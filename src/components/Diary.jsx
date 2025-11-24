@@ -7,8 +7,8 @@ import { mockLogs } from '../data/mockData';
 
 const Diary = () => {
     const { user } = useAuth();
-    const [logs, setLogs] = useState(mockLogs);
-    const [filteredLogs, setFilteredLogs] = useState(mockLogs);
+    const [logs, setLogs] = useState([]);
+    const [filteredLogs, setFilteredLogs] = useState([]);
     const [loading, setLoading] = useState(false);
     const [showModal, setShowModal] = useState(false);
 
@@ -31,16 +31,23 @@ const Diary = () => {
             const { data, error } = await supabase
                 .from('logs')
                 .select('*')
-                .eq('user_id', user.id)
+                .eq('user_id', user.id)  // ONLY fetch current user's logs
                 .order('visit_date', { ascending: false });
 
             if (error) throw error;
 
             if (data && data.length > 0) {
                 setLogs(data);
+            } else {
+                // Fallback to mock data filtered by user
+                const userMockLogs = mockLogs.filter(log => log.user_id === user.id);
+                setLogs(userMockLogs);
             }
         } catch (error) {
             console.error('Error fetching logs:', error);
+            // Fallback to mock data filtered by user
+            const userMockLogs = mockLogs.filter(log => log.user_id === user.id);
+            setLogs(userMockLogs);
         } finally {
             setLoading(false);
         }
@@ -93,7 +100,12 @@ const Diary = () => {
     return (
         <div className="diary-container">
             <div className="diary-header">
-                <h2>My Food Diary</h2>
+                <div>
+                    <h2>My Food Diary</h2>
+                    <p style={{ color: 'var(--text-secondary)', fontSize: 'var(--font-size-sm)', marginTop: '0.5rem', marginBottom: 0 }}>
+                        Your personal food journal - only you can see these entries
+                    </p>
+                </div>
                 <button className="btn-primary" onClick={() => setShowModal(true)}>
                     + New Entry
                 </button>
