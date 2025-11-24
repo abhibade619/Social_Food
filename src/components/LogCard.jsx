@@ -1,13 +1,16 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../supabaseClient';
+import { Link } from 'react-router-dom';
 
 const LogCard = ({ log, onClick }) => {
     const [userProfile, setUserProfile] = useState(null);
+    const [taggedUsers, setTaggedUsers] = useState([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         fetchUserProfile();
-    }, [log.user_id]);
+        fetchTaggedUsers();
+    }, [log.user_id, log.id]);
 
     const fetchUserProfile = async () => {
         try {
@@ -35,6 +38,29 @@ const LogCard = ({ log, onClick }) => {
         }
     };
 
+    const fetchTaggedUsers = async () => {
+        try {
+            const { data, error } = await supabase
+                .from('tagged_users')
+                .select(`
+          user_id,
+          profiles:user_id (
+            id,
+            username,
+            full_name
+          )
+        `)
+                .eq('log_id', log.id);
+
+            if (error) throw error;
+            if (data) {
+                setTaggedUsers(data);
+            }
+        } catch (error) {
+            console.error('Error fetching tagged users:', error);
+        }
+    };
+
     const formatDate = (dateString) => {
         const date = new Date(dateString);
         return date.toLocaleDateString('en-US', {
@@ -57,6 +83,12 @@ const LogCard = ({ log, onClick }) => {
                 <div className="loading">Loading...</div>
             </div>
         );
+    }
+
+    // Parse photos if it's a string
+    let photos = [];
+    if (log.photos) {
+        photos = typeof log.photos === 'string' ? JSON.parse(log.photos) : log.photos;
     }
 
     return (
@@ -83,6 +115,17 @@ const LogCard = ({ log, onClick }) => {
                 </div>
 
                 {log.content && <p className="log-text">{log.content}</p>}
+
+                {/* Display Photos */}
+                {photos && photos.length > 0 && (
+                    <div className="log-photos">
+                        {photos.map((photo, index) => (
+                            <div key={index} className="log-photo">
+                                <img src={photo} alt={`Photo ${index + 1}`} />
+                            </div>
+                        ))}
+                    </div>
+                )}
 
                 <div className="ratings">
                     {log.rating_food && (
@@ -120,6 +163,25 @@ const LogCard = ({ log, onClick }) => {
                 {log.return_intent && (
                     <div className="return-intent">
                         <strong>Would return:</strong> {log.return_intent}
+                    </div>
+                )}
+
+                {/* Display Tagged Users */}
+                {taggedUsers && taggedUsers.length > 0 && (
+                    <div className="tagged-users">
+                        <span className="tagged-users-label">With:</span>
+                        {taggedUsers.map((tag, index) => (
+                            <span key={tag.user_id}>
+                                <Link
+                                    to={`/profile/${tag.user_id}`}
+                                    className="tagged-user-link"
+                                    onClick={(e) => e.stopPropagation()}
+                                >
+                                    {tag.profiles?.full_name || tag.profiles?.username || 'User'}
+                                </Link>
+                                {index < taggedUsers.length - 1 && ', '}
+                            </span>
+                        ))}
                     </div>
                 )}
             </div>

@@ -20,6 +20,11 @@ const LogModal = ({ onClose, onLogCreated }) => {
         content: '',
         visit_date: new Date().toISOString().split('T')[0],
     });
+    const [photos, setPhotos] = useState([]);
+    const [photoPreview, setPhotoPreview] = useState([]);
+    const [taggedFriends, setTaggedFriends] = useState([]);
+    const [friendSearch, setFriendSearch] = useState('');
+    const [friendResults, setFriendResults] = useState([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
 
@@ -28,26 +33,130 @@ const LogModal = ({ onClose, onLogCreated }) => {
         setFormData((prev) => ({ ...prev, [name]: value }));
     };
 
+    const handlePhotoUpload = (e) => {
+        const files = Array.from(e.target.files);
+        if (files.length + photos.length > 5) {
+            setError('Maximum 5 photos allowed');
+            return;
+        }
+
+        setPhotos([...photos, ...files]);
+
+        // Create preview URLs
+        const newPreviews = files.map(file => URL.createObjectURL(file));
+        setPhotoPreview([...photoPreview, ...newPreviews]);
+    };
+
+    const removePhoto = (index) => {
+        const newPhotos = photos.filter((_, i) => i !== index);
+        const newPreviews = photoPreview.filter((_, i) => i !== index);
+        setPhotos(newPhotos);
+        setPhotoPreview(newPreviews);
+    };
+
+    const searchFriends = async (searchTerm) => {
+        if (searchTerm.length < 2) {
+            setFriendResults([]);
+            return;
+        }
+
+        try {
+            const { data, error } = await supabase
+                .from('profiles')
+                .select('id, username, full_name, avatar_url')
+                .or(`username.ilike.%${searchTerm}%,full_name.ilike.%${searchTerm}%`)
+                .neq('id', user.id)
+                .limit(5);
+
+            if (error) throw error;
+            setFriendResults(data || []);
+        } catch (err) {
+            console.error('Error searching friends:', err);
+        }
+    };
+
+    const handleFriendSearch = (e) => {
+        const value = e.target.value;
+        setFriendSearch(value);
+        searchFriends(value);
+    };
+
+    const addTaggedFriend = (friend) => {
+        if (!taggedFriends.find(f => f.id === friend.id)) {
+            setTaggedFriends([...taggedFriends, friend]);
+        }
+        setFriendSearch('');
+        setFriendResults([]);
+    };
+
+    const removeTaggedFriend = (friendId) => {
+        setTaggedFriends(taggedFriends.filter(f => f.id !== friendId));
+    };
+
+    const uploadPhotos = async () => {
+        const photoUrls = [];
+
+        for (const photo of photos) {
+            const fileExt = photo.name.split('.').pop();
+            const fileName = `${user.id}/${Date.now()}_${Math.random().toString(36).substring(7)}.${fileExt}`;
+
+            const { data, error } = await supabase.storage
+                .from('log-photos')
+                .upload(fileName, photo);
+
+            if (error) throw error;
+
+            const { data: { publicUrl } } = supabase.storage
+                .from('log-photos')
+                .getPublicUrl(fileName);
+
+            photoUrls.push(publicUrl);
+        }
+
+        return photoUrls;
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
         setError('');
 
         try {
+            // Upload photos if any
+            let photoUrls = [];
+            if (photos.length > 0) {
+                photoUrls = await uploadPhotos();
+            }
+
             const logData = {
                 ...formData,
                 user_id: user.id,
+                photos: photoUrls,
             };
 
-            const { data, error } = await supabase
+            const { data: logResult, error: logError } = await supabase
                 .from('logs')
                 .insert([logData])
                 .select()
                 .single();
 
-            if (error) throw error;
+            if (logError) throw logError;
 
-            onLogCreated(data);
+            // Tag friends if any
+            if (taggedFriends.length > 0) {
+                const tagData = taggedFriends.map(friend => ({
+                    log_id: logResult.id,
+                    user_id: friend.id
+                }));
+
+                const { error: tagError } = await supabase
+                    .from('tagged_users')
+                    .insert(tagData);
+
+                if (tagError) console.error('Error tagging users:', tagError);
+            }
+
+            onLogCreated(logResult);
         } catch (err) {
             setError(err.message);
             console.error('Error creating log:', err);
@@ -263,6 +372,95 @@ const LogModal = ({ onClose, onLogCreated }) => {
                             rows={4}
                             placeholder="Share your thoughts about this dining experience..."
                         />
+                    </div>
+
+                    {/* Photo Upload Section */}
+                    <div className="form-group">
+                        <label>Photos (Optional - Max 5)</label>
+                        <input
+                            type="file"
+                            accept="image/*"
+                            multiple
+                            onChange={handlePhotoUpload}
+                            style={{ display: 'none' }}
+                            id="photo-upload"
+                        />
+                        <label htmlFor="photo-upload" className="btn-secondary" style={{ cursor: 'pointer', display: 'inline-block' }}>
+                            📷 Add Photos
+                        </label>
+
+                        {photoPreview.length > 0 && (
+                            <div className="photo-preview-grid">
+                                {photoPreview.map((preview, index) => (
+                                    <div key={index} className="photo-preview-item">
+                                        <img src={preview} alt={`Preview ${index + 1}`} />
+                                        <button
+                                            type="button"
+                                            className="remove-photo-btn"
+                                            onClick={() => removePhoto(index)}
+                                        >
+                                            ×
+                                        </button>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Tag Friends Section */}
+                    <div className="form-group">
+                        <label>Tag Friends (Optional)</label>
+                        <input
+                            type="text"
+                            placeholder="Search friends by name or username..."
+                            value={friendSearch}
+                            onChange={handleFriendSearch}
+                            className="friend-search-input"
+                        />
+
+                        {friendResults.length > 0 && (
+                            <div className="friend-results">
+                                {friendResults.map(friend => (
+                                    <div
+                                        key={friend.id}
+                                        className="friend-result-item"
+                                        onClick={() => addTaggedFriend(friend)}
+                                    >
+                                        <img
+                                            src={friend.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${friend.id}`}
+                                            alt={friend.username}
+                                            className="friend-avatar-small"
+                                        />
+                                        <div>
+                                            <p className="friend-name">{friend.full_name || friend.username}</p>
+                                            <p className="friend-username">@{friend.username}</p>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+
+                        {taggedFriends.length > 0 && (
+                            <div className="tagged-friends-list">
+                                {taggedFriends.map(friend => (
+                                    <div key={friend.id} className="tagged-friend-chip">
+                                        <img
+                                            src={friend.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${friend.id}`}
+                                            alt={friend.username}
+                                            className="friend-avatar-tiny"
+                                        />
+                                        <span>{friend.full_name || friend.username}</span>
+                                        <button
+                                            type="button"
+                                            onClick={() => removeTaggedFriend(friend.id)}
+                                            className="remove-tag-btn"
+                                        >
+                                            ×
+                                        </button>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
                     </div>
 
                     {error && <div className="error-message">{error}</div>}
