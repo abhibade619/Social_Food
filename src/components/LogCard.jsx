@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../supabaseClient';
 import { Link } from 'react-router-dom';
+import { useAuth } from '../context/AuthProvider';
 
-const LogCard = ({ log, onClick }) => {
+const LogCard = ({ log, onClick, showActions = false, onEdit, onDelete }) => {
+    const { user } = useAuth();
     const [userProfile, setUserProfile] = useState(null);
     const [taggedUsers, setTaggedUsers] = useState([]);
     const [loading, setLoading] = useState(true);
