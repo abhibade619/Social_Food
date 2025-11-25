@@ -983,3 +983,119 @@ label {
 ::-webkit-scrollbar-thumb:hover {
   background: var(--text-tertiary);
 }
+
+/* ============================================
+   ADDITIONAL REFINEMENTS
+   ============================================ */
+
+/* Better Feed Header */
+.feed-container .feed-header {
+  background: var(--bg-card);
+  padding: var(--space-6);
+  border-radius: var(--radius-xl);
+  margin-bottom: var(--space-8);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border-light);
+}
+
+/* Improve card spacing in grid */
+.logs-grid {
+  gap: var(--space-8);
+}
+
+/* Better navbar */
+.navbar {
+  box-shadow: var(--shadow-md);
+}
+
+/* Improve empty log card appearance */
+.log-card-content {
+  min-height: 200px;
+}
+
+/* Better tag contrast */
+.cuisine-tag {
+  background: linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%);
+  color: #78350F;
+  font-weight: var(--font-weight-semibold);
+}
+
+.location-tag {
+  background: linear-gradient(135deg, #DBEAFE 0%, #BFDBFE 100%);
+  color: #1E3A8A;
+  font-weight: var(--font-weight-semibold);
+}
+
+.visit-type-tag {
+  background: linear-gradient(135deg, #E0E7FF 0%, #C7D2FE 100%);
+  color: #3730A3;
+  font-weight: var(--font-weight-semibold);
+}
+
+/* Improve rating badges */
+.rating-badge {
+  font-weight: var(--font-weight-semibold);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.rating-good {
+  background: linear-gradient(135deg, #D1FAE5 0%, #A7F3D0 100%);
+  color: #065F46;
+  border-color: #10B981;
+}
+
+.rating-ok {
+  background: linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%);
+  color: #78350F;
+  border-color: #F59E0B;
+}
+
+.rating-bad {
+  background: linear-gradient(135deg, #FEE2E2 0%, #FECACA 100%);
+  color: #991B1B;
+  border-color: #EF4444;
+}
+
+/* Better button in feed header */
+.feed-header .btn-primary {
+  box-shadow: 0 4px 14px 0 rgba(255, 107, 53, 0.4);
+}
+
+.feed-header .btn-primary:hover {
+  box-shadow: 0 6px 20px 0 rgba(255, 107, 53, 0.5);
+}
+
+/* Improve overall card appearance */
+.log-card {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.log-card:hover {
+  transform: translateY(-6px) scale(1.01);
+  box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.15);
+}
+
+/* Better restaurant name */
+.restaurant-name {
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+}
+
+/* Improve overall rating badge */
+.overall-rating {
+  box-shadow: 0 4px 12px 0 rgba(255, 107, 53, 0.35);
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse-subtle {
+  0%, 100% {
+    box-shadow: 0 4px 12px 0 rgba(255, 107, 53, 0.35);
+  }
+  50% {
+    box-shadow: 0 6px 16px 0 rgba(255, 107, 53, 0.45);
+  }
+}
+
+.overall-rating:hover {
+  animation: pulse-subtle 1.5s infinite;
+}
