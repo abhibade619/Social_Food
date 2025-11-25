@@ -7,18 +7,32 @@ const Auth = () => {
     const [password, setPassword] = useState('');
     const [username, setUsername] = useState('');
     const [error, setError] = useState('');
+    const [success, setSuccess] = useState('');
     const [loading, setLoading] = useState(false);
     const { signIn, signUp, isSupabaseConfigured } = useAuth();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError('');
+        setSuccess('');
         setLoading(true);
 
         try {
             if (isSignUp) {
                 const { error } = await signUp(email, password, username);
                 if (error) throw error;
+
+                // Show success message
+                setSuccess('✅ Account created! Please check your email for a confirmation link.');
+                setEmail('');
+                setPassword('');
+                setUsername('');
+
+                // Switch to sign in after 3 seconds
+                setTimeout(() => {
+                    setIsSignUp(false);
+                    setSuccess('');
+                }, 5000);
             } else {
                 const { error } = await signIn(email, password);
                 if (error) throw error;
@@ -87,6 +101,7 @@ const Auth = () => {
                     </div>
 
                     {error && <div className="error-message">{error}</div>}
+                    {success && <div className="success-message">{success}</div>}
 
                     <button type="submit" className="btn-primary" disabled={loading}>
                         {loading ? 'Loading...' : isSignUp ? 'Sign Up' : 'Sign In'}
