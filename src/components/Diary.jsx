@@ -29,15 +29,45 @@ const Diary = () => {
     const fetchLogs = async () => {
         setLoading(true);
         try {
-            const { data, error } = await supabase
+            // Fetch user's own logs
+            const { data: ownLogs, error: ownError } = await supabase
                 .from('logs')
                 .select('*')
-                .eq('user_id', user.id)  // ONLY fetch current user's logs
+                .eq('user_id', user.id)
                 .order('visit_date', { ascending: false });
 
-            if (error) throw error;
+            if (ownError) throw ownError;
 
-            setLogs(data || []);
+            // Fetch logs where user is tagged
+            const { data: taggedData, error: taggedError } = await supabase
+                .from('tagged_users')
+                .select('log_id')
+                .eq('user_id', user.id);
+
+            if (taggedError) throw taggedError;
+
+            let taggedLogs = [];
+            if (taggedData && taggedData.length > 0) {
+                const taggedLogIds = taggedData.map(t => t.log_id);
+                const { data: taggedLogsData, error: taggedLogsError } = await supabase
+                    .from('logs')
+                    .select('*')
+                    .in('id', taggedLogIds)
+                    .order('visit_date', { ascending: false });
+
+                if (!taggedLogsError && taggedLogsData) {
+                    taggedLogs = taggedLogsData;
+                }
+            }
+
+            // Combine and deduplicate logs
+            const allLogs = [...(ownLogs || []), ...taggedLogs];
+            const uniqueLogs = Array.from(new Map(allLogs.map(log => [log.id, log])).values());
+
+            // Sort by visit_date
+            uniqueLogs.sort((a, b) => new Date(b.visit_date) - new Date(a.visit_date));
+
+            setLogs(uniqueLogs);
         } catch (error) {
             console.error('Error fetching logs:', error);
             setLogs([]);

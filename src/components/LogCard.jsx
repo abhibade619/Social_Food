@@ -77,6 +77,37 @@ const LogCard = ({ log, onClick }) => {
         return 'rating-bad';
     };
 
+    // Calculate overall rating out of 10
+    const calculateOverallRating = () => {
+        const ratings = [];
+
+        // Food rating (most important - weight 3x)
+        if (log.rating_food) ratings.push(parseInt(log.rating_food), parseInt(log.rating_food), parseInt(log.rating_food));
+
+        // Service/Ambience/Value for dine-in OR Packaging/Store Service for takeout
+        if (log.rating_service) ratings.push(parseInt(log.rating_service));
+        if (log.rating_ambience) ratings.push(parseInt(log.rating_ambience));
+        if (log.rating_value) ratings.push(parseInt(log.rating_value));
+        if (log.rating_packaging) ratings.push(parseInt(log.rating_packaging));
+        if (log.rating_store_service) ratings.push(parseInt(log.rating_store_service));
+
+        // Return intent (convert to rating)
+        if (log.return_intent) {
+            if (log.return_intent === 'Definitely') ratings.push(5, 5);
+            else if (log.return_intent === 'Probably') ratings.push(4);
+            else if (log.return_intent === 'Maybe') ratings.push(3);
+            else if (log.return_intent === 'Probably Not') ratings.push(2);
+            else if (log.return_intent === 'Definitely Not') ratings.push(1);
+        }
+
+        if (ratings.length === 0) return null;
+
+        const average = ratings.reduce((a, b) => a + b, 0) / ratings.length;
+        return ((average / 5) * 10).toFixed(1);
+    };
+
+    const overallRating = calculateOverallRating();
+
     if (loading) {
         return (
             <div className="log-card">
@@ -103,11 +134,47 @@ const LogCard = ({ log, onClick }) => {
                     <p className="log-user-name">{userProfile?.full_name || 'User'}</p>
                     <p className="log-username">@{userProfile?.username || 'user'}</p>
                 </div>
-                <span className="log-date">{formatDate(log.visit_date || log.created_at)}</span>
+                <div className="log-header-right">
+                    <span className="log-date">{formatDate(log.visit_date || log.created_at)}</span>
+
+                    {/* Show edit/delete buttons only for own logs */}
+                    {showActions && user?.id === log.user_id && (
+                        <div className="log-actions">
+                            <button
+                                className="action-btn edit-btn"
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    onEdit && onEdit(log);
+                                }}
+                                title="Edit log"
+                            >
+                                ✏️
+                            </button>
+                            <button
+                                className="action-btn delete-btn"
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    onDelete && onDelete(log.id);
+                                }}
+                                title="Delete log"
+                            >
+                                🗑️
+                            </button>
+                        </div>
+                    )}
+                </div>
             </div>
 
             <div className="log-content">
-                <h3 className="restaurant-name">{log.restaurant_name}</h3>
+                <div className="log-title-row">
+                    <h3 className="restaurant-name">{log.restaurant_name}</h3>
+                    {overallRating && (
+                        <div className="overall-rating">
+                            <span className="rating-number">{overallRating}</span>
+                            <span className="rating-max">/10</span>
+                        </div>
+                    )}
+                </div>
                 <div className="log-meta">
                     {log.cuisine && <span className="cuisine-tag">{log.cuisine}</span>}
                     {log.location && <span className="location-tag">📍 {log.location}</span>}

@@ -1959,3 +1959,58 @@
     right: var(--spacing-md);
   }
 }
+
+/* ============================================
+   OVERALL RATING DISPLAY
+   ============================================ */
+.log-title-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-sm);
+}
+
+.overall-rating {
+  display: flex;
+  align-items: baseline;
+  gap: 0.2rem;
+  background: linear-gradient(135deg, var(--primary-color) 0%, #ff8a50 100%);
+  padding: 0.4rem 0.8rem;
+  border-radius: var(--border-radius);
+  box-shadow: 0 2px 8px rgba(255, 107, 53, 0.3);
+}
+
+.rating-number {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: white;
+  line-height: 1;
+}
+
+.rating-max {
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.9);
+  font-weight: 600;
+}
+
+/* Update log header for better layout */
+.log-header {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-md);
+  flex-wrap: wrap;
+}
+
+.log-header-right {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  margin-left: auto;
+}
+
+.log-date {
+  color: var(--text-secondary);
+  font-size: var(--font-size-sm);
+  white-space: nowrap;
+}

@@ -20,6 +20,7 @@ const Feed = () => {
             const { data, error } = await supabase
                 .from('logs')
                 .select('*')
+                .neq('user_id', user.id) // Exclude own logs from feed
                 .order('created_at', { ascending: false });
 
             if (error) throw error;
