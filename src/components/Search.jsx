@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../supabaseClient';
 import { restaurants } from '../data/restaurants';
-import { mockUsers } from '../data/mockData';
+import FollowButton from './FollowButton';
 
 const Search = ({ setCurrentView, setSelectedRestaurant, setSelectedUser }) => {
     const [activeTab, setActiveTab] = useState('restaurants');
@@ -39,27 +39,10 @@ const Search = ({ setCurrentView, setSelectedRestaurant, setSelectedUser }) => {
                     .limit(20);
 
                 if (error) throw error;
-
-                // Fallback to mock data if no results
-                if (data && data.length > 0) {
-                    setFilteredUsers(data);
-                } else {
-                    const mockFiltered = mockUsers.filter(
-                        (user) =>
-                            user.username.toLowerCase().includes(term.toLowerCase()) ||
-                            user.full_name.toLowerCase().includes(term.toLowerCase())
-                    );
-                    setFilteredUsers(mockFiltered);
-                }
+                setFilteredUsers(data || []);
             } catch (error) {
                 console.error('Error searching users:', error);
-                // Fallback to mock data
-                const mockFiltered = mockUsers.filter(
-                    (user) =>
-                        user.username.toLowerCase().includes(term.toLowerCase()) ||
-                        user.full_name.toLowerCase().includes(term.toLowerCase())
-                );
-                setFilteredUsers(mockFiltered);
+                setFilteredUsers([]);
             }
         }
 
@@ -151,17 +134,19 @@ const Search = ({ setCurrentView, setSelectedRestaurant, setSelectedUser }) => {
                         <div
                             key={user.id}
                             className="user-result-card"
-                            onClick={() => handleUserClick(user)}
                         >
-                            <img
-                                src={user.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.username}`}
-                                alt={user.username}
-                                className="user-result-avatar"
-                            />
-                            <div className="user-result-info">
-                                <p className="user-result-name">{user.full_name || 'No name'}</p>
-                                <p className="user-result-username">@{user.username || 'unknown'}</p>
+                            <div onClick={() => handleUserClick(user)} style={{ display: 'flex', alignItems: 'center', flex: 1, cursor: 'pointer' }}>
+                                <img
+                                    src={user.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.username}`}
+                                    alt={user.username}
+                                    className="user-result-avatar"
+                                />
+                                <div className="user-result-info">
+                                    <p className="user-result-name">{user.full_name || 'No name'}</p>
+                                    <p className="user-result-username">@{user.username || 'unknown'}</p>
+                                </div>
                             </div>
+                            <FollowButton targetUserId={user.id} targetUsername={user.username} />
                         </div>
                     ))}
             </div>
