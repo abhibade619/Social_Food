@@ -3,7 +3,7 @@ import { supabase } from '../supabaseClient';
 import { useAuth } from '../context/AuthProvider';
 import LogCard from './LogCard';
 import LogModal from './LogModal';
-import { mockLogs } from '../data/mockData';
+import EditLogModal from './EditLogModal';
 
 const Diary = () => {
     const { user } = useAuth();
@@ -11,6 +11,7 @@ const Diary = () => {
     const [filteredLogs, setFilteredLogs] = useState([]);
     const [loading, setLoading] = useState(false);
     const [showModal, setShowModal] = useState(false);
+    const [editingLog, setEditingLog] = useState(null);
 
     // Filter states
     const [timeFilter, setTimeFilter] = useState('all');
@@ -36,18 +37,10 @@ const Diary = () => {
 
             if (error) throw error;
 
-            if (data && data.length > 0) {
-                setLogs(data);
-            } else {
-                // Fallback to mock data filtered by user
-                const userMockLogs = mockLogs.filter(log => log.user_id === user.id);
-                setLogs(userMockLogs);
-            }
+            setLogs(data || []);
         } catch (error) {
             console.error('Error fetching logs:', error);
-            // Fallback to mock data filtered by user
-            const userMockLogs = mockLogs.filter(log => log.user_id === user.id);
-            setLogs(userMockLogs);
+            setLogs([]);
         } finally {
             setLoading(false);
         }
@@ -91,6 +84,32 @@ const Diary = () => {
     const handleLogCreated = (newLog) => {
         setLogs([newLog, ...logs]);
         setShowModal(false);
+    };
+
+    const handleEdit = (log) => {
+        setEditingLog(log);
+    };
+
+    const handleLogUpdated = (updatedLog) => {
+        setLogs(logs.map(log => log.id === updatedLog.id ? updatedLog : log));
+        setEditingLog(null);
+    };
+
+    const handleDelete = async (logId) => {
+        try {
+            const { error } = await supabase
+                .from('logs')
+                .delete()
+                .eq('id', logId)
+                .eq('user_id', user.id);
+
+            if (error) throw error;
+
+            setLogs(logs.filter(log => log.id !== logId));
+        } catch (error) {
+            console.error('Error deleting log:', error);
+            alert('Failed to delete log');
+        }
     };
 
     // Get unique cuisines and locations from logs
@@ -175,7 +194,13 @@ const Diary = () => {
 
                     <div className="logs-grid">
                         {filteredLogs.map((log) => (
-                            <LogCard key={log.id} log={log} />
+                            <LogCard
+                                key={log.id}
+                                log={log}
+                                showActions={true}
+                                onEdit={handleEdit}
+                                onDelete={handleDelete}
+                            />
                         ))}
                     </div>
                 </main>
@@ -229,6 +254,14 @@ const Diary = () => {
                 <LogModal
                     onClose={() => setShowModal(false)}
                     onLogCreated={handleLogCreated}
+                />
+            )}
+
+            {editingLog && (
+                <EditLogModal
+                    log={editingLog}
+                    onClose={() => setEditingLog(null)}
+                    onLogUpdated={handleLogUpdated}
                 />
             )}
         </div>

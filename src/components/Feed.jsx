@@ -3,10 +3,9 @@ import { supabase } from '../supabaseClient';
 import { useAuth } from '../context/AuthProvider';
 import LogCard from './LogCard';
 import LogModal from './LogModal';
-import { mockLogs } from '../data/mockData';
 
 const Feed = () => {
-    const [logs, setLogs] = useState(mockLogs);
+    const [logs, setLogs] = useState([]);
     const [loading, setLoading] = useState(false);
     const [showModal, setShowModal] = useState(false);
     const { user } = useAuth();
@@ -24,14 +23,10 @@ const Feed = () => {
                 .order('created_at', { ascending: false });
 
             if (error) throw error;
-
-            // If we have real data, use it; otherwise use mock data
-            if (data && data.length > 0) {
-                setLogs(data);
-            }
+            setLogs(data || []);
         } catch (error) {
             console.error('Error fetching logs:', error);
-            // Keep using mock data on error
+            setLogs([]);
         } finally {
             setLoading(false);
         }

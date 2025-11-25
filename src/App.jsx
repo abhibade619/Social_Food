@@ -1,10 +1,13 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from './context/AuthProvider';
+import { supabase } from './supabaseClient';
 import Auth from './components/Auth';
+import ProfileSetup from './components/ProfileSetup';
 import Navbar from './components/Navbar';
 import Feed from './components/Feed';
 import Search from './components/Search';
 import Profile from './components/Profile';
+import UserProfile from './components/UserProfile';
 import RestaurantPage from './components/RestaurantPage';
 import AccountInfo from './components/AccountInfo';
 import Settings from './components/Settings';
@@ -16,8 +19,41 @@ function App() {
   const [currentView, setCurrentView] = useState('feed');
   const [selectedRestaurant, setSelectedRestaurant] = useState(null);
   const [selectedUser, setSelectedUser] = useState(null);
+  const [profileComplete, setProfileComplete] = useState(true);
+  const [checkingProfile, setCheckingProfile] = useState(true);
 
-  if (loading) {
+  useEffect(() => {
+    if (user) {
+      checkProfileCompletion();
+    }
+  }, [user]);
+
+  const checkProfileCompletion = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('username, full_name')
+        .eq('id', user.id)
+        .single();
+
+      if (error || !data?.username || !data?.full_name) {
+        setProfileComplete(false);
+      } else {
+        setProfileComplete(true);
+      }
+    } catch (error) {
+      console.error('Error checking profile:', error);
+      setProfileComplete(false);
+    } finally {
+      setCheckingProfile(false);
+    }
+  };
+
+  const handleProfileSetupComplete = () => {
+    setProfileComplete(true);
+  };
+
+  if (loading || checkingProfile) {
     return (
       <div className="loading-screen">
         <h1>🍽️ FoodSocial</h1>
@@ -30,11 +66,24 @@ function App() {
     return <Auth />;
   }
 
+  if (!profileComplete) {
+    return <ProfileSetup onComplete={handleProfileSetupComplete} />;
+  }
+
   const renderView = () => {
     if (currentView === 'restaurant' && selectedRestaurant) {
       return (
         <RestaurantPage
           restaurant={selectedRestaurant}
+          onBack={() => setCurrentView('search')}
+        />
+      );
+    }
+
+    if (currentView === 'userProfile' && selectedUser) {
+      return (
+        <UserProfile
+          userId={selectedUser.id}
           onBack={() => setCurrentView('search')}
         />
       );
