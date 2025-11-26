@@ -124,123 +124,138 @@ const LogCard = ({ log, onClick, showActions = false, onEdit, onDelete, onViewPr
     if (log.photos) {
         photos = typeof log.photos === 'string' ? JSON.parse(log.photos) : log.photos;
     }
-    {
-        showActions && user?.id === log.user_id && (
-            <div className="log-actions">
-                <button
-                    className="action-btn edit-btn"
-                    onClick={(e) => {
-                        e.stopPropagation();
-                        onEdit && onEdit(log);
-                    }}
-                    title="Edit log"
-                >
-                    ✏️
-                </button>
-                <button
-                    className="action-btn delete-btn"
-                    onClick={(e) => {
-                        e.stopPropagation();
-                        onDelete && onDelete(log.id);
-                    }}
-                    title="Delete log"
-                >
-                    🗑️
-                </button>
-            </div>
-        )
-    }
-                </div >
-            </div >
 
-    <div className="log-content">
-        <div className="log-title-row">
-            <h3 className="restaurant-name">{log.restaurant_name}</h3>
-            {overallRating && (
-                <div className="overall-rating">
-                    <span className="rating-number">{overallRating}</span>
-                    <span className="rating-max">/10</span>
+    return (
+        <div className="log-card" onClick={onClick}>
+            <div className="log-header">
+                <img
+                    src={userProfile?.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${log.user_id}`}
+                    alt={userProfile?.username || 'User'}
+                    className="user-avatar"
+                />
+                <div className="log-user-info">
+                    <p className="log-user-name">{userProfile?.full_name || 'User'}</p>
+                    <p className="log-username">@{userProfile?.username || 'user'}</p>
                 </div>
-            )}
-        </div>
-        <div className="log-meta">
-            {log.cuisine && <span className="cuisine-tag">{log.cuisine}</span>}
-            {log.location && <span className="location-tag">📍 {log.location}</span>}
-            {log.visit_type && <span className="visit-type-tag">{log.visit_type}</span>}
-        </div>
+                <div className="log-header-right">
+                    <span className="log-date">{formatDate(log.visit_date || log.created_at)}</span>
 
-        {log.content && <p className="log-text">{log.content}</p>}
+                    {/* Show edit/delete buttons only for own logs */}
+                    {showActions && user?.id === log.user_id && (
+                        <div className="log-actions">
+                            <button
+                                className="action-btn edit-btn"
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    onEdit && onEdit(log);
+                                }}
+                                title="Edit log"
+                            >
+                                ✏️
+                            </button>
+                            <button
+                                className="action-btn delete-btn"
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    onDelete && onDelete(log.id);
+                                }}
+                                title="Delete log"
+                            >
+                                🗑️
+                            </button>
+                        </div>
+                    )}
+                </div>
+            </div>
 
-        {/* Display Photos */}
-        {photos && photos.length > 0 && (
-            <div className="log-photos">
-                {photos.map((photo, index) => (
-                    <div key={index} className="log-photo">
-                        <img src={photo} alt={`Photo ${index + 1}`} />
+            <div className="log-content">
+                <div className="log-title-row">
+                    <h3 className="restaurant-name">{log.restaurant_name}</h3>
+                    {overallRating && (
+                        <div className="overall-rating">
+                            <span className="rating-number">{overallRating}</span>
+                            <span className="rating-max">/10</span>
+                        </div>
+                    )}
+                </div>
+                <div className="log-meta">
+                    {log.cuisine && <span className="cuisine-tag">{log.cuisine}</span>}
+                    {log.location && <span className="location-tag">📍 {log.location}</span>}
+                    {log.visit_type && <span className="visit-type-tag">{log.visit_type}</span>}
+                </div>
+
+                {log.content && <p className="log-text">{log.content}</p>}
+
+                {/* Display Photos */}
+                {photos && photos.length > 0 && (
+                    <div className="log-photos">
+                        {photos.map((photo, index) => (
+                            <div key={index} className="log-photo">
+                                <img src={photo} alt={`Photo ${index + 1}`} />
+                            </div>
+                        ))}
                     </div>
-                ))}
-            </div>
-        )}
+                )}
 
-        <div className="ratings">
-            {log.rating_food && (
-                <span className={`rating-badge ${getRatingColor(log.rating_food)}`}>
-                    Food: {log.rating_food}/5
-                </span>
-            )}
-            {log.rating_service && (
-                <span className={`rating-badge ${getRatingColor(log.rating_service)}`}>
-                    Service: {log.rating_service}/5
-                </span>
-            )}
-            {log.rating_ambience && (
-                <span className={`rating-badge ${getRatingColor(log.rating_ambience)}`}>
-                    Ambience: {log.rating_ambience}/5
-                </span>
-            )}
-            {log.rating_value && (
-                <span className={`rating-badge ${getRatingColor(log.rating_value)}`}>
-                    Value: {log.rating_value}/5
-                </span>
-            )}
-            {log.rating_packaging && (
-                <span className={`rating-badge ${getRatingColor(log.rating_packaging)}`}>
-                    Packaging: {log.rating_packaging}/5
-                </span>
-            )}
-            {log.rating_store_service && (
-                <span className={`rating-badge ${getRatingColor(log.rating_store_service)}`}>
-                    Store Service: {log.rating_store_service}/5
-                </span>
-            )}
+                <div className="ratings">
+                    {log.rating_food && (
+                        <span className={`rating-badge ${getRatingColor(log.rating_food)}`}>
+                            Food: {log.rating_food}/5
+                        </span>
+                    )}
+                    {log.rating_service && (
+                        <span className={`rating-badge ${getRatingColor(log.rating_service)}`}>
+                            Service: {log.rating_service}/5
+                        </span>
+                    )}
+                    {log.rating_ambience && (
+                        <span className={`rating-badge ${getRatingColor(log.rating_ambience)}`}>
+                            Ambience: {log.rating_ambience}/5
+                        </span>
+                    )}
+                    {log.rating_value && (
+                        <span className={`rating-badge ${getRatingColor(log.rating_value)}`}>
+                            Value: {log.rating_value}/5
+                        </span>
+                    )}
+                    {log.rating_packaging && (
+                        <span className={`rating-badge ${getRatingColor(log.rating_packaging)}`}>
+                            Packaging: {log.rating_packaging}/5
+                        </span>
+                    )}
+                    {log.rating_store_service && (
+                        <span className={`rating-badge ${getRatingColor(log.rating_store_service)}`}>
+                            Store Service: {log.rating_store_service}/5
+                        </span>
+                    )}
+                </div>
+
+                {log.return_intent && (
+                    <div className="return-intent">
+                        <strong>Would return:</strong> {log.return_intent}
+                    </div>
+                )}
+
+                {/* Display Tagged Users */}
+                {taggedUsers && taggedUsers.length > 0 && (
+                    <div className="tagged-users">
+                        <span className="tagged-users-label">With:</span>
+                        {taggedUsers.map((tag, index) => (
+                            <span key={tag.user_id}>
+                                <Link
+                                    to={`/profile/${tag.user_id}`}
+                                    className="tagged-user-link"
+                                    onClick={(e) => e.stopPropagation()}
+                                >
+                                    {tag.profiles?.full_name || tag.profiles?.username || 'User'}
+                                </Link>
+                                {index < taggedUsers.length - 1 && ', '}
+                            </span>
+                        ))}
+                    </div>
+                )}
+            </div>
         </div>
-
-        {log.return_intent && (
-            <div className="return-intent">
-                <strong>Would return:</strong> {log.return_intent}
-            </div>
-        )}
-
-        {/* Display Tagged Users */}
-        {taggedUsers && taggedUsers.length > 0 && (
-            <div className="tagged-users">
-                <span className="tagged-users-label">With:</span>
-                {taggedUsers.map((tag, index) => (
-                    <span key={tag.user_id}>
-                        <Link
-                            to={`/profile/${tag.user_id}`}
-                            className="tagged-user-link"
-                            onClick={(e) => e.stopPropagation()}
-                        >
-                            {tag.profiles?.full_name || tag.profiles?.username || 'User'}
-                        </Link>
-                        {index < taggedUsers.length - 1 && ', '}
-                    </span>
-                ))}
-            </div>
-        )}
-    </div>
-        </div >
     );
 };
 
