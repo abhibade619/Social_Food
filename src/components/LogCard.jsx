@@ -214,30 +214,8 @@ const LogCard = ({ log, onClick, showActions = false, onEdit, onDelete, onViewPr
         {log.return_intent && (
             <div className="return-intent">
                 <strong>Would return:</strong> {log.return_intent}
-            </div>
-        )}
-
-        {/* Display Tagged Users */}
-        {taggedUsers && taggedUsers.length > 0 && (
-            <div className="tagged-users">
-                <span className="tagged-users-label">With:</span>
-                {taggedUsers.map((tag, index) => (
-                    <span key={tag.user_id}>
-                        <Link
-                            to={`/profile/${tag.user_id}`}
-                            className="tagged-user-link"
-                            onClick={(e) => e.stopPropagation()}
-                        >
-                            {tag.profiles?.full_name || tag.profiles?.username || 'User'}
-                        </Link>
-                        {index < taggedUsers.length - 1 && ', '}
-                    </span>
-                ))}
-            </div>
-        )}
-    </div>
-        </div >
-    );
+            </div >
+        );
 };
 
-export default LogCard;
+        export default LogCard;
