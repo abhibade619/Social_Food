@@ -25,6 +25,9 @@ function App() {
   useEffect(() => {
     if (user) {
       checkProfileCompletion();
+    } else {
+      // If no user, we're not checking profile
+      setCheckingProfile(false);
     }
   }, [user]);
 
