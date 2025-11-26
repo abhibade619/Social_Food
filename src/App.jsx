@@ -8,6 +8,8 @@ import Feed from './components/Feed';
 import Search from './components/Search';
 import Profile from './components/Profile';
 import UserProfile from './components/UserProfile';
+import FollowersList from './components/FollowersList';
+import FollowingList from './components/FollowingList';
 import RestaurantPage from './components/RestaurantPage';
 import AccountInfo from './components/AccountInfo';
 import Settings from './components/Settings';
@@ -88,6 +90,24 @@ function App() {
         <UserProfile
           userId={selectedUser.id}
           onBack={() => setCurrentView('search')}
+        />
+      );
+    }
+
+    if (currentView === 'followers') {
+      return (
+        <FollowersList
+          userId={user.id}
+          onBack={() => setCurrentView('profile')}
+        />
+      );
+    }
+
+    if (currentView === 'following') {
+      return (
+        <FollowingList
+          userId={user.id}
+          onBack={() => setCurrentView('profile')}
         />
       );
     }

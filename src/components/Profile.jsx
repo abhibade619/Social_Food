@@ -11,9 +11,11 @@ const Profile = () => {
     const [editing, setEditing] = useState(false);
     const [followerCount, setFollowerCount] = useState(0);
     const [followingCount, setFollowingCount] = useState(0);
+    const [uploading, setUploading] = useState(false);
     const [formData, setFormData] = useState({
         username: '',
         full_name: '',
+        bio: '',
         website: '',
     });
 
@@ -38,6 +40,7 @@ const Profile = () => {
                 setFormData({
                     username: data.username || '',
                     full_name: data.full_name || '',
+                    bio: data.bio || '',
                     website: data.website || '',
                 });
             }
@@ -82,6 +85,62 @@ const Profile = () => {
             setFollowingCount(followingCount || 0);
         } catch (error) {
             console.error('Error fetching follow counts:', error);
+        }
+    };
+
+    const handleAvatarUpload = async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        // Validate file type
+        if (!file.type.startsWith('image/')) {
+            alert('Please upload an image file');
+            return;
+        }
+
+        // Validate file size (max 5MB)
+        if (file.size > 5 * 1024 * 1024) {
+            alert('File size must be less than 5MB');
+            return;
+        }
+
+        setUploading(true);
+        try {
+            // Create unique file name
+            const fileExt = file.name.split('.').pop();
+            const fileName = `${user.id}/${Date.now()}.${fileExt}`;
+
+            // Upload to Supabase Storage
+            const { data: uploadData, error: uploadError } = await supabase.storage
+                .from('avatars')
+                .upload(fileName, file, {
+                    cacheControl: '3600',
+                    upsert: true
+                });
+
+            if (uploadError) throw uploadError;
+
+            // Get public URL
+            const { data: { publicUrl } } = supabase.storage
+                .from('avatars')
+                .getPublicUrl(fileName);
+
+            // Update profile with new avatar URL
+            const { error: updateError } = await supabase
+                .from('profiles')
+                .update({ avatar_url: publicUrl })
+                .eq('id', user.id);
+
+            if (updateError) throw updateError;
+
+            // Refresh profile
+            await fetchProfile();
+            alert('Profile picture updated successfully!');
+        } catch (error) {
+            console.error('Error uploading avatar:', error);
+            alert('Failed to upload profile picture. Please try again.');
+        } finally {
+            setUploading(false);
         }
     };
 
@@ -152,6 +211,27 @@ const Profile = () => {
                                     onChange={(e) => setFormData({ ...formData, website: e.target.value })}
                                 />
                             </div>
+                            <div className="form-group">
+                                <label htmlFor="bio">Bio</label>
+                                <textarea
+                                    id="bio"
+                                    rows="4"
+                                    value={formData.bio}
+                                    onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
+                                    placeholder="Tell us about yourself..."
+                                />
+                            </div>
+                            <div className="form-group">
+                                <label htmlFor="avatar">Profile Picture</label>
+                                <input
+                                    id="avatar"
+                                    type="file"
+                                    accept="image/*"
+                                    onChange={handleAvatarUpload}
+                                    disabled={uploading}
+                                />
+                                {uploading && <p className="upload-status">Uploading...</p>}
+                            </div>
                             <div className="form-actions">
                                 <button type="submit" className="btn-primary">Save</button>
                                 <button type="button" className="btn-secondary" onClick={() => setEditing(false)}>
@@ -168,6 +248,9 @@ const Profile = () => {
                                 <a href={profile.website} target="_blank" rel="noopener noreferrer" className="website">
                                     {profile.website}
                                 </a>
+                            )}
+                            {profile?.bio && (
+                                <p className="profile-bio">{profile.bio}</p>
                             )}
                             <button className="btn-primary" onClick={() => setEditing(true)}>
                                 Edit Profile
