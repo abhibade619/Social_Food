@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState } from 'react';
-import { Loader } from '@googlemaps/js-api-loader';
 
 const RestaurantAutocomplete = ({ onPlaceSelected, defaultValue = '', location = '' }) => {
     const inputRef = useRef(null);
@@ -9,83 +8,87 @@ const RestaurantAutocomplete = ({ onPlaceSelected, defaultValue = '', location =
     useEffect(() => {
         const initAutocomplete = async () => {
             try {
-                const loader = new Loader({
-                    apiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY,
-                    version: 'weekly',
-                    libraries: ['places']
-                });
+                // Load Google Maps script dynamically
+                const script = document.createElement('script');
+                script.src = `https://maps.googleapis.com/maps/api/js?key=${import.meta.env.VITE_GOOGLE_MAPS_API_KEY}&libraries=places&callback=initMap`;
+                script.async = true;
+                script.defer = true;
 
-                await loader.load();
+                // Define callback function
+                window.initMap = () => {
+                    if (!inputRef.current) return;
 
-                const autocompleteInstance = new google.maps.places.Autocomplete(
-                    inputRef.current,
-                    {
-                        types: ['restaurant', 'cafe', 'food', 'meal_takeaway', 'meal_delivery'],
-                        fields: [
-                            'place_id',
-                            'name',
-                            'formatted_address',
-                            'geometry',
-                            'address_components',
-                            'rating',
-                            'user_ratings_total',
-                            'types'
-                        ]
-                    }
-                );
+                    const autocompleteInstance = new window.google.maps.places.Autocomplete(
+                        inputRef.current,
+                        {
+                            types: ['establishment'],
+                            fields: [
+                                'place_id',
+                                'name',
+                                'formatted_address',
+                                'geometry',
+                                'address_components',
+                                'rating',
+                                'user_ratings_total',
+                                'types'
+                            ]
+                        }
+                    );
 
-                // Bias results to location if provided
-                if (location) {
-                    // You could geocode the location here to get coordinates
-                    // For now, we'll just use the location as a search bias
+                    autocompleteInstance.addListener('place_changed', () => {
+                        const place = autocompleteInstance.getPlace();
+
+                        if (!place.geometry || !place.geometry.location) {
+                            console.error('No details available for input');
+                            return;
+                        }
+
+                        // Extract city and state from address components
+                        let city = '';
+                        let state = '';
+                        let country = '';
+
+                        if (place.address_components) {
+                            place.address_components.forEach(component => {
+                                if (component.types.includes('locality')) {
+                                    city = component.long_name;
+                                }
+                                if (component.types.includes('administrative_area_level_1')) {
+                                    state = component.short_name;
+                                }
+                                if (component.types.includes('country')) {
+                                    country = component.short_name;
+                                }
+                            });
+                        }
+
+                        const placeData = {
+                            place_id: place.place_id,
+                            name: place.name,
+                            address: place.formatted_address,
+                            latitude: place.geometry.location.lat(),
+                            longitude: place.geometry.location.lng(),
+                            city: city,
+                            state: state,
+                            country: country,
+                            location: city && state ? `${city}, ${state}` : city || state,
+                            rating: place.rating,
+                            user_ratings_total: place.user_ratings_total
+                        };
+
+                        onPlaceSelected(placeData);
+                    });
+
+                    setAutocomplete(autocompleteInstance);
+                    setIsLoading(false);
+                };
+
+                // Check if script already loaded
+                if (window.google && window.google.maps && window.google.maps.places) {
+                    window.initMap();
+                } else {
+                    document.head.appendChild(script);
                 }
-
-                autocompleteInstance.addListener('place_changed', () => {
-                    const place = autocompleteInstance.getPlace();
-
-                    if (!place.geometry || !place.geometry.location) {
-                        console.error('No details available for input');
-                        return;
-                    }
-
-                    // Extract city and state from address components
-                    let city = '';
-                    let state = '';
-                    let country = '';
-
-                    if (place.address_components) {
-                        place.address_components.forEach(component => {
-                            if (component.types.includes('locality')) {
-                                city = component.long_name;
-                            }
-                            if (component.types.includes('administrative_area_level_1')) {
-                                state = component.short_name;
-                            }
-                            if (component.types.includes('country')) {
-                                country = component.short_name;
-                            }
-                        });
-                    }
-
-                    const placeData = {
-                        place_id: place.place_id,
-                        name: place.name,
-                        address: place.formatted_address,
-                        latitude: place.geometry.location.lat(),
-                        longitude: place.geometry.location.lng(),
-                        city: city,
-                        state: state,
-                        country: country,
-                        location: city && state ? `${city}, ${state}` : city || state,
-                        rating: place.rating,
-                        user_ratings_total: place.user_ratings_total
-                    };
-
-                    onPlaceSelected(placeData);
-                });
-
-                setAutocomplete(autocompleteInstance);
-                setIsLoading(false);
             } catch (error) {
                 console.error('Error loading Google Maps:', error);
                 setIsLoading(false);
@@ -95,6 +98,13 @@ const RestaurantAutocomplete = ({ onPlaceSelected, defaultValue = '', location =
         if (inputRef.current && !autocomplete) {
             initAutocomplete();
         }
+
+        // Cleanup
+        return () => {
+            if (window.initMap) {
+                delete window.initMap;
+            }
+        };
     }, []);
 
     return (
@@ -102,12 +112,23 @@ const RestaurantAutocomplete = ({ onPlaceSelected, defaultValue = '', location =
             <input
                 ref={inputRef}
                 type="text"
-                placeholder={isLoading ? 'Loading...' : 'Search for a restaurant...'}
+                placeholder={isLoading ? 'Loading Google Places...' : 'Search for a restaurant...'}
                 defaultValue={defaultValue}
                 disabled={isLoading}
                 className="autocomplete-input"
+                style={{
+                    width: '100%',
+                    padding: '8px 12px',
+                    border: '1px solid #ddd',
+                    borderRadius: '4px',
+                    fontSize: '14px'
+                }}
             />
-            {isLoading && <span className="loading-indicator">Loading Google Places...</span>}
+            {isLoading && (
+                <small style={{ color: '#888', fontSize: '0.85rem', marginTop: '4px', display: 'block' }}>
+                    Loading Google Places...
+                </small>
+            )}
         </div>
     );
 };
