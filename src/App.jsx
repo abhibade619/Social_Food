@@ -115,7 +115,10 @@ function App() {
 
     switch (currentView) {
       case 'feed':
-        return <Feed />;
+        return <Feed onViewProfile={(userId) => {
+          setSelectedUser({ id: userId });
+          setCurrentView('userProfile');
+        }} />;
       case 'search':
         return (
           <Search

@@ -20,6 +20,11 @@ const UserMenu = ({ onNavigate, onSignOut }) => {
         action();
     };
 
+    const handleNavigate = (view) => {
+        setIsOpen(false);
+        onNavigate(view);
+    };
+
     return (
         <div className="user-menu">
             <button
@@ -36,17 +41,16 @@ const UserMenu = ({ onNavigate, onSignOut }) => {
 
             {isOpen && (
                 <div className="menu-dropdown">
-                    <button
-                        className="menu-item"
-                        onClick={() => handleMenuClick(() => onNavigate('account'))}
-                    >
+                    <button className="menu-item" onClick={() => handleNavigate('wishlist')}>
+                        <span className="menu-icon">📝</span>
+                        My Wishlist
+                    </button>
+                    <div className="menu-divider"></div>
+                    <button className="menu-item" onClick={() => handleNavigate('account')}>
                         <span className="menu-icon">👤</span>
                         Account Info
                     </button>
-                    <button
-                        className="menu-item"
-                        onClick={() => handleMenuClick(() => onNavigate('settings'))}
-                    >
+                    <button className="menu-item" onClick={() => handleNavigate('settings')}>
                         <span className="menu-icon">⚙️</span>
                         Settings
                     </button>

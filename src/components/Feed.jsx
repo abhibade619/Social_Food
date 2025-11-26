@@ -4,7 +4,7 @@ import { useAuth } from '../context/AuthProvider';
 import LogCard from './LogCard';
 import LogModal from './LogModal';
 
-const Feed = () => {
+const Feed = ({ onViewProfile }) => {
     const [logs, setLogs] = useState([]);
     const [loading, setLoading] = useState(false);
     const [showModal, setShowModal] = useState(false);
@@ -51,7 +51,11 @@ const Feed = () => {
 
             <div className="logs-grid">
                 {logs.map((log) => (
-                    <LogCard key={log.id} log={log} />
+                    <LogCard
+                        key={log.id}
+                        log={log}
+                        onViewProfile={onViewProfile}
+                    />
                 ))}
             </div>
 
