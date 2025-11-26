@@ -3,7 +3,7 @@ import { supabase } from '../supabaseClient';
 import { useAuth } from '../context/AuthProvider';
 import LogCard from './LogCard';
 
-const Profile = () => {
+const Profile = ({ onNavigate }) => {
     const { user } = useAuth();
     const [profile, setProfile] = useState(null);
     const [userLogs, setUserLogs] = useState([]);
@@ -265,11 +265,19 @@ const Profile = () => {
                     <span className="stat-value">{userLogs.length}</span>
                     <span className="stat-label">Logs</span>
                 </div>
-                <div className="stat stat-clickable">
+                <div
+                    className="stat stat-clickable"
+                    onClick={() => onNavigate && onNavigate('followers')}
+                    style={{ cursor: 'pointer' }}
+                >
                     <span className="stat-value">{followerCount}</span>
                     <span className="stat-label">Followers</span>
                 </div>
-                <div className="stat stat-clickable">
+                <div
+                    className="stat stat-clickable"
+                    onClick={() => onNavigate && onNavigate('following')}
+                    style={{ cursor: 'pointer' }}
+                >
                     <span className="stat-value">{followingCount}</span>
                     <span className="stat-label">Following</span>
                 </div>

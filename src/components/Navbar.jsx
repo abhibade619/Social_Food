@@ -101,6 +101,12 @@ const Navbar = ({ currentView, setCurrentView }) => {
                     >
                         Profile
                     </button>
+                    <button
+                        className={`nav-link ${currentView === 'wishlist' ? 'active' : ''}`}
+                        onClick={() => setCurrentView('wishlist')}
+                    >
+                        Wishlist
+                    </button>
                     <UserMenu onNavigate={handleNavigate} onSignOut={handleSignOut} />
                 </div>
             </div>

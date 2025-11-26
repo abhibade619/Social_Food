@@ -10,6 +10,7 @@ import Profile from './components/Profile';
 import UserProfile from './components/UserProfile';
 import FollowersList from './components/FollowersList';
 import FollowingList from './components/FollowingList';
+import Wishlist from './components/Wishlist';
 import RestaurantPage from './components/RestaurantPage';
 import AccountInfo from './components/AccountInfo';
 import Settings from './components/Settings';
@@ -124,7 +125,9 @@ function App() {
           />
         );
       case 'profile':
-        return <Profile />;
+        return <Profile onNavigate={setCurrentView} />;
+      case 'wishlist':
+        return <Wishlist />;
       case 'diary':
         return <Diary />;
       case 'account':
