@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 
-const UserMenu = ({ onNavigate, onSignOut }) => {
+const UserMenu = ({ user, onNavigate, onSignOut }) => {
     const [isOpen, setIsOpen] = useState(false);
 
     // Close menu when clicking outside
@@ -27,17 +27,26 @@ const UserMenu = ({ onNavigate, onSignOut }) => {
 
     return (
         <div className="user-menu">
-            <button
-                className="menu-button"
-                onClick={() => setIsOpen(!isOpen)}
-                aria-label="User menu"
-            >
-                <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
-                    <circle cx="10" cy="4" r="2" />
-                    <circle cx="10" cy="10" r="2" />
-                    <circle cx="10" cy="16" r="2" />
-                </svg>
-            </button>
+            <div className="user-menu-trigger">
+                <img
+                    src={user?.user_metadata?.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user?.id}`}
+                    alt="Profile"
+                    className="nav-avatar"
+                    onClick={() => onNavigate('profile')}
+                    style={{ cursor: 'pointer' }}
+                />
+                <button
+                    className="menu-button"
+                    onClick={() => setIsOpen(!isOpen)}
+                    aria-label="User menu"
+                >
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                        <circle cx="12" cy="5" r="2" />
+                        <circle cx="12" cy="12" r="2" />
+                        <circle cx="12" cy="19" r="2" />
+                    </svg>
+                </button>
+            </div>
 
             {isOpen && (
                 <div className="menu-dropdown">

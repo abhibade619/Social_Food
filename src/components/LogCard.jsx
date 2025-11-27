@@ -100,57 +100,64 @@ const LogCard = ({ log, onClick, showActions = false, onEdit, onDelete, onViewPr
     }
 
     if (loading) {
-        return <div className="log-card"><div className="loading">Loading...</div></div>;
+        return <div className="log-card glass-panel"><div className="loading">Loading...</div></div>;
     }
 
     return (
-        <div className="log-card" onClick={onClick}>
+        <div className="log-card glass-panel" onClick={onClick}>
             <div className="log-header">
                 <div className="user-info" onClick={(e) => { e.stopPropagation(); onViewProfile && onViewProfile(log.user_id); }}>
                     <img
                         src={userProfile?.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${log.user_id}`}
                         alt={userProfile?.username || 'User'}
-                        className="avatar-placeholder"
-                        style={{ width: '40px', height: '40px', borderRadius: '50%', objectFit: 'cover' }}
+                        className="user-avatar"
                     />
-                    <div className="log-user-info" style={{ marginLeft: '10px' }}>
-                        <p className="log-user-name" style={{ fontWeight: 'bold', margin: 0 }}>{userProfile?.full_name || 'User'}</p>
-                        <p className="log-username" style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', margin: 0 }}>@{userProfile?.username || 'user'}</p>
+                    <div className="log-user-info">
+                        <p className="log-user-name">{userProfile?.full_name || 'User'}</p>
+                        <p className="log-username">@{userProfile?.username || 'user'}</p>
                     </div>
                 </div>
-                <span className="log-date" style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>{formatDate(log.visit_date || log.created_at)}</span>
+                <span className="log-date">{formatDate(log.visit_date || log.created_at)}</span>
             </div>
 
-            <div className="log-content" style={{ marginTop: '15px' }}>
-                <div className="log-title-row" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <h3 className="restaurant-name" style={{ color: 'var(--primary-color)' }}>{log.restaurant_name}</h3>
-                    <div className="log-rating" style={{ color: '#f1c40f' }}>
+            <div className="log-content">
+                <div className="log-title-row">
+                    <h3 className="restaurant-name">{log.restaurant_name}</h3>
+                    <div className="log-rating">
                         {'⭐'.repeat(log.rating)}
                     </div>
                 </div>
 
-                <div className="log-meta" style={{ display: 'flex', gap: '10px', fontSize: '0.85rem', color: 'var(--text-secondary)', margin: '5px 0' }}>
-                    {log.cuisine && <span className="cuisine-tag">{log.cuisine}</span>}
-                    {log.location && <span className="location-tag">📍 {log.location}</span>}
+                <div className="log-meta">
+                    {log.cuisine && <span className="meta-tag cuisine-tag">{log.cuisine}</span>}
+                    {log.location && <span className="meta-tag location-tag">📍 {log.location}</span>}
                 </div>
 
-                {log.content && <p className="log-text" style={{ margin: '10px 0' }}>{log.content}</p>}
+                {log.content && <p className="log-text">{log.content}</p>}
 
                 {photos && photos.length > 0 && (
-                    <div className="log-photos" style={{ display: 'flex', gap: '10px', overflowX: 'auto', padding: '10px 0' }}>
+                    <div className="log-photos-grid">
                         {photos.map((photo, index) => (
-                            <img key={index} src={photo} alt={`Photo ${index + 1}`} style={{ height: '200px', borderRadius: '8px' }} />
+                            <div key={index} className="log-photo-wrapper">
+                                <img src={photo} alt={`Photo ${index + 1}`} className="log-photo" />
+                            </div>
                         ))}
                     </div>
                 )}
 
-                <div className="log-actions" style={{ marginTop: '15px', borderTop: '1px solid var(--border-color)', paddingTop: '10px' }}>
+                <div className="log-actions">
                     <button
                         onClick={handleLike}
-                        style={{ background: 'none', color: hasLiked ? 'var(--accent-color)' : 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: '5px' }}
+                        className={`action-btn ${hasLiked ? 'liked' : ''}`}
                     >
                         {hasLiked ? '❤️' : '🤍'} {likes}
                     </button>
+                    {showActions && (
+                        <div className="owner-actions">
+                            <button onClick={(e) => { e.stopPropagation(); onEdit(log); }} className="action-btn">✏️</button>
+                            <button onClick={(e) => { e.stopPropagation(); onDelete(log.id); }} className="action-btn delete">🗑️</button>
+                        </div>
+                    )}
                 </div>
             </div>
         </div>

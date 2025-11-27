@@ -1,6 +1,14 @@
+import { useState } from 'react';
 import { mockUsers } from '../data/mockData';
 
 const UserSearch = ({ onUserSelect }) => {
+    const [searchTerm, setSearchTerm] = useState('');
+
+    const filteredUsers = mockUsers.filter(user =>
+        user.username.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        user.full_name.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+
     const handleUserClick = (user) => {
         if (onUserSelect) {
             onUserSelect(user);
@@ -9,9 +17,15 @@ const UserSearch = ({ onUserSelect }) => {
 
     return (
         <div className="user-search">
-            <h3>Tag Friends</h3>
+            <input
+                type="text"
+                placeholder="Search for users..."
+                className="search-input"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+            />
             <div className="user-list">
-                {mockUsers.map((user) => (
+                {filteredUsers.map((user) => (
                     <div
                         key={user.id}
                         className="user-item"
@@ -24,6 +38,9 @@ const UserSearch = ({ onUserSelect }) => {
                         </div>
                     </div>
                 ))}
+                {filteredUsers.length === 0 && (
+                    <p className="no-results">No users found.</p>
+                )}
             </div>
         </div>
     );

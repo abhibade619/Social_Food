@@ -17,35 +17,29 @@ const Search = ({ setCurrentView, setSelectedRestaurant, setSelectedUser }) => {
     };
 
     return (
-        <div className="search-page">
-            <div className="search-header">
-                <LocationSelector
-                    currentLocation={location.name || (typeof location === 'string' ? location : '')}
-                    onLocationChange={handleLocationChange}
-                />
+        <div className="search-page container">
+            <div className="search-header-premium">
+                <h1>Search</h1>
+                <div className="segmented-control">
+                    <button
+                        className={`segment-btn ${activeTab === 'restaurants' ? 'active' : ''}`}
+                        onClick={() => setActiveTab('restaurants')}
+                    >
+                        Restaurants
+                    </button>
+                    <button
+                        className={`segment-btn ${activeTab === 'users' ? 'active' : ''}`}
+                        onClick={() => setActiveTab('users')}
+                    >
+                        Users
+                    </button>
+                </div>
             </div>
 
-            <div className="search-tabs">
-                <button
-                    className={`tab-button ${activeTab === 'restaurants' ? 'active' : ''}`}
-                    onClick={() => setActiveTab('restaurants')}
-                >
-                    Restaurants
-                </button>
-                <button
-                    className={`tab-button ${activeTab === 'users' ? 'active' : ''}`}
-                    onClick={() => setActiveTab('users')}
-                >
-                    People
-                </button>
-            </div>
-
-            <div className="search-content">
+            <div className="search-content-premium">
                 {activeTab === 'restaurants' ? (
-                    <div className="restaurant-search-section">
-                        <h2>Find Restaurants</h2>
-
-                        <div className="search-input-container">
+                    <div className="search-section fade-in">
+                        <div className="search-input-wrapper glass-panel">
                             <RestaurantAutocomplete
                                 onPlaceSelected={(place) => {
                                     setSelectedRestaurant(place);
@@ -56,14 +50,15 @@ const Search = ({ setCurrentView, setSelectedRestaurant, setSelectedUser }) => {
                         </div>
                     </div>
                 ) : (
-                    <div className="user-search-section">
-                        <h2>Find People</h2>
-                        <UserSearch
-                            onUserSelected={(user) => {
-                                setSelectedUser(user);
-                                setCurrentView('userProfile');
-                            }}
-                        />
+                    <div className="search-section fade-in">
+                        <div className="search-input-wrapper glass-panel">
+                            <UserSearch
+                                onUserSelected={(user) => {
+                                    setSelectedUser(user);
+                                    setCurrentView('userProfile');
+                                }}
+                            />
+                        </div>
                     </div>
                 )}
             </div>

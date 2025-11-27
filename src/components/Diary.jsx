@@ -147,78 +147,80 @@ const Diary = () => {
     const uniqueLocations = [...new Set(logs.map(log => log.location).filter(Boolean))];
 
     return (
-        <div className="diary-container">
-            <div className="diary-header">
-                <div>
-                    <h2>My Food Diary</h2>
-                    <p style={{ color: 'var(--text-secondary)', fontSize: 'var(--font-size-sm)', marginTop: '0.5rem', marginBottom: 0 }}>
-                        Your personal food journal - only you can see these entries
-                    </p>
+        <div className="diary-container container">
+            <div className="diary-header-premium">
+                <div className="diary-title-section">
+                    <h1>My Culinary Journal</h1>
+                    <p className="diary-subtitle">Documenting your gastronomic adventures.</p>
                 </div>
-                <button className="btn-primary" onClick={() => setShowModal(true)}>
-                    + New Entry
+                <button className="btn-primary new-entry-btn" onClick={() => setShowModal(true)}>
+                    <span className="plus-icon">+</span> New Entry
                 </button>
             </div>
 
-            <div className="diary-layout">
+            <div className="diary-layout-premium">
                 {/* Left Sidebar - Category Filters */}
-                <aside className="diary-sidebar diary-sidebar-left">
-                    <div className="filter-section">
-                        <h3>Filter by Cuisine</h3>
-                        <div className="filter-options">
+                <aside className="diary-sidebar glass-panel">
+                    <div className="filter-group">
+                        <h3>Cuisines</h3>
+                        <div className="filter-list">
                             <button
-                                className={`filter-btn ${cuisineFilter === 'all' ? 'active' : ''}`}
+                                className={`filter-item ${cuisineFilter === 'all' ? 'active' : ''}`}
                                 onClick={() => setCuisineFilter('all')}
                             >
                                 All Cuisines
                             </button>
-                            {uniqueCuisines.map(cuisine => (
-                                <button
-                                    key={cuisine}
-                                    className={`filter-btn ${cuisineFilter === cuisine ? 'active' : ''}`}
-                                    onClick={() => setCuisineFilter(cuisine)}
-                                >
-                                    {cuisine}
-                                </button>
-                            ))}
+                            {uniqueCuisines.length > 0 ? (
+                                uniqueCuisines.map(cuisine => (
+                                    <button
+                                        key={cuisine}
+                                        className={`filter-item ${cuisineFilter === cuisine ? 'active' : ''}`}
+                                        onClick={() => setCuisineFilter(cuisine)}
+                                    >
+                                        {cuisine}
+                                    </button>
+                                ))
+                            ) : (
+                                <p className="filter-empty">No cuisines yet</p>
+                            )}
                         </div>
                     </div>
 
-                    <div className="filter-section">
-                        <h3>Filter by Location</h3>
-                        <div className="filter-options">
+                    <div className="filter-group">
+                        <h3>Locations</h3>
+                        <div className="filter-list">
                             <button
-                                className={`filter-btn ${locationFilter === 'all' ? 'active' : ''}`}
+                                className={`filter-item ${locationFilter === 'all' ? 'active' : ''}`}
                                 onClick={() => setLocationFilter('all')}
                             >
                                 All Locations
                             </button>
-                            {uniqueLocations.map(location => (
-                                <button
-                                    key={location}
-                                    className={`filter-btn ${locationFilter === location ? 'active' : ''}`}
-                                    onClick={() => setLocationFilter(location)}
-                                >
-                                    {location}
-                                </button>
-                            ))}
+                            {uniqueLocations.length > 0 ? (
+                                uniqueLocations.map(location => (
+                                    <button
+                                        key={location}
+                                        className={`filter-item ${locationFilter === location ? 'active' : ''}`}
+                                        onClick={() => setLocationFilter(location)}
+                                    >
+                                        {location}
+                                    </button>
+                                ))
+                            ) : (
+                                <p className="filter-empty">No locations yet</p>
+                            )}
                         </div>
                     </div>
                 </aside>
 
                 {/* Main Content */}
                 <main className="diary-main">
-                    {loading && <p className="loading">Loading your diary...</p>}
+                    {loading && <div className="loading-spinner"></div>}
 
                     {!loading && filteredLogs.length === 0 && (
-                        <div className="empty-state">
-                            <p className="empty-icon">📔</p>
-                            <p className="empty-title">No entries found</p>
-                            <p className="empty-description">
-                                {logs.length === 0
-                                    ? 'Start your food diary by creating your first entry!'
-                                    : 'Try adjusting your filters to see more entries.'}
-                            </p>
+                        <div className="empty-state glass-panel">
+                            <div className="empty-icon">📔</div>
+                            <h3>Your journal is empty</h3>
+                            <p>Start documenting your food journey today.</p>
                         </div>
                     )}
 
@@ -234,50 +236,6 @@ const Diary = () => {
                         ))}
                     </div>
                 </main>
-
-                {/* Right Sidebar - Time Filters */}
-                <aside className="diary-sidebar diary-sidebar-right">
-                    <div className="filter-section">
-                        <h3>Time Period</h3>
-                        <div className="filter-options">
-                            <button
-                                className={`filter-btn ${timeFilter === 'week' ? 'active' : ''}`}
-                                onClick={() => setTimeFilter('week')}
-                            >
-                                📅 This Week
-                            </button>
-                            <button
-                                className={`filter-btn ${timeFilter === '90days' ? 'active' : ''}`}
-                                onClick={() => setTimeFilter('90days')}
-                            >
-                                📊 Last 90 Days
-                            </button>
-                            <button
-                                className={`filter-btn ${timeFilter === 'year' ? 'active' : ''}`}
-                                onClick={() => setTimeFilter('year')}
-                            >
-                                📆 Last Year
-                            </button>
-                            <button
-                                className={`filter-btn ${timeFilter === 'all' ? 'active' : ''}`}
-                                onClick={() => setTimeFilter('all')}
-                            >
-                                🗂️ All Time
-                            </button>
-                        </div>
-
-                        <div className="filter-stats">
-                            <p className="stat-item">
-                                <span className="stat-label">Showing:</span>
-                                <span className="stat-value">{filteredLogs.length} entries</span>
-                            </p>
-                            <p className="stat-item">
-                                <span className="stat-label">Total:</span>
-                                <span className="stat-value">{logs.length} entries</span>
-                            </p>
-                        </div>
-                    </div>
-                </aside>
             </div>
 
             {showModal && (

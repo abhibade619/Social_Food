@@ -59,24 +59,17 @@ const Navbar = ({ currentView, setCurrentView, onNewLog }) => {
         await signOut();
     };
 
-    const handleNavigate = (view) => {
-        setCurrentView(view);
-    };
-
     return (
-        <nav className="navbar">
-            <div className="navbar-container">
+        <nav className="navbar glass-panel">
+            <div className="navbar-content container">
                 <div className="navbar-left">
-                    <div className="navbar-brand" onClick={() => setCurrentView('feed')}>
-                        🍽️ <span>FoodSocial</span>
+                    <div className="logo" onClick={() => setCurrentView('feed')}>
+                        <span className="logo-icon">🍽️</span>
+                        <span className="logo-text">FoodSocial</span>
                     </div>
-                    <LocationSelector
-                        currentLocation={location}
-                        onLocationChange={handleLocationChange}
-                    />
                 </div>
 
-                <div className="navbar-links">
+                <div className="navbar-right">
                     <button
                         className={`nav-link ${currentView === 'feed' ? 'active' : ''}`}
                         onClick={() => setCurrentView('feed')}
@@ -89,24 +82,18 @@ const Navbar = ({ currentView, setCurrentView, onNewLog }) => {
                     >
                         Diary
                     </button>
-
-                    <button className="nav-btn-primary" onClick={onNewLog}>
-                        + New Log
-                    </button>
-
                     <button
                         className={`nav-link ${currentView === 'search' ? 'active' : ''}`}
                         onClick={() => setCurrentView('search')}
                     >
                         Search
                     </button>
-                    <button
-                        className={`nav-link ${currentView === 'profile' ? 'active' : ''}`}
-                        onClick={() => setCurrentView('profile')}
-                    >
-                        Profile
-                    </button>
-                    <UserMenu onNavigate={handleNavigate} onSignOut={handleSignOut} />
+
+                    <UserMenu
+                        user={user}
+                        onNavigate={setCurrentView}
+                        onSignOut={signOut}
+                    />
                 </div>
             </div>
         </nav>
