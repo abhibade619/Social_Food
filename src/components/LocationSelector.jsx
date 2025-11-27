@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { setOptions, importLibrary } from '@googlemaps/js-api-loader';
 
 const LocationSelector = ({ currentLocation, onLocationChange }) => {
     const [isOpen, setIsOpen] = useState(false);
@@ -6,6 +7,23 @@ const LocationSelector = ({ currentLocation, onLocationChange }) => {
     const [suggestions, setSuggestions] = useState([]);
     const [loading, setLoading] = useState(false);
     const dropdownRef = useRef(null);
+    const autocompleteService = useRef(null);
+    const placesService = useRef(null);
+
+    // Initialize Google Maps Service
+    useEffect(() => {
+        const initServices = async () => {
+            try {
+                const { AutocompleteService, PlacesService } = await importLibrary("places");
+                autocompleteService.current = new AutocompleteService();
+                placesService.current = new PlacesService(document.createElement('div'));
+            } catch (e) {
+                console.error("Error loading Google Maps API", e);
+            }
+        };
+
+        initServices();
+    }, []);
 
     // Close dropdown when clicking outside
     useEffect(() => {
@@ -19,57 +37,63 @@ const LocationSelector = ({ currentLocation, onLocationChange }) => {
         return () => document.removeEventListener('mousedown', handleClickOutside);
     }, []);
 
-    // Fetch location suggestions from Google Places API
-    const fetchSuggestions = async (input) => {
-        if (!input || input.length < 3) {
+    const handleSearch = (e) => {
+        const value = e.target.value;
+        setSearchTerm(value);
+        setLoading(true);
+
+        if (!value.trim()) {
             setSuggestions([]);
+            setLoading(false);
             return;
         }
 
-        setLoading(true);
-        try {
-            // Using Google Places Autocomplete API
-            const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
-            const response = await fetch(
-                `https://maps.googleapis.com/maps/api/place/autocomplete/json?input=${encodeURIComponent(input)}&types=(cities)&key=${apiKey}`
-            );
+        if (autocompleteService.current) {
+            const request = {
+                input: value,
+                types: ['(cities)']
+            };
 
-            // Note: This will fail due to CORS. In production, you'd need a backend proxy
-            // For now, we'll use mock suggestions
-            const mockSuggestions = [
-                { id: 1, description: `${input}, NY, USA` },
-                { id: 2, description: `${input}, CA, USA` },
-                { id: 3, description: `${input}, TX, USA` },
-            ];
-
-            setSuggestions(mockSuggestions);
-        } catch (error) {
-            console.error('Error fetching suggestions:', error);
-            // Fallback to mock data
-            setSuggestions([
-                { id: 1, description: `${searchTerm}, NY, USA` },
-                { id: 2, description: `${searchTerm}, CA, USA` },
-            ]);
-        } finally {
+            autocompleteService.current.getPlacePredictions(request, (predictions, status) => {
+                setLoading(false);
+                if (status === google.maps.places.PlacesServiceStatus.OK && predictions) {
+                    setSuggestions(predictions);
+                } else {
+                    setSuggestions([]);
+                }
+            });
+        } else {
             setLoading(false);
         }
     };
 
-    useEffect(() => {
-        const timer = setTimeout(() => {
-            if (searchTerm) {
-                fetchSuggestions(searchTerm);
-            }
-        }, 300);
+    const handleSelectLocation = (suggestion) => {
+        if (placesService.current && suggestion.place_id) {
+            const request = {
+                placeId: suggestion.place_id,
+                fields: ['name', 'geometry', 'formatted_address']
+            };
 
-        return () => clearTimeout(timer);
-    }, [searchTerm]);
-
-    const handleSelectLocation = (location) => {
-        onLocationChange(location);
-        setIsOpen(false);
-        setSearchTerm('');
-        setSuggestions([]);
+            placesService.current.getDetails(request, (place, status) => {
+                if (status === google.maps.places.PlacesServiceStatus.OK && place.geometry && place.geometry.location) {
+                    const locationData = {
+                        name: place.formatted_address || suggestion.description,
+                        lat: place.geometry.location.lat(),
+                        lng: place.geometry.location.lng()
+                    };
+                    onLocationChange(locationData);
+                } else {
+                    console.error("Failed to get place details");
+                    onLocationChange({ name: suggestion.description, lat: null, lng: null });
+                }
+                setIsOpen(false);
+                setSearchTerm('');
+            });
+        } else {
+            onLocationChange({ name: suggestion.description, lat: null, lng: null });
+            setIsOpen(false);
+            setSearchTerm('');
+        }
     };
 
     return (
@@ -77,11 +101,12 @@ const LocationSelector = ({ currentLocation, onLocationChange }) => {
             <button
                 className="location-button"
                 onClick={() => setIsOpen(!isOpen)}
-                aria-label="Change location"
             >
                 <span className="location-icon">📍</span>
-                <span className="location-text">{currentLocation || 'Set Location'}</span>
-                <span className="dropdown-arrow">{isOpen ? '▲' : '▼'}</span>
+                <span className="location-text">
+                    {currentLocation || 'Select Location'}
+                </span>
+                <span className="dropdown-arrow">▼</span>
             </button>
 
             {isOpen && (
@@ -89,53 +114,43 @@ const LocationSelector = ({ currentLocation, onLocationChange }) => {
                     <div className="location-search">
                         <input
                             type="text"
-                            placeholder="Search for a city..."
+                            placeholder="Search city..."
                             value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
+                            onChange={handleSearch}
                             autoFocus
-                            className="location-search-input"
                         />
                     </div>
 
                     <div className="location-suggestions">
-                        {loading && <div className="loading-suggestions">Loading...</div>}
-
-                        {!loading && suggestions.length > 0 && (
-                            <ul className="suggestions-list">
-                                {suggestions.map((suggestion) => (
-                                    <li
-                                        key={suggestion.id}
-                                        onClick={() => handleSelectLocation(suggestion.description)}
+                        {loading ? (
+                            <div className="suggestion-item loading">Loading...</div>
+                        ) : suggestions.length > 0 ? (
+                            suggestions.map((suggestion) => (
+                                <div
+                                    key={suggestion.place_id}
+                                    className="suggestion-item"
+                                    onClick={() => handleSelectLocation(suggestion)}
+                                >
+                                    {suggestion.description}
+                                </div>
+                            ))
+                        ) : searchTerm ? (
+                            <div className="suggestion-item no-results">No cities found</div>
+                        ) : (
+                            <div className="popular-cities">
+                                <div className="suggestion-header">Popular Cities</div>
+                                {['New York', 'Los Angeles', 'Chicago', 'Houston', 'Miami'].map(city => (
+                                    <div
+                                        key={city}
                                         className="suggestion-item"
+                                        onClick={() => {
+                                            onLocationChange(city);
+                                            setIsOpen(false);
+                                        }}
                                     >
-                                        <span className="suggestion-icon">📍</span>
-                                        {suggestion.description}
-                                    </li>
+                                        {city}
+                                    </div>
                                 ))}
-                            </ul>
-                        )}
-
-                        {!loading && searchTerm && suggestions.length === 0 && (
-                            <div className="no-suggestions">No locations found</div>
-                        )}
-
-                        {!searchTerm && (
-                            <div className="recent-locations">
-                                <p className="section-title">Popular Cities</p>
-                                <ul className="suggestions-list">
-                                    <li onClick={() => handleSelectLocation('New York, NY')} className="suggestion-item">
-                                        <span className="suggestion-icon">📍</span>
-                                        New York, NY
-                                    </li>
-                                    <li onClick={() => handleSelectLocation('Los Angeles, CA')} className="suggestion-item">
-                                        <span className="suggestion-icon">📍</span>
-                                        Los Angeles, CA
-                                    </li>
-                                    <li onClick={() => handleSelectLocation('Chicago, IL')} className="suggestion-item">
-                                        <span className="suggestion-icon">📍</span>
-                                        Chicago, IL
-                                    </li>
-                                </ul>
                             </div>
                         )}
                     </div>

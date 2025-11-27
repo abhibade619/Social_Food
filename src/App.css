@@ -2109,3 +2109,133 @@
 .logs-grid {
   gap: var(--spacing-lg) !important;
 }
+
+/* Cuisine Selector */
+.cuisine-selector {
+  margin: 20px 0;
+  overflow-x: auto;
+  padding-bottom: 10px;
+}
+
+.cuisine-list {
+  display: flex;
+  gap: 12px;
+  padding: 0 4px;
+}
+
+.cuisine-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-width: 80px;
+  padding: 12px;
+  border: 1px solid #eee;
+  border-radius: 12px;
+  background: white;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.cuisine-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+.cuisine-item.active {
+  background: #ff4757;
+  color: white;
+  border-color: #ff4757;
+}
+
+.cuisine-icon {
+  font-size: 24px;
+  margin-bottom: 4px;
+}
+
+.cuisine-label {
+  font-size: 12px;
+  font-weight: 500;
+}
+
+/* Restaurant List */
+.restaurant-list {
+  margin-top: 30px;
+}
+
+.restaurant-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 20px;
+  margin-top: 16px;
+}
+
+.restaurant-card {
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.restaurant-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+}
+
+.restaurant-image-placeholder {
+  height: 160px;
+  background: #f1f2f6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.restaurant-image-placeholder img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.no-image {
+  font-size: 48px;
+  opacity: 0.3;
+}
+
+.restaurant-info {
+  padding: 16px;
+}
+
+.restaurant-info h4 {
+  margin: 0 0 8px 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #2d3436;
+}
+
+.restaurant-meta {
+  display: flex;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.rating {
+  background: #fff3e0;
+  color: #f39c12;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.address {
+  margin: 0;
+  font-size: 13px;
+  color: #636e72;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
