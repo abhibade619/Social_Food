@@ -4,7 +4,7 @@ import { supabase } from '../supabaseClient';
 import LocationSelector from './LocationSelector';
 import UserMenu from './UserMenu';
 
-const Navbar = ({ currentView, setCurrentView }) => {
+const Navbar = ({ currentView, setCurrentView, onNewLog }) => {
     const { user, signOut } = useAuth();
     const [location, setLocation] = useState('');
 
@@ -89,6 +89,11 @@ const Navbar = ({ currentView, setCurrentView }) => {
                     >
                         Diary
                     </button>
+
+                    <button className="nav-btn-primary" onClick={onNewLog}>
+                        + New Log
+                    </button>
+
                     <button
                         className={`nav-link ${currentView === 'search' ? 'active' : ''}`}
                         onClick={() => setCurrentView('search')}

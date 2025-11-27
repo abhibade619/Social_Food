@@ -36,21 +36,43 @@ const ProfileSetup = ({ onComplete }) => {
                 return;
             }
 
-            // Create or update profile
-            const { error: updateError } = await supabase
-                .from('profiles')
-                .upsert({
-                    id: user.id,
-                    username: formData.username.toLowerCase(),
-                    full_name: formData.full_name,
-                    bio: formData.bio || null,
-                    updated_at: new Date().toISOString(),
-                });
+            // Prepare profile data
+            const profileData = {
+                id: user.id,
+                username: formData.username.toLowerCase(),
+                full_name: formData.full_name,
+                updated_at: new Date().toISOString(),
+            };
 
-            if (updateError) throw updateError;
+            // Only add bio if it's not empty, but if the column is missing, this will still fail.
+            // We'll try to insert with bio first (if provided), and if it fails with specific error, retry without.
+            if (formData.bio) {
+                profileData.bio = formData.bio;
+            }
+
+            try {
+                const { error: updateError } = await supabase
+                    .from('profiles')
+                    .upsert(profileData);
+
+                if (updateError) throw updateError;
+            } catch (upsertError) {
+                // If error is about missing column 'bio', retry without it
+                if (upsertError.message?.includes('bio') || upsertError.message?.includes('column')) {
+                    console.warn("Bio column missing or error, retrying without bio:", upsertError);
+                    delete profileData.bio;
+                    const { error: retryError } = await supabase
+                        .from('profiles')
+                        .upsert(profileData);
+                    if (retryError) throw retryError;
+                } else {
+                    throw upsertError;
+                }
+            }
 
             onComplete();
         } catch (err) {
+            console.error("Profile setup error:", err);
             setError(err.message);
         } finally {
             setLoading(false);

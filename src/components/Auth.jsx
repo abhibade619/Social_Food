@@ -47,80 +47,76 @@ const Auth = () => {
     return (
         <div className="auth-container">
             <div className="auth-card">
-                <h1>🍽️ FoodSocial</h1>
-                <p className="auth-subtitle">Share your dining experiences</p>
+                <h1 className="auth-title">FoodSocial</h1>
+                <p className="auth-subtitle">
+                    {isSignUp ? 'Join the exclusive food community.' : 'Welcome back, connoisseur.'}
+                </p>
 
                 {!isSupabaseConfigured && (
                     <div className="config-warning">
                         <strong>⚠️ Configuration Required</strong>
                         <p>Please update your <code>.env</code> file with valid Supabase credentials.</p>
-                        <p style={{ fontSize: '0.85rem', marginTop: '0.5rem' }}>
-                            The app is currently using placeholder values and won't function properly.
-                        </p>
                     </div>
                 )}
 
                 <form onSubmit={handleSubmit} className="auth-form">
                     {isSignUp && (
                         <div className="form-group">
-                            <label htmlFor="username">Username</label>
                             <input
                                 id="username"
                                 type="text"
                                 value={username}
                                 onChange={(e) => setUsername(e.target.value)}
-                                placeholder="Enter username"
+                                placeholder="Username"
                                 required
                             />
                         </div>
                     )}
 
                     <div className="form-group">
-                        <label htmlFor="email">Email</label>
                         <input
                             id="email"
                             type="email"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
-                            placeholder="Enter email"
+                            placeholder="Email"
                             required
                         />
                     </div>
 
                     <div className="form-group">
-                        <label htmlFor="password">Password</label>
                         <input
                             id="password"
                             type="password"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
-                            placeholder="Enter password"
+                            placeholder="Password"
                             required
                             minLength={6}
                         />
                     </div>
 
-                    {error && <div className="error-message">{error}</div>}
-                    {success && <div className="success-message">{success}</div>}
+                    {error && <div className="error-message" style={{ color: 'var(--accent-color)' }}>{error}</div>}
+                    {success && <div className="success-message" style={{ color: 'var(--primary-color)' }}>{success}</div>}
 
-                    <button type="submit" className="btn-primary" disabled={loading}>
-                        {loading ? 'Loading...' : isSignUp ? 'Sign Up' : 'Sign In'}
+                    <button type="submit" className="btn-primary" style={{ width: '100%', marginTop: '20px' }} disabled={loading}>
+                        {loading ? 'Processing...' : isSignUp ? 'Sign Up' : 'Sign In'}
                     </button>
                 </form>
 
-                <p className="auth-toggle">
-                    {isSignUp ? 'Already have an account?' : "Don't have an account?"}{' '}
+                <div className="auth-footer" style={{ marginTop: '20px' }}>
                     <button
                         type="button"
                         onClick={() => {
                             setIsSignUp(!isSignUp);
                             setError('');
                         }}
-                        className="link-button"
+                        className="nav-link"
+                        style={{ background: 'none', border: 'none', cursor: 'pointer', textDecoration: 'underline' }}
                     >
-                        {isSignUp ? 'Sign In' : 'Sign Up'}
+                        {isSignUp ? 'Already have an account? Sign In' : "Don't have an account? Sign Up"}
                     </button>
-                </p>
+                </div>
             </div>
         </div>
     );

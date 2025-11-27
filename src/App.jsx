@@ -15,6 +15,7 @@ import RestaurantPage from './components/RestaurantPage';
 import AccountInfo from './components/AccountInfo';
 import Settings from './components/Settings';
 import Diary from './components/Diary';
+import LogModal from './components/LogModal';
 import './App.css';
 
 function App() {
@@ -24,6 +25,8 @@ function App() {
   const [selectedUser, setSelectedUser] = useState(null);
   const [profileComplete, setProfileComplete] = useState(true);
   const [checkingProfile, setCheckingProfile] = useState(true);
+  const [showLogModal, setShowLogModal] = useState(false);
+  const [feedVersion, setFeedVersion] = useState(0);
 
   useEffect(() => {
     if (user) {
@@ -57,6 +60,12 @@ function App() {
 
   const handleProfileSetupComplete = () => {
     setProfileComplete(true);
+  };
+
+  const handleLogCreated = () => {
+    setFeedVersion(v => v + 1);
+    setShowLogModal(false);
+    setCurrentView('feed'); // Optional: switch to feed to see new log
   };
 
   if (loading || checkingProfile) {
@@ -115,10 +124,13 @@ function App() {
 
     switch (currentView) {
       case 'feed':
-        return <Feed onViewProfile={(userId) => {
-          setSelectedUser({ id: userId });
-          setCurrentView('userProfile');
-        }} />;
+        return <Feed
+          key={feedVersion} // Force re-render/refetch when version changes
+          onViewProfile={(userId) => {
+            setSelectedUser({ id: userId });
+            setCurrentView('userProfile');
+          }}
+        />;
       case 'search':
         return (
           <Search
@@ -144,8 +156,19 @@ function App() {
 
   return (
     <div className="app">
-      <Navbar currentView={currentView} setCurrentView={setCurrentView} />
+      <Navbar
+        currentView={currentView}
+        setCurrentView={setCurrentView}
+        onNewLog={() => setShowLogModal(true)}
+      />
       <main className="main-content">{renderView()}</main>
+
+      {showLogModal && (
+        <LogModal
+          onClose={() => setShowLogModal(false)}
+          onLogCreated={handleLogCreated}
+        />
+      )}
     </div>
   );
 }
