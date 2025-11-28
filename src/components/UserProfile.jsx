@@ -29,7 +29,7 @@ const UserProfile = ({ userId, onBack, onNavigate }) => {
             {/* Profile Header */}
             <div className="profile-header">
                 <div className="profile-cover">
-                    {profile.cover_photo_url && (
+                    {profile?.cover_photo_url && (
                         <img src={profile.cover_photo_url} alt="Cover" className="cover-photo" />
                     )}
                 </div>
@@ -37,24 +37,24 @@ const UserProfile = ({ userId, onBack, onNavigate }) => {
                 <div className="profile-info-section">
                     <div className="profile-avatar-container">
                         <img
-                            src={profile.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${profile.username}`}
-                            alt={profile.username}
+                            src={profile?.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${profile?.username}`}
+                            alt={profile?.username}
                             className="profile-avatar-large"
                         />
                     </div>
 
                     <div className="profile-details">
                         <div className="profile-name-section">
-                            <h1 className="profile-full-name">{profile.full_name || 'No name'}</h1>
-                            <p className="profile-username">@{profile.username || 'unknown'}</p>
+                            <h1 className="profile-full-name">{profile?.full_name || 'No name'}</h1>
+                            <p className="profile-username">@{profile?.username || 'unknown'}</p>
                         </div>
 
                         {!isOwnProfile && (
-                            <FollowButton targetUserId={userId} targetUsername={profile.username} />
+                            <FollowButton targetUserId={userId} targetUsername={profile?.username} />
                         )}
                     </div>
 
-                    {profile.bio && (
+                    {profile?.bio && (
                         <p className="profile-bio">{profile.bio}</p>
                     )}
 
