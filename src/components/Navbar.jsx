@@ -69,6 +69,13 @@ const Navbar = ({ currentView, setCurrentView, onNewLog }) => {
                     </div>
                 </div>
 
+                <div className="navbar-center">
+                    <LocationSelector
+                        currentLocation={location}
+                        onLocationChange={handleLocationChange}
+                    />
+                </div>
+
                 <div className="navbar-right">
                     <button
                         className={`nav-link ${currentView === 'feed' ? 'active' : ''}`}

@@ -8,14 +8,10 @@ const LogCard = ({ log, onClick, showActions = false, onEdit, onDelete, onViewPr
     const [userProfile, setUserProfile] = useState(null);
     const [taggedUsers, setTaggedUsers] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [likes, setLikes] = useState(0);
-    const [hasLiked, setHasLiked] = useState(false);
 
     useEffect(() => {
         fetchUserProfile();
         fetchTaggedUsers();
-        fetchLikes();
-        checkIfLiked();
     }, [log.user_id, log.id]);
 
     const fetchUserProfile = async () => {
@@ -51,39 +47,6 @@ const LogCard = ({ log, onClick, showActions = false, onEdit, onDelete, onViewPr
             if (data) setTaggedUsers(data);
         } catch (error) {
             console.error('Error fetching tagged users:', error);
-        }
-    };
-
-    const fetchLikes = async () => {
-        const { count } = await supabase
-            .from('likes')
-            .select('*', { count: 'exact', head: true })
-            .eq('log_id', log.id);
-        setLikes(count || 0);
-    };
-
-    const checkIfLiked = async () => {
-        if (!user) return;
-        const { data } = await supabase
-            .from('likes')
-            .select('id')
-            .eq('log_id', log.id)
-            .eq('user_id', user.id)
-            .single();
-        setHasLiked(!!data);
-    };
-
-    const handleLike = async (e) => {
-        e.stopPropagation();
-        if (!user) return;
-        if (hasLiked) {
-            await supabase.from('likes').delete().eq('log_id', log.id).eq('user_id', user.id);
-            setLikes(likes - 1);
-            setHasLiked(false);
-        } else {
-            await supabase.from('likes').insert({ log_id: log.id, user_id: user.id });
-            setLikes(likes + 1);
-            setHasLiked(true);
         }
     };
 
@@ -146,12 +109,6 @@ const LogCard = ({ log, onClick, showActions = false, onEdit, onDelete, onViewPr
                 )}
 
                 <div className="log-actions">
-                    <button
-                        onClick={handleLike}
-                        className={`action-btn ${hasLiked ? 'liked' : ''}`}
-                    >
-                        {hasLiked ? '❤️' : '🤍'} {likes}
-                    </button>
                     {showActions && (
                         <div className="owner-actions">
                             <button onClick={(e) => { e.stopPropagation(); onEdit(log); }} className="action-btn">✏️</button>

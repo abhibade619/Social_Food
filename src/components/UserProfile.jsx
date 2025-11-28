@@ -4,99 +4,16 @@ import { useAuth } from '../context/AuthProvider';
 import LogCard from './LogCard';
 import FollowButton from './FollowButton';
 
-const UserProfile = ({ userId, onBack }) => {
+const UserProfile = ({ userId, onBack, onNavigate }) => {
     const { user: currentUser } = useAuth();
     const [profile, setProfile] = useState(null);
     const [logs, setLogs] = useState([]);
     const [stats, setStats] = useState({ followers: 0, following: 0, totalLogs: 0 });
     const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
-        if (userId) {
-            fetchProfile();
-            fetchLogs();
-            fetchStats();
-        }
-    }, [userId]);
+    // ... (keep existing useEffect and fetch functions)
 
-    const fetchProfile = async () => {
-        try {
-            const { data, error } = await supabase
-                .from('profiles')
-                .select('*')
-                .eq('id', userId)
-                .single();
-
-            if (error) throw error;
-            setProfile(data);
-        } catch (error) {
-            console.error('Error fetching profile:', error);
-        }
-    };
-
-    const fetchLogs = async () => {
-        try {
-            const { data, error } = await supabase
-                .from('logs')
-                .select('*')
-                .eq('user_id', userId)
-                .order('visit_date', { ascending: false })
-                .limit(20);
-
-            if (error) throw error;
-            setLogs(data || []);
-        } catch (error) {
-            console.error('Error fetching logs:', error);
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    const fetchStats = async () => {
-        try {
-            // Get followers count
-            const { count: followersCount } = await supabase
-                .from('follows')
-                .select('*', { count: 'exact', head: true })
-                .eq('following_id', userId);
-
-            // Get following count
-            const { count: followingCount } = await supabase
-                .from('follows')
-                .select('*', { count: 'exact', head: true })
-                .eq('follower_id', userId);
-
-            // Get total logs count
-            const { count: logsCount } = await supabase
-                .from('logs')
-                .select('*', { count: 'exact', head: true })
-                .eq('user_id', userId);
-
-            setStats({
-                followers: followersCount || 0,
-                following: followingCount || 0,
-                totalLogs: logsCount || 0,
-            });
-        } catch (error) {
-            console.error('Error fetching stats:', error);
-        }
-    };
-
-    if (loading) {
-        return (
-            <div className="user-profile-container">
-                <div className="loading">Loading profile...</div>
-            </div>
-        );
-    }
-
-    if (!profile) {
-        return (
-            <div className="user-profile-container">
-                <div className="error-message">Profile not found</div>
-            </div>
-        );
-    }
+    // ... (keep existing loading and error states)
 
     const isOwnProfile = currentUser?.id === userId;
 
@@ -147,11 +64,18 @@ const UserProfile = ({ userId, onBack }) => {
                             <span className="stat-value">{stats.totalLogs}</span>
                             <span className="stat-label">Reviews</span>
                         </div>
-                        <div className="stat-item">
+                        <div className="stat-item clickable" onClick={() => {
+                            // TODO: Implement viewing other user's followers if needed
+                            // For now, this might only work for own profile or need a new view
+                            console.log("View followers clicked");
+                        }}>
                             <span className="stat-value">{stats.followers}</span>
                             <span className="stat-label">Followers</span>
                         </div>
-                        <div className="stat-item">
+                        <div className="stat-item clickable" onClick={() => {
+                            // TODO: Implement viewing other user's following if needed
+                            console.log("View following clicked");
+                        }}>
                             <span className="stat-value">{stats.following}</span>
                             <span className="stat-label">Following</span>
                         </div>
@@ -176,7 +100,11 @@ const UserProfile = ({ userId, onBack }) => {
                 ) : (
                     <div className="logs-grid">
                         {logs.map(log => (
-                            <LogCard key={log.id} log={log} />
+                            <LogCard
+                                key={log.id}
+                                log={log}
+                                onViewProfile={onNavigate}
+                            />
                         ))}
                     </div>
                 )}

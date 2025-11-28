@@ -53,7 +53,7 @@ const Search = ({ setCurrentView, setSelectedRestaurant, setSelectedUser }) => {
                     <div className="search-section fade-in">
                         <div className="search-input-wrapper glass-panel">
                             <UserSearch
-                                onUserSelected={(user) => {
+                                onUserSelect={(user) => {
                                     setSelectedUser(user);
                                     setCurrentView('userProfile');
                                 }}

@@ -85,6 +85,11 @@ function App() {
     return <ProfileSetup onComplete={handleProfileSetupComplete} />;
   }
 
+  const handleNavigateToProfile = (userId) => {
+    setSelectedUser({ id: userId });
+    setCurrentView('userProfile');
+  };
+
   const renderView = () => {
     if (currentView === 'restaurant' && selectedRestaurant) {
       return (
@@ -100,6 +105,7 @@ function App() {
         <UserProfile
           userId={selectedUser.id}
           onBack={() => setCurrentView('search')}
+          onNavigate={handleNavigateToProfile}
         />
       );
     }
@@ -109,6 +115,7 @@ function App() {
         <FollowersList
           userId={user.id}
           onBack={() => setCurrentView('profile')}
+          onNavigate={handleNavigateToProfile}
         />
       );
     }
@@ -118,6 +125,7 @@ function App() {
         <FollowingList
           userId={user.id}
           onBack={() => setCurrentView('profile')}
+          onNavigate={handleNavigateToProfile}
         />
       );
     }

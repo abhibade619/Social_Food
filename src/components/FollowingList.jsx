@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { supabase } from '../supabaseClient';
 import { useAuth } from '../context/AuthProvider';
 
-const FollowingList = ({ userId, onBack }) => {
+const FollowingList = ({ userId, onBack, onNavigate }) => {
     const { user: currentUser } = useAuth();
     const [following, setFollowing] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -65,7 +65,11 @@ const FollowingList = ({ userId, onBack }) => {
             ) : (
                 <div className="users-list">
                     {following.map(user => (
-                        <div key={user.id} className="user-result-card">
+                        <div
+                            key={user.id}
+                            className="user-result-card clickable"
+                            onClick={() => onNavigate && onNavigate(user.id)}
+                        >
                             <img
                                 src={user.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.username}`}
                                 alt={user.username}
