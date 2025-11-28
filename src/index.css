@@ -1306,3 +1306,155 @@ label {
   background: rgba(239, 68, 68, 0.1);
   color: #ef4444;
 }
+/* Profile Styles */
+.user-profile-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding-bottom: 80px;
+}
+
+.profile-header {
+  position: relative;
+  margin-bottom: 60px; /* Space for avatar overlap */
+}
+
+.profile-cover {
+  height: 200px;
+  background: linear-gradient(to right, #1a1a1a, #2a2a2a);
+  border-radius: 0 0 24px 24px;
+  overflow: hidden;
+}
+
+.cover-photo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.profile-info-section {
+  position: relative;
+  padding: 0 24px;
+  margin-top: -60px; /* Overlap cover */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.profile-avatar-container {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  padding: 4px;
+  background: var(--bg-color); /* Match background to create border effect */
+  box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+  z-index: 10;
+  overflow: hidden; /* Ensure image stays in circle */
+}
+
+.profile-avatar-large {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+  object-position: center;
+}
+
+.profile-details {
+  text-align: center;
+  margin-top: 16px;
+}
+
+.profile-full-name {
+  font-family: 'Playfair Display', serif;
+  font-size: 2rem;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.profile-username {
+  color: var(--text-secondary);
+  font-size: 1rem;
+}
+
+.profile-bio {
+  text-align: center;
+  color: var(--text-secondary);
+  margin: 16px 0;
+  max-width: 500px;
+  line-height: 1.6;
+}
+
+.profile-stats {
+  display: flex;
+  gap: 32px;
+  margin-top: 24px;
+  justify-content: center;
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.stat-value {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.stat-label {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+
+.clickable {
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.clickable:hover {
+  opacity: 0.8;
+}
+
+.profile-logs-section {
+  padding: 0 20px;
+}
+
+.section-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.8rem;
+  color: var(--text-primary);
+  margin-bottom: 24px;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 12px;
+}
+
+.logs-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 24px;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--text-secondary);
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: 16px;
+  border: 1px dashed var(--border-color);
+}
+
+.empty-icon {
+  font-size: 3rem;
+  margin-bottom: 16px;
+  opacity: 0.5;
+}
+
+.empty-title {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+}
+
