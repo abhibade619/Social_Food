@@ -126,7 +126,7 @@ const UserProfile = ({ userId, onNavigate }) => {
                     <div className="profile-stats">
                         <div className="stat-item">
                             <span className="stat-value">{stats.totalLogs}</span>
-                            <span className="stat-label">Reviews</span>
+                            <span className="stat-label">Logs</span>
                         </div>
                         <div className="stat-item clickable" onClick={() => {
                             // For now, this might only work for own profile or need a new view
@@ -148,16 +148,16 @@ const UserProfile = ({ userId, onNavigate }) => {
 
             {/* User's Logs */}
             <div className="profile-logs-section">
-                <h2 className="section-title">Reviews</h2>
+                <h2 className="section-title">Logs</h2>
 
                 {logs.length === 0 ? (
                     <div className="empty-state">
                         <p className="empty-icon">📝</p>
-                        <p className="empty-title">No reviews yet</p>
+                        <p className="empty-title">No logs yet</p>
                         <p className="empty-description">
                             {isOwnProfile
                                 ? 'Start sharing your dining experiences!'
-                                : `${profile?.full_name} hasn't posted any reviews yet.`}
+                                : `${profile?.full_name} hasn't posted any logs yet.`}
                         </p>
                     </div>
                 ) : (
@@ -167,6 +167,7 @@ const UserProfile = ({ userId, onNavigate }) => {
                                 key={log.id}
                                 log={log}
                                 onViewProfile={onNavigate}
+                                onClick={() => console.log("Log clicked:", log.id)} // Placeholder for now
                             />
                         ))}
                     </div>

@@ -8,6 +8,7 @@ const LogCard = ({ log, onClick, showActions = false, onEdit, onDelete, onViewPr
     const [userProfile, setUserProfile] = useState(null);
     const [taggedUsers, setTaggedUsers] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [showMenu, setShowMenu] = useState(false);
 
     useEffect(() => {
         fetchUserProfile();
@@ -113,9 +114,23 @@ const LogCard = ({ log, onClick, showActions = false, onEdit, onDelete, onViewPr
 
                 <div className="log-actions">
                     {showActions && (
-                        <div className="owner-actions">
-                            <button onClick={(e) => { e.stopPropagation(); onEdit(log); }} className="action-btn icon-btn" title="Edit">✏️</button>
-                            <button onClick={(e) => { e.stopPropagation(); onDelete(log.id); }} className="action-btn icon-btn delete" title="Delete">🗑️</button>
+                        <div className="menu-container" onClick={(e) => e.stopPropagation()}>
+                            <button
+                                className="menu-trigger"
+                                onClick={() => setShowMenu(!showMenu)}
+                            >
+                                ⋮
+                            </button>
+                            {showMenu && (
+                                <div className="action-menu">
+                                    <button onClick={() => { setShowMenu(false); onEdit(log); }} className="menu-item">
+                                        ✏️ Edit
+                                    </button>
+                                    <button onClick={() => { setShowMenu(false); onDelete(log.id); }} className="menu-item menu-item-danger">
+                                        🗑️ Delete
+                                    </button>
+                                </div>
+                            )}
                         </div>
                     )}
                 </div>

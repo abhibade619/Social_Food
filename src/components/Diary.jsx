@@ -232,6 +232,7 @@ const Diary = () => {
                                 showActions={true}
                                 onEdit={handleEdit}
                                 onDelete={handleDelete}
+                                onClick={() => handleEdit(log)}
                             />
                         ))}
                     </div>
