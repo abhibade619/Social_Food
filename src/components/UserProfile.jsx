@@ -65,7 +65,6 @@ const UserProfile = ({ userId, onBack, onNavigate }) => {
                             <span className="stat-label">Reviews</span>
                         </div>
                         <div className="stat-item clickable" onClick={() => {
-                            // TODO: Implement viewing other user's followers if needed
                             // For now, this might only work for own profile or need a new view
                             console.log("View followers clicked");
                         }}>
@@ -94,7 +93,7 @@ const UserProfile = ({ userId, onBack, onNavigate }) => {
                         <p className="empty-description">
                             {isOwnProfile
                                 ? 'Start sharing your dining experiences!'
-                                : `${profile.full_name} hasn't posted any reviews yet.`}
+                                : `${profile?.full_name} hasn't posted any reviews yet.`}
                         </p>
                     </div>
                 ) : (

@@ -46,11 +46,13 @@ const Auth = () => {
 
     return (
         <div className="auth-container">
-            <div className="auth-card">
-                <h1 className="auth-title">FoodSocial</h1>
-                <p className="auth-subtitle">
-                    {isSignUp ? 'Join the exclusive food community.' : 'Welcome back, connoisseur.'}
-                </p>
+            <div className="auth-card glass-panel fade-in">
+                <div className="auth-header">
+                    <h1 className="auth-title">FoodSocial</h1>
+                    <p className="auth-subtitle">
+                        {isSignUp ? 'Join the exclusive culinary circle.' : 'Welcome back, connoisseur.'}
+                    </p>
+                </div>
 
                 {!isSupabaseConfigured && (
                     <div className="config-warning">
@@ -62,59 +64,73 @@ const Auth = () => {
                 <form onSubmit={handleSubmit} className="auth-form">
                     {isSignUp && (
                         <div className="form-group">
-                            <input
-                                id="username"
-                                type="text"
-                                value={username}
-                                onChange={(e) => setUsername(e.target.value)}
-                                placeholder="Username"
-                                required
-                            />
+                            <label htmlFor="username">Username</label>
+                            <div className="input-wrapper">
+                                <input
+                                    id="username"
+                                    type="text"
+                                    value={username}
+                                    onChange={(e) => setUsername(e.target.value)}
+                                    placeholder="@username"
+                                    required
+                                    className="auth-input"
+                                />
+                            </div>
                         </div>
                     )}
 
                     <div className="form-group">
-                        <input
-                            id="email"
-                            type="email"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            placeholder="Email"
-                            required
-                        />
+                        <label htmlFor="email">Email Address</label>
+                        <div className="input-wrapper">
+                            <input
+                                id="email"
+                                type="email"
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                                placeholder="name@example.com"
+                                required
+                                className="auth-input"
+                            />
+                        </div>
                     </div>
 
                     <div className="form-group">
-                        <input
-                            id="password"
-                            type="password"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            placeholder="Password"
-                            required
-                            minLength={6}
-                        />
+                        <label htmlFor="password">Password</label>
+                        <div className="input-wrapper">
+                            <input
+                                id="password"
+                                type="password"
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                placeholder="••••••••"
+                                required
+                                minLength={6}
+                                className="auth-input"
+                            />
+                        </div>
                     </div>
 
-                    {error && <div className="error-message" style={{ color: 'var(--accent-color)' }}>{error}</div>}
-                    {success && <div className="success-message" style={{ color: 'var(--primary-color)' }}>{success}</div>}
+                    {error && <div className="error-message">{error}</div>}
+                    {success && <div className="success-message">{success}</div>}
 
-                    <button type="submit" className="btn-primary" style={{ width: '100%', marginTop: '20px' }} disabled={loading}>
-                        {loading ? 'Processing...' : isSignUp ? 'Sign Up' : 'Sign In'}
+                    <button type="submit" className="btn-primary auth-submit-btn" disabled={loading}>
+                        {loading ? <div className="loading-spinner-small"></div> : (isSignUp ? 'Create Account' : 'Sign In')}
                     </button>
                 </form>
 
-                <div className="auth-footer" style={{ marginTop: '20px' }}>
+                <div className="auth-footer">
+                    <p className="auth-switch-text">
+                        {isSignUp ? 'Already a member?' : "New to FoodSocial?"}
+                    </p>
                     <button
                         type="button"
                         onClick={() => {
                             setIsSignUp(!isSignUp);
                             setError('');
                         }}
-                        className="nav-link"
-                        style={{ background: 'none', border: 'none', cursor: 'pointer', textDecoration: 'underline' }}
+                        className="auth-switch-btn"
                     >
-                        {isSignUp ? 'Already have an account? Sign In' : "Don't have an account? Sign Up"}
+                        {isSignUp ? 'Sign In' : "Create Account"}
                     </button>
                 </div>
             </div>

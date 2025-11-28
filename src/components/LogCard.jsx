@@ -67,14 +67,16 @@ const LogCard = ({ log, onClick, showActions = false, onEdit, onDelete, onViewPr
     }
 
     return (
-        <div className="log-card glass-panel" onClick={onClick}>
+        <div className="log-card glass-panel premium-card" onClick={onClick}>
             <div className="log-header">
-                <div className="user-info" onClick={(e) => { e.stopPropagation(); onViewProfile && onViewProfile(log.user_id); }}>
-                    <img
-                        src={userProfile?.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${log.user_id}`}
-                        alt={userProfile?.username || 'User'}
-                        className="user-avatar"
-                    />
+                <div className="user-info clickable" onClick={(e) => { e.stopPropagation(); onViewProfile && onViewProfile(log.user_id); }}>
+                    <div className="avatar-wrapper">
+                        <img
+                            src={userProfile?.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${log.user_id}`}
+                            alt={userProfile?.username || 'User'}
+                            className="user-avatar"
+                        />
+                    </div>
                     <div className="log-user-info">
                         <p className="log-user-name">{userProfile?.full_name || 'User'}</p>
                         <p className="log-username">@{userProfile?.username || 'user'}</p>
@@ -86,8 +88,9 @@ const LogCard = ({ log, onClick, showActions = false, onEdit, onDelete, onViewPr
             <div className="log-content">
                 <div className="log-title-row">
                     <h3 className="restaurant-name">{log.restaurant_name}</h3>
-                    <div className="log-rating">
-                        {'⭐'.repeat(log.rating)}
+                    <div className="log-rating-badge">
+                        <span className="star-icon">★</span>
+                        <span className="rating-value">{log.rating}</span>
                     </div>
                 </div>
 
@@ -99,7 +102,7 @@ const LogCard = ({ log, onClick, showActions = false, onEdit, onDelete, onViewPr
                 {log.content && <p className="log-text">{log.content}</p>}
 
                 {photos && photos.length > 0 && (
-                    <div className="log-photos-grid">
+                    <div className={`log-photos-grid photos-${Math.min(photos.length, 4)}`}>
                         {photos.map((photo, index) => (
                             <div key={index} className="log-photo-wrapper">
                                 <img src={photo} alt={`Photo ${index + 1}`} className="log-photo" />
@@ -111,8 +114,8 @@ const LogCard = ({ log, onClick, showActions = false, onEdit, onDelete, onViewPr
                 <div className="log-actions">
                     {showActions && (
                         <div className="owner-actions">
-                            <button onClick={(e) => { e.stopPropagation(); onEdit(log); }} className="action-btn">✏️</button>
-                            <button onClick={(e) => { e.stopPropagation(); onDelete(log.id); }} className="action-btn delete">🗑️</button>
+                            <button onClick={(e) => { e.stopPropagation(); onEdit(log); }} className="action-btn icon-btn" title="Edit">✏️</button>
+                            <button onClick={(e) => { e.stopPropagation(); onDelete(log.id); }} className="action-btn icon-btn delete" title="Delete">🗑️</button>
                         </div>
                     )}
                 </div>
