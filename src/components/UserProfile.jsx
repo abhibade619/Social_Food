@@ -4,7 +4,7 @@ import { useAuth } from '../context/AuthProvider';
 import LogCard from './LogCard';
 import FollowButton from './FollowButton';
 
-const UserProfile = ({ userId, onBack, onNavigate }) => {
+const UserProfile = ({ userId, onNavigate }) => {
     const { user: currentUser } = useAuth();
     const [profile, setProfile] = useState(null);
     const [logs, setLogs] = useState([]);
@@ -90,13 +90,6 @@ const UserProfile = ({ userId, onBack, onNavigate }) => {
 
     return (
         <div className="user-profile-container">
-            {/* Back Button */}
-            {onBack && (
-                <button className="back-button" onClick={onBack}>
-                    ← Back
-                </button>
-            )}
-
             {/* Profile Header */}
             <div className="profile-header">
                 <div className="profile-cover">
