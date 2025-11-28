@@ -5,7 +5,7 @@ import LogCard from './LogCard';
 import CuisineSelector from './CuisineSelector';
 import RestaurantList from './RestaurantList';
 
-const Feed = ({ onViewProfile }) => {
+const Feed = ({ onViewProfile, onRestaurantClick }) => {
     const [logs, setLogs] = useState([]);
     const [loading, setLoading] = useState(false);
     const { user } = useAuth();
@@ -132,6 +132,7 @@ const Feed = ({ onViewProfile }) => {
                         key={log.id}
                         log={log}
                         onViewProfile={onViewProfile}
+                        onRestaurantClick={onRestaurantClick}
                     />
                 ))}
             </div>

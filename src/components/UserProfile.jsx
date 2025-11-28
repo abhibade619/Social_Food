@@ -4,7 +4,7 @@ import { useAuth } from '../context/AuthProvider';
 import LogCard from './LogCard';
 import FollowButton from './FollowButton';
 
-const UserProfile = ({ userId, onNavigate }) => {
+const UserProfile = ({ userId, onNavigate, onRestaurantClick }) => {
     const { user: currentUser } = useAuth();
     const [profile, setProfile] = useState(null);
     const [logs, setLogs] = useState([]);
@@ -168,6 +168,7 @@ const UserProfile = ({ userId, onNavigate }) => {
                                 log={log}
                                 onViewProfile={onNavigate}
                                 onClick={() => console.log("Log clicked:", log.id)} // Placeholder for now
+                                onRestaurantClick={onRestaurantClick}
                             />
                         ))}
                     </div>

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../supabaseClient';
 import MapComponent from './MapComponent';
+import LogCard from './LogCard';
 
 const RestaurantPage = ({ restaurant, onBack }) => {
     const [logs, setLogs] = useState([]); // Keep this for future review tab implementation
@@ -21,17 +22,24 @@ const RestaurantPage = ({ restaurant, onBack }) => {
 
     // Keep fetchRestaurantLogs and useEffect for future review tab implementation
     useEffect(() => {
-        // fetchRestaurantLogs(); // Temporarily comment out as reviews tab is placeholder
+        fetchRestaurantLogs();
     }, [restaurant]);
 
     const fetchRestaurantLogs = async () => {
         setLoading(true);
         try {
-            const { data, error } = await supabase
+            let query = supabase
                 .from('logs')
                 .select('*')
-                .eq('restaurant_name', restaurant.name)
                 .order('created_at', { ascending: false });
+
+            if (restaurant.place_id) {
+                query = query.eq('place_id', restaurant.place_id);
+            } else {
+                query = query.eq('restaurant_name', restaurant.name);
+            }
+
+            const { data, error } = await query;
 
             if (error) throw error;
             setLogs(data || []);
@@ -125,9 +133,7 @@ const RestaurantPage = ({ restaurant, onBack }) => {
 
                     {activeTab === 'reviews' && (
                         <div className="reviews-section">
-                            <p>Reviews coming soon...</p>
-                            {/* Placeholder for future review display */}
-                            {/* {loading && <p className="loading">Loading reviews...</p>}
+                            {loading && <p className="loading">Loading reviews...</p>}
                             {!loading && logs.length > 0 && (
                                 <div className="logs-grid">
                                     {logs.map((log) => (
@@ -137,7 +143,7 @@ const RestaurantPage = ({ restaurant, onBack }) => {
                             )}
                             {!loading && logs.length === 0 && (
                                 <p className="no-logs">No reviews yet. Be the first to review!</p>
-                            )} */}
+                            )}
                         </div>
                     )}
 

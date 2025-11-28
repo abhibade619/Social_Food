@@ -113,10 +113,13 @@ const RestaurantAutocomplete = ({ onPlaceSelected, defaultValue = '', locationBi
                 };
 
                 autocompleteService.current.getPlacePredictions(request, (predictions, status) => {
+                    console.log('RestaurantAutocomplete predictions:', predictions, 'Status:', status);
                     setLoading(false);
                     let googleResults = [];
                     if (status === google.maps.places.PlacesServiceStatus.OK && predictions) {
                         googleResults = predictions;
+                    } else {
+                        console.warn('RestaurantAutocomplete: No Google predictions found or status not OK', status);
                     }
 
                     // Combine results: Local first, then Google

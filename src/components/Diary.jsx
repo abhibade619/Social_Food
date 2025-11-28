@@ -5,7 +5,7 @@ import LogCard from './LogCard';
 import LogModal from './LogModal';
 import EditLogModal from './EditLogModal';
 
-const Diary = () => {
+const Diary = ({ onRestaurantClick }) => {
     const { user } = useAuth();
     const [logs, setLogs] = useState([]);
     const [filteredLogs, setFilteredLogs] = useState([]);
@@ -219,7 +219,6 @@ const Diary = () => {
                     {!loading && filteredLogs.length === 0 && (
                         <div className="empty-state glass-panel">
                             <div className="empty-icon">📔</div>
-                            <h3>Your journal is empty</h3>
                             <p>Start documenting your food journey today.</p>
                         </div>
                     )}
@@ -233,6 +232,7 @@ const Diary = () => {
                                 onEdit={handleEdit}
                                 onDelete={handleDelete}
                                 onClick={() => handleEdit(log)}
+                                onRestaurantClick={onRestaurantClick}
                             />
                         ))}
                     </div>

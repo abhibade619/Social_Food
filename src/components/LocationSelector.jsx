@@ -58,10 +58,12 @@ const LocationSelector = ({ currentLocation, onLocationChange }) => {
                 };
 
                 autocompleteService.current.getPlacePredictions(request, (predictions, status) => {
+                    console.log('LocationSelector predictions:', predictions, 'Status:', status);
                     setLoading(false);
                     if (status === google.maps.places.PlacesServiceStatus.OK && predictions) {
                         setSuggestions(predictions.slice(0, 5)); // Limit to top 5
                     } else {
+                        console.warn('LocationSelector: No predictions found or status not OK', status);
                         setSuggestions([]);
                     }
                 });

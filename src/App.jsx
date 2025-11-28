@@ -85,9 +85,9 @@ function App() {
     return <ProfileSetup onComplete={handleProfileSetupComplete} />;
   }
 
-  const handleNavigateToProfile = (userId) => {
-    setSelectedUser({ id: userId });
-    setCurrentView('userProfile');
+  const handleNavigateToRestaurant = (restaurantData) => {
+    setSelectedRestaurant(restaurantData);
+    setCurrentView('restaurant');
   };
 
   const renderView = () => {
@@ -106,6 +106,7 @@ function App() {
           userId={selectedUser.id}
           onBack={() => setCurrentView('search')}
           onNavigate={handleNavigateToProfile}
+          onRestaurantClick={handleNavigateToRestaurant}
         />
       );
     }
@@ -138,6 +139,7 @@ function App() {
             setSelectedUser({ id: userId });
             setCurrentView('userProfile');
           }}
+          onRestaurantClick={handleNavigateToRestaurant}
         />;
       case 'search':
         return (
@@ -145,6 +147,7 @@ function App() {
             setCurrentView={setCurrentView}
             setSelectedRestaurant={setSelectedRestaurant}
             setSelectedUser={setSelectedUser}
+            onRestaurantClick={handleNavigateToRestaurant}
           />
         );
       case 'profile':
@@ -152,7 +155,7 @@ function App() {
       case 'wishlist':
         return <Wishlist />;
       case 'diary':
-        return <Diary />;
+        return <Diary onRestaurantClick={handleNavigateToRestaurant} />;
       case 'account':
         return <AccountInfo />;
       case 'settings':

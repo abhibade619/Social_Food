@@ -3,7 +3,7 @@ import { supabase } from '../supabaseClient';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthProvider';
 
-const LogCard = ({ log, onClick, showActions = false, onEdit, onDelete, onViewProfile, onAddToWishlist }) => {
+const LogCard = ({ log, onClick, showActions = false, onEdit, onDelete, onViewProfile, onAddToWishlist, onRestaurantClick }) => {
     const { user } = useAuth();
     const [userProfile, setUserProfile] = useState(null);
     const [taggedUsers, setTaggedUsers] = useState([]);
@@ -109,7 +109,23 @@ const LogCard = ({ log, onClick, showActions = false, onEdit, onDelete, onViewPr
 
             <div className="log-content">
                 <div className="log-title-row">
-                    <h3 className="restaurant-name">{log.restaurant_name}</h3>
+                    <h3
+                        className="restaurant-name clickable-restaurant"
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            if (onRestaurantClick) {
+                                onRestaurantClick({
+                                    name: log.restaurant_name,
+                                    place_id: log.place_id,
+                                    location: log.location,
+                                    latitude: log.latitude,
+                                    longitude: log.longitude
+                                });
+                            }
+                        }}
+                    >
+                        {log.restaurant_name}
+                    </h3>
                     <div className="log-rating-badge">
                         <span className="star-icon">★</span>
                         <span className="rating-value">{log.rating}</span>
