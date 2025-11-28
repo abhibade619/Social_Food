@@ -40,32 +40,44 @@ const LocationSelector = ({ currentLocation, onLocationChange }) => {
     const handleSearch = (e) => {
         const value = e.target.value;
         setSearchTerm(value);
-        setLoading(true);
 
-        if (!value.trim()) {
+        if (value.length < 3) {
             setSuggestions([]);
             setLoading(false);
             return;
         }
 
-        if (autocompleteService.current) {
-            const request = {
-                input: value,
-                types: ['(cities)']
-            };
+        setLoading(true);
 
-            autocompleteService.current.getPlacePredictions(request, (predictions, status) => {
+        // Debounce logic
+        const timeoutId = setTimeout(() => {
+            if (autocompleteService.current) {
+                const request = {
+                    input: value,
+                    types: ['(cities)']
+                };
+
+                autocompleteService.current.getPlacePredictions(request, (predictions, status) => {
+                    setLoading(false);
+                    if (status === google.maps.places.PlacesServiceStatus.OK && predictions) {
+                        setSuggestions(predictions.slice(0, 5)); // Limit to top 5
+                    } else {
+                        setSuggestions([]);
+                    }
+                });
+            } else {
                 setLoading(false);
-                if (status === google.maps.places.PlacesServiceStatus.OK && predictions) {
-                    setSuggestions(predictions);
-                } else {
-                    setSuggestions([]);
-                }
-            });
-        } else {
-            setLoading(false);
-        }
+            }
+        }, 300); // 300ms debounce
+
+        return () => clearTimeout(timeoutId);
     };
+
+    // Cleanup debounce on unmount or change
+    useEffect(() => {
+        const timer = setTimeout(() => { }, 0);
+        return () => clearTimeout(timer);
+    }, [searchTerm]);
 
     const handleSelectLocation = (suggestion) => {
         if (placesService.current && suggestion.place_id) {
