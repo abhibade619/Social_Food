@@ -128,7 +128,19 @@ button {
 }
 
 .menu-container {
-  position: relative;
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  z-index: 10;
+}
+
+.user-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  /* Fix cropping */
+  border: 2px solid var(--primary-color);
 }
 
 .menu-trigger {
@@ -939,7 +951,7 @@ label {
   padding: 24px;
   border-radius: 16px;
   position: relative;
-  overflow: hidden;
+  /* overflow: hidden; Removed to allow menu to show */
 }
 
 .premium-card::before {

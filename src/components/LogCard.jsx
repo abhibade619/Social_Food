@@ -69,6 +69,27 @@ const LogCard = ({ log, onClick, showActions = false, onEdit, onDelete, onViewPr
 
     return (
         <div className="log-card glass-panel premium-card" onClick={onClick}>
+            {showActions && (
+                <div className="menu-container" onClick={(e) => e.stopPropagation()}>
+                    <button
+                        className="menu-trigger"
+                        onClick={() => setShowMenu(!showMenu)}
+                    >
+                        ⋮
+                    </button>
+                    {showMenu && (
+                        <div className="action-menu">
+                            <button onClick={() => { setShowMenu(false); onEdit(log); }} className="menu-item">
+                                ✏️ Edit
+                            </button>
+                            <button onClick={() => { setShowMenu(false); onDelete(log.id); }} className="menu-item menu-item-danger">
+                                🗑️ Delete
+                            </button>
+                        </div>
+                    )}
+                </div>
+            )}
+
             <div className="log-header">
                 <div className="user-info clickable" onClick={(e) => { e.stopPropagation(); onViewProfile && onViewProfile(log.user_id); }}>
                     <div className="avatar-wrapper">
@@ -111,29 +132,6 @@ const LogCard = ({ log, onClick, showActions = false, onEdit, onDelete, onViewPr
                         ))}
                     </div>
                 )}
-
-                <div className="log-actions">
-                    {showActions && (
-                        <div className="menu-container" onClick={(e) => e.stopPropagation()}>
-                            <button
-                                className="menu-trigger"
-                                onClick={() => setShowMenu(!showMenu)}
-                            >
-                                ⋮
-                            </button>
-                            {showMenu && (
-                                <div className="action-menu">
-                                    <button onClick={() => { setShowMenu(false); onEdit(log); }} className="menu-item">
-                                        ✏️ Edit
-                                    </button>
-                                    <button onClick={() => { setShowMenu(false); onDelete(log.id); }} className="menu-item menu-item-danger">
-                                        🗑️ Delete
-                                    </button>
-                                </div>
-                            )}
-                        </div>
-                    )}
-                </div>
             </div>
         </div>
     );
