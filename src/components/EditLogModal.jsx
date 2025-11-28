@@ -1,4 +1,3 @@
-```javascript
 import { useState, useEffect } from 'react';
 import { supabase } from '../supabaseClient';
 import { useAuth } from '../context/AuthProvider';
@@ -62,7 +61,7 @@ const EditLogModal = ({ log, onClose, onLogUpdated }) => {
             const { data, error } = await supabase
                 .from('profiles')
                 .select('id, username, full_name, avatar_url')
-                .or(`username.ilike.% ${ searchTerm }%, full_name.ilike.% ${ searchTerm }% `)
+                .or(`username.ilike.%${searchTerm}%,full_name.ilike.%${searchTerm}%`)
                 .neq('id', user.id)
                 .limit(5);
 
@@ -389,58 +388,55 @@ const EditLogModal = ({ log, onClose, onLogUpdated }) => {
                                     >
                                         <img
                                             src={friend.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${friend.id}`}
-alt = { friend.username }
-className = "friend-avatar-small"
-    />
-    <div>
-        <div className="friend-name">{friend.full_name}</div>
-        <div className="friend-username">@{friend.username}</div>
-    </div>
-                                    </div >
+                                            alt={friend.username}
+                                            className="friend-avatar-small"
+                                        />
+                                        <div>
+                                            <div className="friend-name">{friend.full_name}</div>
+                                            <div className="friend-username">@{friend.username}</div>
+                                        </div>
+                                    </div>
                                 ))}
-                            </div >
+                            </div>
                         )}
 
-{
-    taggedFriends.length > 0 && (
-        <div className="tagged-friends-list">
-            {taggedFriends.map((friend) => (
-                <div key={friend.id} className="tagged-friend-chip">
-                    <img
-                        src={friend.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${friend.id}`}
-                        alt={friend.username}
-                        className="friend-avatar-tiny"
-                    />
-                    <span>{friend.full_name}</span>
-                    <button
-                        type="button"
-                        onClick={() => removeTaggedFriend(friend.id)}
-                        className="remove-tag-btn"
-                    >
-                        ×
-                    </button>
-                </div>
-            ))}
+                        {taggedFriends.length > 0 && (
+                            <div className="tagged-friends-list">
+                                {taggedFriends.map((friend) => (
+                                    <div key={friend.id} className="tagged-friend-chip">
+                                        <img
+                                            src={friend.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${friend.id}`}
+                                            alt={friend.username}
+                                            className="friend-avatar-tiny"
+                                        />
+                                        <span>{friend.full_name}</span>
+                                        <button
+                                            type="button"
+                                            onClick={() => removeTaggedFriend(friend.id)}
+                                            className="remove-tag-btn"
+                                        >
+                                            ×
+                                        </button>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+                    </div>
+
+                    {error && <div className="error-message">{error}</div>}
+
+                    <div className="modal-actions">
+                        <button type="button" className="btn-secondary" onClick={onClose}>
+                            Cancel
+                        </button>
+                        <button type="submit" className="btn-primary" disabled={loading}>
+                            {loading ? 'Saving...' : 'Save Changes'}
+                        </button>
+                    </div>
+                </form>
+            </div>
         </div>
-    )
-}
-                    </div >
-
-    { error && <div className="error-message">{error}</div>}
-
-<div className="modal-actions">
-    <button type="button" className="btn-secondary" onClick={onClose}>
-        Cancel
-    </button>
-    <button type="submit" className="btn-primary" disabled={loading}>
-        {loading ? 'Saving...' : 'Save Changes'}
-    </button>
-</div>
-                </form >
-            </div >
-        </div >
     );
 };
 
 export default EditLogModal;
-```
