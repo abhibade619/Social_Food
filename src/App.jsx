@@ -90,6 +90,11 @@ function App() {
     setCurrentView('restaurant');
   };
 
+  const handleNavigateToProfile = (userId) => {
+    setSelectedUser({ id: userId });
+    setCurrentView('userProfile');
+  };
+
   const renderView = () => {
     if (currentView === 'restaurant' && selectedRestaurant) {
       return (

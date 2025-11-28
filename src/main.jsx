@@ -6,7 +6,7 @@ import { AuthProvider } from './context/AuthProvider.jsx';
 import { initGoogleMaps } from './utils/googleMaps';
 import './index.css';
 
-initGoogleMaps();
+
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>

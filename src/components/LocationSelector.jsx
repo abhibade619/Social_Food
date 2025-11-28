@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { setOptions, importLibrary } from '@googlemaps/js-api-loader';
+import { loadPlacesLibrary } from '../utils/googleMaps';
 
 const LocationSelector = ({ currentLocation, onLocationChange }) => {
     const [isOpen, setIsOpen] = useState(false);
@@ -7,16 +7,14 @@ const LocationSelector = ({ currentLocation, onLocationChange }) => {
     const [suggestions, setSuggestions] = useState([]);
     const [loading, setLoading] = useState(false);
     const dropdownRef = useRef(null);
-    const autocompleteService = useRef(null);
-    const placesService = useRef(null);
+    const [placesApi, setPlacesApi] = useState(null);
 
     // Initialize Google Maps Service
     useEffect(() => {
         const initServices = async () => {
             try {
-                const { AutocompleteService, PlacesService } = await importLibrary("places");
-                autocompleteService.current = new AutocompleteService();
-                placesService.current = new PlacesService(document.createElement('div'));
+                const lib = await loadPlacesLibrary();
+                setPlacesApi(lib);
             } catch (e) {
                 console.error("Error loading Google Maps API", e);
             }
@@ -50,23 +48,28 @@ const LocationSelector = ({ currentLocation, onLocationChange }) => {
         setLoading(true);
 
         // Debounce logic
-        const timeoutId = setTimeout(() => {
-            if (autocompleteService.current) {
-                const request = {
-                    input: value,
-                    types: ['(cities)']
-                };
+        const timeoutId = setTimeout(async () => {
+            if (placesApi && placesApi.AutocompleteSuggestion) {
+                try {
+                    const request = {
+                        input: value,
+                        includedPrimaryTypes: ['(cities)']
+                    };
 
-                autocompleteService.current.getPlacePredictions(request, (predictions, status) => {
-                    console.log('LocationSelector predictions:', predictions, 'Status:', status);
+                    const { suggestions: predictions } = await placesApi.AutocompleteSuggestion.fetchAutocompleteSuggestions(request);
+
+                    console.log('LocationSelector predictions:', predictions);
                     setLoading(false);
-                    if (status === google.maps.places.PlacesServiceStatus.OK && predictions) {
+                    if (predictions) {
                         setSuggestions(predictions.slice(0, 5)); // Limit to top 5
                     } else {
-                        console.warn('LocationSelector: No predictions found or status not OK', status);
                         setSuggestions([]);
                     }
-                });
+                } catch (error) {
+                    console.error('LocationSelector: Error fetching suggestions', error);
+                    setSuggestions([{ placePrediction: { text: { text: `Error: ${error.message}` }, placeId: 'error' } }]);
+                    setLoading(false);
+                }
             } else {
                 setLoading(false);
             }
@@ -81,30 +84,34 @@ const LocationSelector = ({ currentLocation, onLocationChange }) => {
         return () => clearTimeout(timer);
     }, [searchTerm]);
 
-    const handleSelectLocation = (suggestion) => {
-        if (placesService.current && suggestion.place_id) {
-            const request = {
-                placeId: suggestion.place_id,
-                fields: ['name', 'geometry', 'formatted_address']
-            };
+    const handleSelectLocation = async (suggestion) => {
+        // suggestion is an AutocompleteSuggestion object
+        // It has a placePrediction property
+        const prediction = suggestion.placePrediction;
 
-            placesService.current.getDetails(request, (place, status) => {
-                if (status === google.maps.places.PlacesServiceStatus.OK && place.geometry && place.geometry.location) {
-                    const locationData = {
-                        name: place.formatted_address || suggestion.description,
-                        lat: place.geometry.location.lat(),
-                        lng: place.geometry.location.lng()
-                    };
-                    onLocationChange(locationData);
-                } else {
-                    console.error("Failed to get place details");
-                    onLocationChange({ name: suggestion.description, lat: null, lng: null });
-                }
+        if (placesApi && placesApi.Place && prediction && prediction.placeId && prediction.placeId !== 'error') {
+            try {
+                const place = new placesApi.Place({ id: prediction.placeId });
+                await place.fetchFields({ fields: ['displayName', 'location', 'formattedAddress'] });
+
+                const locationData = {
+                    name: place.formattedAddress || prediction.text.text,
+                    lat: place.location.lat(),
+                    lng: place.location.lng()
+                };
+                onLocationChange(locationData);
                 setIsOpen(false);
                 setSearchTerm('');
-            });
+            } catch (error) {
+                console.error("Failed to get place details", error);
+                onLocationChange({ name: prediction.text.text, lat: null, lng: null });
+                setIsOpen(false);
+                setSearchTerm('');
+            }
         } else {
-            onLocationChange({ name: suggestion.description, lat: null, lng: null });
+            if (prediction && prediction.text) {
+                onLocationChange({ name: prediction.text.text, lat: null, lng: null });
+            }
             setIsOpen(false);
             setSearchTerm('');
         }
@@ -118,7 +125,7 @@ const LocationSelector = ({ currentLocation, onLocationChange }) => {
             >
                 <span className="location-icon">📍</span>
                 <span className="location-text">
-                    {currentLocation || 'Select Location'}
+                    {(currentLocation && typeof currentLocation === 'object' ? currentLocation.name : currentLocation) || 'Select Location'}
                 </span>
                 <span className="dropdown-arrow">▼</span>
             </button>
@@ -139,15 +146,19 @@ const LocationSelector = ({ currentLocation, onLocationChange }) => {
                         {loading ? (
                             <div className="suggestion-item loading">Loading...</div>
                         ) : suggestions.length > 0 ? (
-                            suggestions.map((suggestion) => (
-                                <div
-                                    key={suggestion.place_id}
-                                    className="suggestion-item"
-                                    onClick={() => handleSelectLocation(suggestion)}
-                                >
-                                    {suggestion.description}
-                                </div>
-                            ))
+                            suggestions.map((suggestion, index) => {
+                                const prediction = suggestion.placePrediction;
+                                if (!prediction) return null;
+                                return (
+                                    <div
+                                        key={prediction.placeId || index}
+                                        className="suggestion-item"
+                                        onClick={() => handleSelectLocation(suggestion)}
+                                    >
+                                        {prediction.text ? prediction.text.text : 'Unknown Location'}
+                                    </div>
+                                );
+                            })
                         ) : searchTerm ? (
                             <div className="suggestion-item no-results">No cities found</div>
                         ) : (

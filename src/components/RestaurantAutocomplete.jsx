@@ -1,23 +1,21 @@
-import { useEffect, useRef, useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { supabase } from '../supabaseClient';
-import { importLibrary } from '@googlemaps/js-api-loader';
+import { loadPlacesLibrary } from '../utils/googleMaps';
 
 const RestaurantAutocomplete = ({ onPlaceSelected, defaultValue = '', locationBias = null }) => {
     const [inputValue, setInputValue] = useState(defaultValue);
     const [suggestions, setSuggestions] = useState([]);
     const [showSuggestions, setShowSuggestions] = useState(false);
     const [loading, setLoading] = useState(false);
-    const autocompleteService = useRef(null);
-    const placesService = useRef(null);
+    const [placesApi, setPlacesApi] = useState(null);
     const wrapperRef = useRef(null);
 
     // Initialize Google Maps Services
     useEffect(() => {
         const initServices = async () => {
             try {
-                const { AutocompleteService, PlacesService } = await importLibrary("places");
-                autocompleteService.current = new AutocompleteService();
-                placesService.current = new PlacesService(document.createElement('div'));
+                const lib = await loadPlacesLibrary();
+                setPlacesApi(lib);
             } catch (e) {
                 console.error("Error loading Google Maps API", e);
             }
@@ -101,35 +99,45 @@ const RestaurantAutocomplete = ({ onPlaceSelected, defaultValue = '', locationBi
             }
 
             // 3. If not enough, fetch from Google
-            if (autocompleteService.current) {
-                const request = {
-                    input: value,
-                    types: ['establishment'],
-                    locationBias: locationBias && locationBias.lat && locationBias.lng ?
-                        new google.maps.Circle({
-                            center: { lat: locationBias.lat, lng: locationBias.lng },
-                            radius: 50000
-                        }) : undefined
-                };
+            if (placesApi && placesApi.AutocompleteSuggestion) {
+                try {
+                    const request = {
+                        input: value,
+                        includedPrimaryTypes: ['restaurant', 'food'], // Updated types
+                        locationBias: locationBias && locationBias.lat && locationBias.lng ?
+                            new google.maps.Circle({
+                                center: { lat: locationBias.lat, lng: locationBias.lng },
+                                radius: 50000
+                            }) : undefined
+                    };
 
-                autocompleteService.current.getPlacePredictions(request, (predictions, status) => {
-                    console.log('RestaurantAutocomplete predictions:', predictions, 'Status:', status);
+                    const { suggestions: predictions } = await placesApi.AutocompleteSuggestion.fetchAutocompleteSuggestions(request);
+
+                    console.log('RestaurantAutocomplete predictions:', predictions);
                     setLoading(false);
+
                     let googleResults = [];
-                    if (status === google.maps.places.PlacesServiceStatus.OK && predictions) {
-                        googleResults = predictions;
-                    } else {
-                        console.warn('RestaurantAutocomplete: No Google predictions found or status not OK', status);
+                    if (predictions) {
+                        // Transform to match local structure roughly for rendering
+                        googleResults = predictions.map(p => ({
+                            isLocal: false,
+                            placePrediction: p.placePrediction
+                        }));
                     }
 
                     // Combine results: Local first, then Google
                     // Filter out Google results that might duplicate local ones (by place_id)
                     const localPlaceIds = new Set(localResults.map(r => r.place_id).filter(id => id));
-                    const filteredGoogleResults = googleResults.filter(r => !localPlaceIds.has(r.place_id));
+                    const filteredGoogleResults = googleResults.filter(r => !localPlaceIds.has(r.placePrediction?.placeId));
 
                     const combined = [...localResults, ...filteredGoogleResults].slice(0, 8);
                     setSuggestions(combined);
-                });
+
+                } catch (error) {
+                    console.warn('RestaurantAutocomplete: Error fetching Google predictions', error);
+                    setSuggestions(localResults);
+                    setLoading(false);
+                }
             } else {
                 setSuggestions(localResults);
                 setLoading(false);
@@ -139,11 +147,10 @@ const RestaurantAutocomplete = ({ onPlaceSelected, defaultValue = '', locationBi
         return () => clearTimeout(timeoutId);
     };
 
-    const handleSelect = (suggestion) => {
-        setInputValue(suggestion.structured_formatting.main_text);
-        setShowSuggestions(false);
-
+    const handleSelect = async (suggestion) => {
         if (suggestion.isLocal) {
+            setInputValue(suggestion.structured_formatting.main_text);
+            setShowSuggestions(false);
             // Use stored local data
             const item = suggestion.data;
             onPlaceSelected({
@@ -156,39 +163,45 @@ const RestaurantAutocomplete = ({ onPlaceSelected, defaultValue = '', locationBi
             });
         } else {
             // Fetch details from Google
-            if (placesService.current && suggestion.place_id) {
-                const request = {
-                    placeId: suggestion.place_id,
-                    fields: ['name', 'formatted_address', 'geometry', 'address_components', 'rating', 'user_ratings_total', 'international_phone_number', 'website']
-                };
+            const prediction = suggestion.placePrediction;
+            if (prediction) {
+                setInputValue(prediction.text.text);
+                setShowSuggestions(false);
 
-                placesService.current.getDetails(request, (place, status) => {
-                    if (status === google.maps.places.PlacesServiceStatus.OK) {
-                        // Extract city/state logic similar to before
+                if (placesApi && placesApi.Place && prediction.placeId) {
+                    try {
+                        const place = new placesApi.Place({ id: prediction.placeId });
+                        await place.fetchFields({
+                            fields: ['displayName', 'formattedAddress', 'location', 'addressComponents', 'rating', 'userRatingCount', 'internationalPhoneNumber', 'websiteURI']
+                        });
+
+                        // Extract city/state logic
                         let city = '', state = '', country = '';
-                        if (place.address_components) {
-                            place.address_components.forEach(component => {
-                                if (component.types.includes('locality')) city = component.long_name;
-                                if (component.types.includes('administrative_area_level_1')) state = component.short_name;
-                                if (component.types.includes('country')) country = component.short_name;
+                        if (place.addressComponents) {
+                            place.addressComponents.forEach(component => {
+                                if (component.types.includes('locality')) city = component.longText || component.shortText;
+                                if (component.types.includes('administrative_area_level_1')) state = component.shortText;
+                                if (component.types.includes('country')) country = component.shortText;
                             });
                         }
 
                         onPlaceSelected({
-                            place_id: place.place_id,
-                            name: place.name,
-                            address: place.formatted_address,
-                            latitude: place.geometry.location.lat(),
-                            longitude: place.geometry.location.lng(),
+                            place_id: place.id,
+                            name: place.displayName,
+                            address: place.formattedAddress,
+                            latitude: place.location.lat(),
+                            longitude: place.location.lng(),
                             city, state, country,
                             location: city && state ? `${city}, ${state}` : city || state,
                             rating: place.rating,
-                            user_ratings_total: place.user_ratings_total,
-                            phone: place.international_phone_number,
-                            website: place.website
+                            user_ratings_total: place.userRatingCount,
+                            phone: place.internationalPhoneNumber,
+                            website: place.websiteURI
                         });
+                    } catch (error) {
+                        console.error("Failed to get place details", error);
                     }
-                });
+                }
             }
         }
     };
@@ -229,33 +242,59 @@ const RestaurantAutocomplete = ({ onPlaceSelected, defaultValue = '', locationBi
                 }}>
                     {loading && <div style={{ padding: '12px', color: '#888' }}>Loading...</div>}
 
-                    {!loading && suggestions.map((suggestion, index) => (
-                        <div
-                            key={suggestion.place_id || index}
-                            onClick={() => handleSelect(suggestion)}
-                            style={{
-                                padding: '12px',
-                                cursor: 'pointer',
-                                borderBottom: '1px solid rgba(255,255,255,0.05)',
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: '10px'
-                            }}
-                            className="suggestion-item"
-                        >
-                            <span style={{ fontSize: '1.2rem' }}>
-                                {suggestion.isLocal ? '🕒' : '📍'}
-                            </span>
-                            <div>
-                                <div style={{ fontWeight: '600', color: 'var(--text-primary)' }}>
-                                    {suggestion.structured_formatting.main_text}
-                                </div>
-                                <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
-                                    {suggestion.structured_formatting.secondary_text}
+                    {!loading && suggestions.map((suggestion, index) => {
+                        let mainText = '';
+                        let secondaryText = '';
+                        let isLocal = suggestion.isLocal;
+
+                        if (isLocal) {
+                            mainText = suggestion.structured_formatting.main_text;
+                            secondaryText = suggestion.structured_formatting.secondary_text;
+                        } else {
+                            const prediction = suggestion.placePrediction;
+                            if (prediction) {
+                                mainText = prediction.text.text;
+                                // Secondary text isn't directly available in the same way in new API, 
+                                // but we can try to infer or just show the text.
+                                // Actually, `prediction.text.text` is the main name. 
+                                // We might not have a separate address field easily accessible in the prediction object 
+                                // without fetching details, but `prediction.text.text` usually contains the name.
+                                // Let's check if there is structured formatting.
+                                // The new API returns `text` (FormattableText).
+                                secondaryText = ''; // New API prediction object is simpler
+                            }
+                        }
+
+                        return (
+                            <div
+                                key={isLocal ? (suggestion.place_id || index) : (suggestion.placePrediction?.placeId || index)}
+                                onClick={() => handleSelect(suggestion)}
+                                style={{
+                                    padding: '12px',
+                                    cursor: 'pointer',
+                                    borderBottom: '1px solid rgba(255,255,255,0.05)',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '10px'
+                                }}
+                                className="suggestion-item"
+                            >
+                                <span style={{ fontSize: '1.2rem' }}>
+                                    {isLocal ? '🕒' : '📍'}
+                                </span>
+                                <div>
+                                    <div style={{ fontWeight: '600', color: 'var(--text-primary)' }}>
+                                        {mainText}
+                                    </div>
+                                    {secondaryText && (
+                                        <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
+                                            {secondaryText}
+                                        </div>
+                                    )}
                                 </div>
                             </div>
-                        </div>
-                    ))}
+                        );
+                    })}
                 </div>
             )}
         </div>

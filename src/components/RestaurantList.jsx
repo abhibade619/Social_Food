@@ -1,65 +1,64 @@
-import { useState, useEffect, useRef } from 'react';
-import { importLibrary } from '@googlemaps/js-api-loader';
+import { useEffect, useState } from 'react';
+import { loadPlacesLibrary } from '../utils/googleMaps';
 
 const RestaurantList = ({ location, cuisine, onRestaurantClick }) => {
     const [restaurants, setRestaurants] = useState([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
-    const placesService = useRef(null);
+    const [placesApi, setPlacesApi] = useState(null);
+
+    useEffect(() => {
+        const init = async () => {
+            try {
+                const lib = await loadPlacesLibrary();
+                setPlacesApi(lib);
+            } catch (e) {
+                console.error("Error loading Google Maps API", e);
+            }
+        };
+        init();
+    }, []);
 
     useEffect(() => {
         const fetchRestaurants = async () => {
-            if (!location || !location.name) return;
+            if (!location || !location.name || !placesApi || !placesApi.Place) return;
 
             setLoading(true);
             setError(null);
 
             try {
-                const { PlacesService } = await importLibrary("places");
-
-                if (!placesService.current) {
-                    placesService.current = new PlacesService(document.createElement('div'));
-                }
-
                 const query = cuisine === 'all'
                     ? `restaurants in ${location.name}`
                     : `${cuisine} restaurants in ${location.name}`;
 
                 const request = {
-                    query: query,
-                    fields: ['place_id', 'name', 'formatted_address', 'geometry', 'rating', 'user_ratings_total', 'photos', 'types']
+                    textQuery: query,
+                    fields: ['id', 'displayName', 'formattedAddress', 'location', 'rating', 'userRatingCount', 'photos', 'types'],
+                    locationBias: location.lat && location.lng ? {
+                        center: { lat: location.lat, lng: location.lng },
+                        radius: 5000
+                    } : undefined
                 };
 
-                // If we have coordinates, we can bias the search, but textSearch with "in City" is usually enough.
-                // However, passing locationBias might help if the city name is ambiguous.
-                if (location.lat && location.lng) {
-                    request.location = { lat: location.lat, lng: location.lng };
-                    request.radius = 5000; // 5km bias
-                }
+                const { places } = await placesApi.Place.searchByText(request);
 
-                placesService.current.textSearch(request, (results, status) => {
-                    if (status === google.maps.places.PlacesServiceStatus.OK && results) {
-                        // Sort by rating (descending)
-                        const sortedResults = results.sort((a, b) => (b.rating || 0) - (a.rating || 0));
-                        setRestaurants(sortedResults);
-                    } else {
-                        setRestaurants([]);
-                        if (status !== google.maps.places.PlacesServiceStatus.ZERO_RESULTS) {
-                            setError('Failed to fetch restaurants');
-                        }
-                    }
-                    setLoading(false);
-                });
+                if (places && places.length > 0) {
+                    const sortedResults = places.sort((a, b) => (b.rating || 0) - (a.rating || 0));
+                    setRestaurants(sortedResults);
+                } else {
+                    setRestaurants([]);
+                }
+                setLoading(false);
 
             } catch (err) {
                 console.error("Error fetching restaurants:", err);
-                setError('Error loading Google Maps API');
+                setError('Error loading restaurants');
                 setLoading(false);
             }
         };
 
         fetchRestaurants();
-    }, [location, cuisine]);
+    }, [location, cuisine, placesApi]);
 
     if (loading) return <div className="restaurant-list-loading">Loading top {cuisine === 'all' ? '' : cuisine} restaurants in {location.name}...</div>;
     if (error) return <div className="restaurant-list-error">{error}</div>;
@@ -72,23 +71,30 @@ const RestaurantList = ({ location, cuisine, onRestaurantClick }) => {
             <div className="restaurant-grid">
                 {restaurants.map((place) => (
                     <div
-                        key={place.place_id}
+                        key={place.id}
                         className="restaurant-card"
-                        onClick={() => onRestaurantClick(place)}
+                        onClick={() => onRestaurantClick({
+                            place_id: place.id,
+                            name: place.displayName,
+                            address: place.formattedAddress,
+                            rating: place.rating,
+                            user_ratings_total: place.userRatingCount,
+                            photos: place.photos
+                        })}
                     >
                         <div className="restaurant-image-placeholder">
                             {place.photos && place.photos.length > 0 ? (
-                                <img src={place.photos[0].getUrl({ maxWidth: 400 })} alt={place.name} />
+                                <img src={place.photos[0].getURI({ maxWidth: 400 })} alt={place.displayName} />
                             ) : (
                                 <span className="no-image">🍽️</span>
                             )}
                         </div>
                         <div className="restaurant-info">
-                            <h4>{place.name}</h4>
+                            <h4>{place.displayName}</h4>
                             <div className="restaurant-meta">
-                                <span className="rating">⭐ {place.rating} ({place.user_ratings_total})</span>
+                                <span className="rating">⭐ {place.rating} ({place.userRatingCount})</span>
                             </div>
-                            <p className="address">{place.formatted_address}</p>
+                            <p className="address">{place.formattedAddress}</p>
                         </div>
                     </div>
                 ))}

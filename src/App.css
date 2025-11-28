@@ -781,6 +781,17 @@
   gap: var(--spacing-xs);
 }
 
+.clickable-restaurant {
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.clickable-restaurant:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+  border-color: var(--primary-color);
+}
+
 /* Restaurant Page */
 .restaurant-page {
   animation: fadeIn var(--transition-base);
@@ -1262,6 +1273,7 @@
     max-height: 95vh;
   }
 }
+
 /* Photo Upload and Display Styles */
 .photo-preview-grid {
   display: grid;
@@ -1904,6 +1916,7 @@
   from {
     opacity: 0;
   }
+
   to {
     opacity: 1;
   }
@@ -1914,6 +1927,7 @@
     transform: translateY(20px);
     opacity: 0;
   }
+
   to {
     transform: translateY(0);
     opacity: 1;
@@ -1925,6 +1939,7 @@
     transform: translateX(-10px);
     opacity: 0;
   }
+
   to {
     transform: translateX(0);
     opacity: 1;
@@ -1938,21 +1953,21 @@
   .profile-cover {
     height: 150px;
   }
-  
+
   .profile-avatar-large {
     width: 90px;
     height: 90px;
   }
-  
+
   .profile-details {
     flex-direction: column;
     gap: var(--spacing-md);
   }
-  
+
   .profile-stats {
     gap: var(--spacing-md);
   }
-  
+
   .log-actions {
     position: absolute;
     top: var(--spacing-md);
@@ -2139,7 +2154,7 @@
 
 .cuisine-item:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
 
 .cuisine-item.active {
@@ -2174,14 +2189,14 @@
   background: white;
   border-radius: 12px;
   overflow: hidden;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
   cursor: pointer;
   transition: transform 0.2s;
 }
 
 .restaurant-card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
 }
 
 .restaurant-image-placeholder {
@@ -2238,4 +2253,3 @@
   overflow: hidden;
   text-overflow: ellipsis;
 }
-

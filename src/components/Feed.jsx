@@ -23,12 +23,28 @@ const Feed = ({ onViewProfile, onRestaurantClick }) => {
         // Try to get location from local storage or profile
         const savedLocation = localStorage.getItem('userLocation');
         if (savedLocation) {
-            // If it's a simple string, we might not have coords. 
-            // Ideally we should store the full object.
-            // For now, let's assume simple string and let RestaurantList handle it (it does textSearch).
-            setLocation({ name: savedLocation });
+            try {
+                const parsed = JSON.parse(savedLocation);
+                if (typeof parsed === 'object' && parsed !== null) {
+                    setLocation(parsed);
+                } else {
+                    setLocation({ name: savedLocation });
+                }
+            } catch (e) {
+                // Fallback for legacy string values or malformed JSON
+                setLocation({ name: savedLocation });
+            }
         }
     };
+
+    // Listen for location changes from Navbar
+    useEffect(() => {
+        const handleLocationUpdate = () => {
+            loadUserLocation();
+        };
+        window.addEventListener('locationChanged', handleLocationUpdate);
+        return () => window.removeEventListener('locationChanged', handleLocationUpdate);
+    }, []);
 
     const fetchLogs = async () => {
         setLoading(true);
@@ -85,7 +101,11 @@ const Feed = ({ onViewProfile, onRestaurantClick }) => {
                 </div>
                 <div className="horizontal-scroll-container">
                     {popularRestaurants.map(rest => (
-                        <div key={rest.id} className="restaurant-card-premium">
+                        <div
+                            key={rest.id}
+                            className="restaurant-card-premium clickable-restaurant"
+                            onClick={() => onRestaurantClick(rest)}
+                        >
                             <div className="card-image" style={{ backgroundImage: `url(${rest.image})` }}>
                                 <span className="rating-badge">⭐ {rest.rating}</span>
                             </div>
@@ -105,7 +125,11 @@ const Feed = ({ onViewProfile, onRestaurantClick }) => {
                 </div>
                 <div className="horizontal-scroll-container">
                     {topRatedRestaurants.map(rest => (
-                        <div key={rest.id} className="restaurant-card-premium">
+                        <div
+                            key={rest.id}
+                            className="restaurant-card-premium clickable-restaurant"
+                            onClick={() => onRestaurantClick(rest)}
+                        >
                             <div className="card-image" style={{ backgroundImage: `url(${rest.image})` }}>
                                 <span className="rating-badge">⭐ {rest.rating}</span>
                             </div>

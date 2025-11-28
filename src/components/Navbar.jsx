@@ -28,8 +28,15 @@ const Navbar = ({ currentView, setCurrentView, onNewLog }) => {
                 .single();
 
             if (data?.location) {
-                setLocation(data.location);
-                localStorage.setItem('userLocation', data.location);
+                // Handle potential JSON string in profile
+                try {
+                    const parsed = JSON.parse(data.location);
+                    setLocation(parsed);
+                    localStorage.setItem('userLocation', JSON.stringify(parsed));
+                } catch {
+                    setLocation(data.location);
+                    localStorage.setItem('userLocation', data.location);
+                }
             }
         } catch (error) {
             console.error('Error loading location:', error);
@@ -38,7 +45,12 @@ const Navbar = ({ currentView, setCurrentView, onNewLog }) => {
 
     const handleLocationChange = async (newLocation) => {
         setLocation(newLocation);
-        localStorage.setItem('userLocation', newLocation);
+        // Ensure we store stringified JSON
+        const locationString = JSON.stringify(newLocation);
+        localStorage.setItem('userLocation', locationString);
+
+        // Dispatch event for other components
+        window.dispatchEvent(new Event('locationChanged'));
 
         if (user) {
             try {
@@ -46,7 +58,7 @@ const Navbar = ({ currentView, setCurrentView, onNewLog }) => {
                     .from('profiles')
                     .upsert({
                         id: user.id,
-                        location: newLocation,
+                        location: locationString, // Store as JSON string in DB too
                         updated_at: new Date().toISOString(),
                     });
             } catch (error) {
