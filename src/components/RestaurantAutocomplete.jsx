@@ -153,14 +153,16 @@ const RestaurantAutocomplete = ({ onPlaceSelected, defaultValue = '', locationBi
             setShowSuggestions(false);
             // Use stored local data
             const item = suggestion.data;
-            onPlaceSelected({
-                name: item.restaurant_name,
-                location: item.location,
-                place_id: item.place_id,
-                latitude: item.latitude,
-                longitude: item.longitude,
-                address: item.full_address
-            });
+            if (onPlaceSelected) {
+                onPlaceSelected({
+                    name: item.restaurant_name,
+                    location: item.location,
+                    place_id: item.place_id,
+                    latitude: item.latitude,
+                    longitude: item.longitude,
+                    address: item.full_address
+                });
+            }
         } else {
             // Fetch details from Google
             const prediction = suggestion.placePrediction;
@@ -187,31 +189,35 @@ const RestaurantAutocomplete = ({ onPlaceSelected, defaultValue = '', locationBi
                             });
                         }
 
-                        onPlaceSelected({
-                            place_id: place.id,
-                            // Use place.displayName if available, otherwise fall back to the prediction name
-                            name: place.displayName || predictionName,
-                            address: place.formattedAddress,
-                            latitude: place.location.lat(),
-                            longitude: place.location.lng(),
-                            city, state, country,
-                            location: city && state ? `${city}, ${state}` : city || state,
-                            rating: place.rating,
-                            user_ratings_total: place.userRatingCount,
-                            phone: place.internationalPhoneNumber,
-                            website: place.websiteURI
-                        });
+                        if (onPlaceSelected) {
+                            onPlaceSelected({
+                                place_id: place.id,
+                                // Use place.displayName if available, otherwise fall back to the prediction name
+                                name: place.displayName || predictionName,
+                                address: place.formattedAddress,
+                                latitude: place.location.lat(),
+                                longitude: place.location.lng(),
+                                city, state, country,
+                                location: city && state ? `${city}, ${state}` : city || state,
+                                rating: place.rating,
+                                user_ratings_total: place.userRatingCount,
+                                phone: place.internationalPhoneNumber,
+                                website: place.websiteURI
+                            });
+                        }
                     } catch (error) {
                         console.error("Failed to get place details", error);
                         // Fallback if details fetch fails
-                        onPlaceSelected({
-                            place_id: prediction.placeId,
-                            name: predictionName,
-                            address: '',
-                            latitude: null,
-                            longitude: null,
-                            location: ''
-                        });
+                        if (onPlaceSelected) {
+                            onPlaceSelected({
+                                place_id: prediction.placeId,
+                                name: predictionName,
+                                address: '',
+                                latitude: null,
+                                longitude: null,
+                                location: ''
+                            });
+                        }
                     }
                 }
             }

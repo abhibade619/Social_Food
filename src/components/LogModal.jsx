@@ -209,7 +209,7 @@ const LogModal = ({ onClose, onLogCreated }) => {
                             {useAutocomplete ? (
                                 <div className="input-with-action">
                                     <RestaurantAutocomplete
-                                        onSelect={handlePlaceSelected}
+                                        onPlaceSelected={handlePlaceSelected}
                                         defaultValue={formData.restaurant_name}
                                         locationBias={formData.latitude && formData.longitude ? { lat: formData.latitude, lng: formData.longitude } : null}
                                     />
