@@ -170,7 +170,7 @@
   position: absolute;
   top: calc(100% + 0.5rem);
   left: 0;
-  background: var(--bg-card);
+  background: var(--surface-highlight);
   border: 1px solid var(--border-color);
   border-radius: var(--border-radius);
   box-shadow: var(--shadow-lg);
