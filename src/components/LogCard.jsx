@@ -126,6 +126,12 @@ const LogCard = ({ log, onClick, showActions = false, onEdit, onDelete, onViewPr
                     >
                         {log.restaurant_name}
                     </h3>
+                    {log.rating && (
+                        <div className="log-rating-badge">
+                            <span className="rating-star">★</span>
+                            <span className="rating-value">{Number(log.rating).toFixed(1)}</span>
+                        </div>
+                    )}
                 </div>
 
                 {log.content && <p className="log-text">{log.content}</p>}
