@@ -4,7 +4,7 @@ import { useAuth } from '../context/AuthProvider';
 import LogCard from './LogCard';
 import FollowButton from './FollowButton';
 
-const UserProfile = ({ userId, onNavigate, onRestaurantClick }) => {
+const UserProfile = ({ userId, onNavigate, onRestaurantClick, onViewFollowers, onViewFollowing }) => {
     const { user: currentUser } = useAuth();
     const [profile, setProfile] = useState(null);
     const [logs, setLogs] = useState([]);
@@ -128,17 +128,11 @@ const UserProfile = ({ userId, onNavigate, onRestaurantClick }) => {
                             <span className="stat-value">{stats.totalLogs}</span>
                             <span className="stat-label">Logs</span>
                         </div>
-                        <div className="stat-item clickable" onClick={() => {
-                            // For now, this might only work for own profile or need a new view
-                            console.log("View followers clicked");
-                        }}>
+                        <div className="stat-item clickable" onClick={() => onViewFollowers && onViewFollowers(userId)}>
                             <span className="stat-value">{stats.followers}</span>
                             <span className="stat-label">Followers</span>
                         </div>
-                        <div className="stat-item clickable" onClick={() => {
-                            // TODO: Implement viewing other user's following if needed
-                            console.log("View following clicked");
-                        }}>
+                        <div className="stat-item clickable" onClick={() => onViewFollowing && onViewFollowing(userId)}>
                             <span className="stat-value">{stats.following}</span>
                             <span className="stat-label">Following</span>
                         </div>

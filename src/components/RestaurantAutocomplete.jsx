@@ -165,7 +165,9 @@ const RestaurantAutocomplete = ({ onPlaceSelected, defaultValue = '', locationBi
             // Fetch details from Google
             const prediction = suggestion.placePrediction;
             if (prediction) {
-                setInputValue(prediction.text.text);
+                // Use the text from the prediction as the initial name
+                const predictionName = prediction.text.text;
+                setInputValue(predictionName);
                 setShowSuggestions(false);
 
                 if (placesApi && placesApi.Place && prediction.placeId) {
@@ -187,7 +189,8 @@ const RestaurantAutocomplete = ({ onPlaceSelected, defaultValue = '', locationBi
 
                         onPlaceSelected({
                             place_id: place.id,
-                            name: place.displayName,
+                            // Use place.displayName if available, otherwise fall back to the prediction name
+                            name: place.displayName || predictionName,
                             address: place.formattedAddress,
                             latitude: place.location.lat(),
                             longitude: place.location.lng(),
@@ -200,6 +203,15 @@ const RestaurantAutocomplete = ({ onPlaceSelected, defaultValue = '', locationBi
                         });
                     } catch (error) {
                         console.error("Failed to get place details", error);
+                        // Fallback if details fetch fails
+                        onPlaceSelected({
+                            place_id: prediction.placeId,
+                            name: predictionName,
+                            address: '',
+                            latitude: null,
+                            longitude: null,
+                            location: ''
+                        });
                     }
                 }
             }

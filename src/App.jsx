@@ -23,6 +23,7 @@ function App() {
   const [currentView, setCurrentView] = useState('feed');
   const [selectedRestaurant, setSelectedRestaurant] = useState(null);
   const [selectedUser, setSelectedUser] = useState(null);
+  const [listTargetUser, setListTargetUser] = useState(null); // New state for followers/following lists
   const [profileComplete, setProfileComplete] = useState(true);
   const [checkingProfile, setCheckingProfile] = useState(true);
   const [showLogModal, setShowLogModal] = useState(false);
@@ -95,6 +96,16 @@ function App() {
     setCurrentView('userProfile');
   };
 
+  const handleViewFollowers = (userId) => {
+    setListTargetUser(userId);
+    setCurrentView('followers');
+  };
+
+  const handleViewFollowing = (userId) => {
+    setListTargetUser(userId);
+    setCurrentView('following');
+  };
+
   const renderView = () => {
     if (currentView === 'restaurant' && selectedRestaurant) {
       return (
@@ -111,6 +122,8 @@ function App() {
           userId={selectedUser.id}
           onBack={() => setCurrentView('search')}
           onNavigate={handleNavigateToProfile}
+          onViewFollowers={handleViewFollowers}
+          onViewFollowing={handleViewFollowing}
           onRestaurantClick={handleNavigateToRestaurant}
         />
       );
@@ -119,8 +132,8 @@ function App() {
     if (currentView === 'followers') {
       return (
         <FollowersList
-          userId={user.id}
-          onBack={() => setCurrentView('profile')}
+          userId={listTargetUser || user.id}
+          onBack={() => setCurrentView('profile')} // Ideally back to previous view, but profile is safe fallback
           onNavigate={handleNavigateToProfile}
         />
       );
@@ -129,7 +142,7 @@ function App() {
     if (currentView === 'following') {
       return (
         <FollowingList
-          userId={user.id}
+          userId={listTargetUser || user.id}
           onBack={() => setCurrentView('profile')}
           onNavigate={handleNavigateToProfile}
         />
@@ -156,7 +169,11 @@ function App() {
           />
         );
       case 'profile':
-        return <Profile onNavigate={setCurrentView} />;
+        return <Profile
+          onNavigate={setCurrentView}
+          onViewFollowers={handleViewFollowers}
+          onViewFollowing={handleViewFollowing}
+        />;
       case 'wishlist':
         return <Wishlist />;
       case 'diary':
