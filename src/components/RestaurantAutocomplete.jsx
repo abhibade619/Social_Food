@@ -232,7 +232,7 @@ const RestaurantAutocomplete = ({ onPlaceSelected, defaultValue = '', locationBi
                     left: 0,
                     right: 0,
                     zIndex: 1000,
-                    background: 'var(--surface-color)',
+                    background: 'var(--surface-highlight)',
                     border: '1px solid var(--border-color)',
                     borderRadius: '8px',
                     marginTop: '4px',

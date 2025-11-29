@@ -204,7 +204,7 @@ const LogModal = ({ onClose, onLogCreated }) => {
                                     <RestaurantAutocomplete
                                         onPlaceSelected={handlePlaceSelected}
                                         defaultValue={formData.restaurant_name}
-                                        location={formData.location}
+                                        locationBias={formData.latitude && formData.longitude ? { lat: formData.latitude, lng: formData.longitude } : null}
                                     />
                                     <small style={{ color: '#888', fontSize: '0.85rem', marginTop: '4px', display: 'block' }}>
                                         Or <button type="button" onClick={() => setUseAutocomplete(false)} style={{ background: 'none', border: 'none', color: '#007bff', cursor: 'pointer', textDecoration: 'underline', padding: 0 }}>type manually</button>
