@@ -1498,10 +1498,17 @@ input[type="date"] {
   /* Forces browser to use dark theme controls */
 }
 
-/* Fallback for browsers that don't support color-scheme on inputs */
+/* Use a custom white calendar icon to guarantee visibility */
 input[type="date"]::-webkit-calendar-picker-indicator {
-  filter: invert(1) !important;
-  /* Invert black icon to white */
-  opacity: 0.8;
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="15" viewBox="0 0 24 24"><path fill="%23ffffff" d="M20 3h-1V1h-2v2H7V1H5v2H4c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 18H4V8h16v13z"/></svg>') !important;
+  background-repeat: no-repeat;
+  background-position: center;
   cursor: pointer;
+  opacity: 0.8;
+  filter: none !important;
+  /* Remove any previous filters */
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator:hover {
+  opacity: 1;
 }

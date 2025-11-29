@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { supabase } from '../supabaseClient';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthProvider';
+import { calculateOverallRating } from '../utils/calculateRating';
 
 const LogCard = ({ log, onClick, showActions = false, onEdit, onDelete, onViewProfile, onAddToWishlist, onRestaurantClick }) => {
     const { user } = useAuth();
@@ -9,6 +10,10 @@ const LogCard = ({ log, onClick, showActions = false, onEdit, onDelete, onViewPr
     const [taggedUsers, setTaggedUsers] = useState([]);
     const [loading, setLoading] = useState(true);
     const [showMenu, setShowMenu] = useState(false);
+
+    // Calculate rating if not present
+    const displayRating = log.rating || calculateOverallRating(log);
+    const hasRating = displayRating && parseFloat(displayRating) > 0;
 
     useEffect(() => {
         fetchUserProfile();
@@ -126,10 +131,10 @@ const LogCard = ({ log, onClick, showActions = false, onEdit, onDelete, onViewPr
                     >
                         {log.restaurant_name}
                     </h3>
-                    {log.rating && (
+                    {hasRating && (
                         <div className="log-rating-badge">
                             <span className="rating-star">★</span>
-                            <span className="rating-value">{Number(log.rating).toFixed(1)}</span>
+                            <span className="rating-value">{Number(displayRating).toFixed(1)}</span>
                         </div>
                     )}
                 </div>
