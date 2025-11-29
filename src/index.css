@@ -1306,6 +1306,7 @@ label {
   background: rgba(239, 68, 68, 0.1);
   color: #ef4444;
 }
+
 /* Profile Styles */
 .user-profile-container {
   max-width: 800px;
@@ -1315,7 +1316,8 @@ label {
 
 .profile-header {
   position: relative;
-  margin-bottom: 60px; /* Space for avatar overlap */
+  margin-bottom: 60px;
+  /* Space for avatar overlap */
 }
 
 .profile-cover {
@@ -1334,7 +1336,8 @@ label {
 .profile-info-section {
   position: relative;
   padding: 0 24px;
-  margin-top: -60px; /* Overlap cover */
+  margin-top: -60px;
+  /* Overlap cover */
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -1345,10 +1348,12 @@ label {
   height: 120px;
   border-radius: 50%;
   padding: 4px;
-  background: var(--bg-color); /* Match background to create border effect */
-  box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+  background: var(--bg-color);
+  /* Match background to create border effect */
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
   z-index: 10;
-  overflow: hidden; /* Ensure image stays in circle */
+  overflow: hidden;
+  /* Ensure image stays in circle */
 }
 
 .profile-avatar-large {
@@ -1458,3 +1463,45 @@ label {
   margin-bottom: 8px;
 }
 
+
+/* =========================================
+   CRITICAL UI FIXES - DO NOT REMOVE
+   ========================================= */
+
+/* Fix for white dropdowns in dark mode */
+select {
+  background-color: var(--surface-color) !important;
+  color: var(--text-primary) !important;
+  border: 1px solid var(--border-color) !important;
+  appearance: none;
+  /* Remove default arrow to style consistently if needed, but keeping simple for now */
+  background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23ECEFF4%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
+  background-repeat: no-repeat;
+  background-position: right .7em top 50%;
+  background-size: .65em auto;
+  padding-right: 2.5em;
+  /* Space for custom arrow */
+}
+
+select option {
+  background-color: var(--surface-color) !important;
+  color: var(--text-primary) !important;
+  padding: 10px;
+}
+
+/* Fix for invisible date picker icon */
+input[type="date"] {
+  background-color: var(--surface-color) !important;
+  color: var(--text-primary) !important;
+  border: 1px solid var(--border-color) !important;
+  color-scheme: dark !important;
+  /* Forces browser to use dark theme controls */
+}
+
+/* Fallback for browsers that don't support color-scheme on inputs */
+input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(1) !important;
+  /* Invert black icon to white */
+  opacity: 0.8;
+  cursor: pointer;
+}
