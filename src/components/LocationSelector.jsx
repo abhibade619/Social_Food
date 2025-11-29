@@ -169,7 +169,7 @@ const LocationSelector = ({ currentLocation, onLocationChange }) => {
                                         key={city}
                                         className="suggestion-item"
                                         onClick={() => {
-                                            onLocationChange(city);
+                                            onLocationChange({ name: city, lat: null, lng: null });
                                             setIsOpen(false);
                                         }}
                                     >

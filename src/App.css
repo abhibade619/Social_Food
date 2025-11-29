@@ -2253,3 +2253,212 @@
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
+/* Compact Log Modal Styles */
+.compact-modal {
+  max-width: 700px;
+  padding: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  max-height: 95vh;
+}
+
+.compact-form {
+  padding: var(--spacing-md);
+  overflow-y: auto;
+  flex: 1;
+}
+
+.form-row {
+  display: flex;
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-sm);
+  align-items: flex-start;
+}
+
+.form-group {
+  margin-bottom: 0;
+  flex: 1;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 4px;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  width: 100%;
+  padding: 8px 12px;
+  font-size: 0.9rem;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-sm);
+  color: var(--text-primary);
+}
+
+.input-with-action {
+  display: flex;
+  gap: 8px;
+}
+
+.input-with-action input,
+.input-with-action .restaurant-autocomplete {
+  flex: 1;
+}
+
+.text-action-btn {
+  background: none;
+  border: none;
+  color: var(--primary-color);
+  font-size: 0.8rem;
+  cursor: pointer;
+  white-space: nowrap;
+  padding: 0 4px;
+}
+
+.checkbox-group-compact {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-top: 24px;
+  /* Align with inputs */
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.compact-section {
+  background: var(--bg-tertiary);
+  padding: 12px;
+  border-radius: var(--border-radius-sm);
+  margin-bottom: var(--spacing-sm);
+}
+
+.section-title-compact {
+  font-size: 0.9rem;
+  margin: 0 0 8px 0;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.ratings-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  gap: 12px;
+}
+
+.rating-item label {
+  font-size: 0.8rem;
+  margin-bottom: 2px;
+  display: block;
+}
+
+.rating-item select {
+  padding: 4px 8px;
+}
+
+.compact-actions-row {
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.compact-upload label {
+  margin: 0;
+  font-size: 0.85rem;
+  padding: 6px 12px;
+}
+
+.compact-tags {
+  flex: 2;
+}
+
+.compact-input {
+  padding: 6px 12px !important;
+}
+
+.compact-previews {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 12px;
+  padding: 8px;
+  background: var(--bg-tertiary);
+  border-radius: var(--border-radius-sm);
+}
+
+.mini-preview {
+  position: relative;
+  width: 40px;
+  height: 40px;
+}
+
+.mini-preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 4px;
+}
+
+.mini-preview button,
+.mini-tag button {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  width: 16px;
+  height: 16px;
+  background: red;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  font-size: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.mini-tag {
+  position: relative;
+  background: var(--primary-color);
+  color: white;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  display: flex;
+  align-items: center;
+}
+
+.compact-results {
+  max-height: 100px;
+  overflow-y: auto;
+  margin-bottom: 12px;
+}
+
+.compact-error {
+  font-size: 0.85rem;
+  padding: 8px;
+  margin-bottom: 12px;
+}
+
+.compact-footer {
+  padding: 12px var(--spacing-md);
+  background: var(--bg-card);
+  border-top: 1px solid var(--border-color);
+  margin-top: 0;
+}
+
+.btn-sm {
+  padding: 6px 12px;
+  font-size: 0.85rem;
+}

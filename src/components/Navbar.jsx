@@ -11,7 +11,13 @@ const Navbar = ({ currentView, setCurrentView, onNewLog }) => {
     useEffect(() => {
         const savedLocation = localStorage.getItem('userLocation');
         if (savedLocation) {
-            setLocation(savedLocation);
+            try {
+                const parsed = JSON.parse(savedLocation);
+                setLocation(parsed);
+            } catch {
+                // Handle legacy plain string in local storage
+                setLocation({ name: savedLocation, lat: null, lng: null });
+            }
         } else {
             loadLocationFromProfile();
         }
@@ -28,14 +34,17 @@ const Navbar = ({ currentView, setCurrentView, onNewLog }) => {
                 .single();
 
             if (data?.location) {
-                // Handle potential JSON string in profile
                 try {
+                    // Try to parse if it's a JSON string
                     const parsed = JSON.parse(data.location);
                     setLocation(parsed);
                     localStorage.setItem('userLocation', JSON.stringify(parsed));
                 } catch {
-                    setLocation(data.location);
-                    localStorage.setItem('userLocation', data.location);
+                    // If parse fails, it's likely a plain string (legacy)
+                    // Convert to object structure
+                    const locationObj = { name: data.location, lat: null, lng: null };
+                    setLocation(locationObj);
+                    localStorage.setItem('userLocation', JSON.stringify(locationObj));
                 }
             }
         } catch (error) {
