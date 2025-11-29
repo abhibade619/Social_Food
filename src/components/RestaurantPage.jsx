@@ -4,23 +4,19 @@ import MapComponent from './MapComponent';
 import LogCard from './LogCard';
 
 const RestaurantPage = ({ restaurant, onBack }) => {
-    const [logs, setLogs] = useState([]); // Keep this for future review tab implementation
-    const [loading, setLoading] = useState(true); // Keep this for future review tab implementation
-    const [activeTab, setActiveTab] = useState('overview');
+    const [logs, setLogs] = useState([]);
+    const [loading, setLoading] = useState(true);
 
     // Parse coordinates if they exist
     const getCoordinates = () => {
         if (restaurant.latitude && restaurant.longitude) {
             return { lat: parseFloat(restaurant.latitude), lng: parseFloat(restaurant.longitude) };
         }
-        // Default to a central location if no coords (e.g. New York) or handle gracefully
-        // For now, let's return null and handle it in the UI
         return null;
     };
 
     const coordinates = getCoordinates();
 
-    // Keep fetchRestaurantLogs and useEffect for future review tab implementation
     useEffect(() => {
         fetchRestaurantLogs();
     }, [restaurant]);
@@ -50,106 +46,79 @@ const RestaurantPage = ({ restaurant, onBack }) => {
         }
     };
 
-    // calculateAverageRating and avgRating are no longer used in the current JSX structure
-    // but can be kept if the reviews tab will display average rating.
-    const calculateAverageRating = () => {
-        if (logs.length === 0) return null;
-
-        const ratings = logs
-            .map((log) => parseInt(log.rating_food))
-            .filter((rating) => !isNaN(rating));
-
-        if (ratings.length === 0) return null;
-
-        const avg = ratings.reduce((sum, rating) => sum + rating, 0) / ratings.length;
-        return avg.toFixed(1);
-    };
-
-    const avgRating = calculateAverageRating();
-
     return (
-        <div className="restaurant-page">
-            <div className="restaurant-header">
-                <button onClick={onBack} className="back-button">← Back</button>
-                <div className="restaurant-title-section">
-                    <h1>{restaurant.name}</h1>
-                    <div className="restaurant-meta">
-                        <span className="rating">⭐ {restaurant.rating || 'N/A'}</span>
-                        <span className="price">{restaurant.price_level ? '$'.repeat(restaurant.price_level) : '$$'}</span>
-                        <span className="cuisine">{restaurant.cuisine || 'Restaurant'}</span>
+        <div className="restaurant-page container">
+            <div className="restaurant-header-premium">
+                <button onClick={onBack} className="back-button-premium">← Back</button>
+                <div className="restaurant-hero">
+                    <h1 className="restaurant-title-large">{restaurant.name || 'Restaurant Details'}</h1>
+                    <div className="restaurant-badges">
+                        {restaurant.rating && <span className="badge-rating">⭐ {restaurant.rating}</span>}
+                        {restaurant.price_level && <span className="badge-price">{'$'.repeat(restaurant.price_level)}</span>}
+                        <span className="badge-cuisine">{restaurant.cuisine || 'Restaurant'}</span>
                     </div>
                 </div>
             </div>
 
-            <div className="restaurant-content">
-                <div className="restaurant-tabs">
-                    <button
-                        className={`tab-button ${activeTab === 'overview' ? 'active' : ''}`}
-                        onClick={() => setActiveTab('overview')}
-                    >
-                        Overview
-                    </button>
-                    <button
-                        className={`tab-button ${activeTab === 'reviews' ? 'active' : ''}`}
-                        onClick={() => setActiveTab('reviews')}
-                    >
-                        Reviews
-                    </button>
-                    <button
-                        className={`tab-button ${activeTab === 'photos' ? 'active' : ''}`}
-                        onClick={() => setActiveTab('photos')}
-                    >
-                        Photos
-                    </button>
+            <div className="restaurant-grid-layout">
+                {/* Left Column: Info & Map */}
+                <div className="restaurant-info-column">
+                    <div className="glass-panel info-card-premium">
+                        <h3>Location & Contact</h3>
+                        <div className="info-item">
+                            <span className="info-icon">📍</span>
+                            <p>{restaurant.location || restaurant.address || 'Address not available'}</p>
+                        </div>
+                        {restaurant.phone && (
+                            <div className="info-item">
+                                <span className="info-icon">📞</span>
+                                <p>{restaurant.phone}</p>
+                            </div>
+                        )}
+                        {restaurant.website && (
+                            <div className="info-item">
+                                <span className="info-icon">🌐</span>
+                                <a href={restaurant.website} target="_blank" rel="noopener noreferrer" className="website-link">Visit Website</a>
+                            </div>
+                        )}
+
+                        {coordinates && (
+                            <div className="map-wrapper-premium">
+                                <MapComponent
+                                    center={coordinates}
+                                    markers={[{ position: coordinates, title: restaurant.name }]}
+                                />
+                            </div>
+                        )}
+                    </div>
+
+                    {restaurant.description && (
+                        <div className="glass-panel info-card-premium">
+                            <h3>About</h3>
+                            <p className="description-text">{restaurant.description}</p>
+                        </div>
+                    )}
                 </div>
 
-                <div className="tab-content">
-                    {activeTab === 'overview' && (
-                        <div className="overview-section">
-                            <div className="info-card">
-                                <h3>Location & Contact</h3>
-                                <p>📍 {restaurant.location || restaurant.address || 'Address not available'}</p>
-                                {restaurant.phone && <p>📞 {restaurant.phone}</p>}
-                                {restaurant.website && (
-                                    <p>🌐 <a href={restaurant.website} target="_blank" rel="noopener noreferrer">Website</a></p>
-                                )}
-
-                                {coordinates && (
-                                    <div className="map-container" style={{ marginTop: '20px', height: '300px' }}>
-                                        <MapComponent
-                                            center={coordinates}
-                                            markers={[{ position: coordinates, title: restaurant.name }]}
-                                        />
-                                    </div>
-                                )}
-                            </div>
-
-                            <div className="info-card">
-                                <h3>About</h3>
-                                <p>{restaurant.description || 'No description available.'}</p>
-                            </div>
+                {/* Right Column: Logs/Reviews */}
+                <div className="restaurant-logs-column">
+                    <h2 className="section-title-premium">Community Logs</h2>
+                    {loading ? (
+                        <div className="loading-container">
+                            <div className="loading-spinner"></div>
+                            <p>Loading reviews...</p>
                         </div>
-                    )}
-
-                    {activeTab === 'reviews' && (
-                        <div className="reviews-section">
-                            {loading && <p className="loading">Loading reviews...</p>}
-                            {!loading && logs.length > 0 && (
-                                <div className="logs-grid">
-                                    {logs.map((log) => (
-                                        <LogCard key={log.id} log={log} />
-                                    ))}
-                                </div>
-                            )}
-                            {!loading && logs.length === 0 && (
-                                <p className="no-logs">No reviews yet. Be the first to review!</p>
-                            )}
+                    ) : logs.length > 0 ? (
+                        <div className="logs-stack">
+                            {logs.map((log) => (
+                                <LogCard key={log.id} log={log} />
+                            ))}
                         </div>
-                    )}
-
-                    {activeTab === 'photos' && (
-                        <div className="photos-section">
-                            <p>Photos coming soon...</p>
+                    ) : (
+                        <div className="empty-logs-state glass-panel">
+                            <span className="empty-icon">📝</span>
+                            <h3>No logs yet</h3>
+                            <p>Be the first to log a visit here!</p>
                         </div>
                     )}
                 </div>
