@@ -126,16 +126,6 @@ const LogCard = ({ log, onClick, showActions = false, onEdit, onDelete, onViewPr
                     >
                         {log.restaurant_name}
                     </h3>
-                    <div className="log-rating-badge">
-                        <span className="star-icon">★</span>
-                        <span className="rating-value">{log.rating}</span>
-                    </div>
-                </div>
-
-                <div className="log-meta">
-                    {log.cuisine && <span className="meta-tag cuisine-tag">{log.cuisine}</span>}
-                    {log.location && <span className="meta-tag location-tag">📍 {log.location}</span>}
-                    {log.is_first_time && <span className="meta-tag first-visit-tag">✨ First Visit</span>}
                 </div>
 
                 {log.content && <p className="log-text">{log.content}</p>}

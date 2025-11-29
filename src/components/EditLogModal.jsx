@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { supabase } from '../supabaseClient';
 import { useAuth } from '../context/AuthProvider';
 import { cuisineTypes, visitTypes, ratingOptions, returnIntentOptions } from '../data/restaurants';
+import { calculateOverallRating } from '../utils/calculateRating';
 
 const EditLogModal = ({ log, onClose, onLogUpdated }) => {
     const { user } = useAuth();
@@ -96,10 +97,13 @@ const EditLogModal = ({ log, onClose, onLogUpdated }) => {
         setError('');
 
         try {
+            const calculatedRating = calculateOverallRating(formData);
+
             const { data, error } = await supabase
                 .from('logs')
                 .update({
                     ...formData,
+                    rating: calculatedRating,
                     updated_at: new Date().toISOString()
                 })
                 .eq('id', log.id)
@@ -133,6 +137,8 @@ const EditLogModal = ({ log, onClose, onLogUpdated }) => {
     };
 
     const isDineIn = formData.visit_type === 'Dine-in';
+    const isTakeout = formData.visit_type === 'Takeout';
+    const isDelivery = formData.visit_type === 'Delivery';
 
     return (
         <div className="modal-overlay" onClick={onClose}>
@@ -226,21 +232,6 @@ const EditLogModal = ({ log, onClose, onLogUpdated }) => {
                         <h3>Ratings</h3>
                         <div className="form-row">
                             <div className="form-group">
-                                <label htmlFor="rating">Overall Rating *</label>
-                                <select
-                                    id="rating"
-                                    name="rating"
-                                    value={formData.rating}
-                                    onChange={handleChange}
-                                    required
-                                >
-                                    <option value="">Select</option>
-                                    {ratingOptions.map((rating) => (
-                                        <option key={rating} value={rating}>{rating}</option>
-                                    ))}
-                                </select>
-                            </div>
-                            <div className="form-group">
                                 <label htmlFor="rating_food">Food</label>
                                 <select
                                     id="rating_food"
@@ -286,57 +277,57 @@ const EditLogModal = ({ log, onClose, onLogUpdated }) => {
                                             ))}
                                         </select>
                                     </div>
-
-                                    <div className="form-group">
-                                        <label htmlFor="rating_value">Value</label>
-                                        <select
-                                            id="rating_value"
-                                            name="rating_value"
-                                            value={formData.rating_value}
-                                            onChange={handleChange}
-                                        >
-                                            <option value="">-</option>
-                                            {ratingOptions.map((rating) => (
-                                                <option key={rating} value={rating}>{rating}</option>
-                                            ))}
-                                        </select>
-                                    </div>
                                 </>
                             )}
 
-                            {!isDineIn && (
-                                <>
-                                    <div className="form-group">
-                                        <label htmlFor="rating_packaging">Packaging</label>
-                                        <select
-                                            id="rating_packaging"
-                                            name="rating_packaging"
-                                            value={formData.rating_packaging}
-                                            onChange={handleChange}
-                                        >
-                                            <option value="">-</option>
-                                            {ratingOptions.map((rating) => (
-                                                <option key={rating} value={rating}>{rating}</option>
-                                            ))}
-                                        </select>
-                                    </div>
-
-                                    <div className="form-group">
-                                        <label htmlFor="rating_store_service">Store Service</label>
-                                        <select
-                                            id="rating_store_service"
-                                            name="rating_store_service"
-                                            value={formData.rating_store_service}
-                                            onChange={handleChange}
-                                        >
-                                            <option value="">-</option>
-                                            {ratingOptions.map((rating) => (
-                                                <option key={rating} value={rating}>{rating}</option>
-                                            ))}
-                                        </select>
-                                    </div>
-                                </>
+                            {(isTakeout || isDelivery) && (
+                                <div className="form-group">
+                                    <label htmlFor="rating_packaging">Packaging</label>
+                                    <select
+                                        id="rating_packaging"
+                                        name="rating_packaging"
+                                        value={formData.rating_packaging}
+                                        onChange={handleChange}
+                                    >
+                                        <option value="">-</option>
+                                        {ratingOptions.map((rating) => (
+                                            <option key={rating} value={rating}>{rating}</option>
+                                        ))}
+                                    </select>
+                                </div>
                             )}
+
+                            {isTakeout && (
+                                <div className="form-group">
+                                    <label htmlFor="rating_store_service">Store Service</label>
+                                    <select
+                                        id="rating_store_service"
+                                        name="rating_store_service"
+                                        value={formData.rating_store_service}
+                                        onChange={handleChange}
+                                    >
+                                        <option value="">-</option>
+                                        {ratingOptions.map((rating) => (
+                                            <option key={rating} value={rating}>{rating}</option>
+                                        ))}
+                                    </select>
+                                </div>
+                            )}
+
+                            <div className="form-group">
+                                <label htmlFor="rating_value">Value</label>
+                                <select
+                                    id="rating_value"
+                                    name="rating_value"
+                                    value={formData.rating_value}
+                                    onChange={handleChange}
+                                >
+                                    <option value="">-</option>
+                                    {ratingOptions.map((rating) => (
+                                        <option key={rating} value={rating}>{rating}</option>
+                                    ))}
+                                </select>
+                            </div>
                         </div>
                     </div>
 
@@ -433,8 +424,8 @@ const EditLogModal = ({ log, onClose, onLogUpdated }) => {
                         </button>
                     </div>
                 </form>
-            </div >
-        </div >
+            </div>
+        </div>
     );
 };
 

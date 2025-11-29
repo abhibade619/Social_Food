@@ -130,134 +130,128 @@ const LogModal = ({ onClose, onLogCreated }) => {
                 .from('log-photos')
                 .getPublicUrl(fileName);
 
-            photoUrls.push(publicUrl);
-        }
 
-        return photoUrls;
-    };
+            try {
+                // Upload photos if any
+                let photoUrls = [];
+                if (photos.length > 0) {
+                    photoUrls = await uploadPhotos();
+                }
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        setLoading(true);
-        setError('');
+                const calculatedRating = calculateOverallRating();
 
-        try {
-            // Upload photos if any
-            let photoUrls = [];
-            if (photos.length > 0) {
-                photoUrls = await uploadPhotos();
+                const logData = {
+                    ...formData,
+                    rating: calculatedRating,
+                    user_id: user.id,
+                    photos: photoUrls,
+                };
+
+                const { data: logResult, error: logError } = await supabase
+                    .from('logs')
+                    .insert([logData])
+                    .select()
+                    .single();
+
+                if (logError) throw logError;
+
+                // Tag friends if any
+                if (taggedFriends.length > 0) {
+                    const tagData = taggedFriends.map(friend => ({
+                        log_id: logResult.id,
+                        user_id: friend.id
+                    }));
+
+                    const { error: tagError } = await supabase
+                        .from('tagged_users')
+                        .insert(tagData);
+
+                    if (tagError) console.error('Error tagging users:', tagError);
+                }
+
+                onLogCreated(logResult);
+            } catch (err) {
+                setError(err.message);
+                console.error('Error creating log:', err);
+            } finally {
+                setLoading(false);
             }
+        };
 
-            const logData = {
-                ...formData,
-                user_id: user.id,
-                photos: photoUrls,
-            };
+        const isDineIn = formData.visit_type === 'Dine-in';
+        const isTakeout = formData.visit_type === 'Takeout';
+        const isDelivery = formData.visit_type === 'Delivery';
 
-            const { data: logResult, error: logError } = await supabase
-                .from('logs')
-                .insert([logData])
-                .select()
-                .single();
-
-            if (logError) throw logError;
-
-            // Tag friends if any
-            if (taggedFriends.length > 0) {
-                const tagData = taggedFriends.map(friend => ({
-                    log_id: logResult.id,
-                    user_id: friend.id
-                }));
-
-                const { error: tagError } = await supabase
-                    .from('tagged_users')
-                    .insert(tagData);
-
-                if (tagError) console.error('Error tagging users:', tagError);
-            }
-
-            onLogCreated(logResult);
-        } catch (err) {
-            setError(err.message);
-            console.error('Error creating log:', err);
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    const isDineIn = formData.visit_type === 'Dine-in';
-
-    return (
-        <div className="modal-overlay" onClick={onClose}>
-            <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-                <div className="modal-header">
-                    <h2>Create New Log</h2>
-                    <button className="close-button" onClick={onClose}>×</button>
-                </div>
-
-                <form onSubmit={handleSubmit} className="log-form">
-                    <div className="form-row">
-                        <div className="form-group">
-                            <label htmlFor="restaurant_name">Restaurant Name *</label>
-                            {useAutocomplete ? (
-                                <>
-                                    <RestaurantAutocomplete
-                                        onPlaceSelected={handlePlaceSelected}
-                                        defaultValue={formData.restaurant_name}
-                                        locationBias={formData.latitude && formData.longitude ? { lat: formData.latitude, lng: formData.longitude } : null}
-                                    />
-                                    <small style={{ color: '#888', fontSize: '0.85rem', marginTop: '4px', display: 'block' }}>
-                                        Or <button type="button" onClick={() => setUseAutocomplete(false)} style={{ background: 'none', border: 'none', color: '#007bff', cursor: 'pointer', textDecoration: 'underline', padding: 0 }}>type manually</button>
-                                    </small>
-                                </>
-                            ) : (
-                                <>
-                                    <input
-                                        id="restaurant_name"
-                                        name="restaurant_name"
-                                        type="text"
-                                        value={formData.restaurant_name}
-                                        onChange={handleChange}
-                                        required
-                                        placeholder="e.g., Joe's Pizza"
-                                    />
-                                    <small style={{ color: '#888', fontSize: '0.85rem', marginTop: '4px', display: 'block' }}>
-                                        Or <button type="button" onClick={() => setUseAutocomplete(true)} style={{ background: 'none', border: 'none', color: '#007bff', cursor: 'pointer', textDecoration: 'underline', padding: 0 }}>search with Google Places</button>
-                                    </small>
-                                </>
-                            )}
-                        </div>
-
-                        <div className="form-group">
-                            <label htmlFor="location">Location</label>
-                            <input
-                                id="location"
-                                name="location"
-                                type="text"
-                                value={formData.location}
-                                onChange={handleChange}
-                                placeholder="e.g., Boston, MA"
-                            />
-                        </div>
+        return (
+            <div className="modal-overlay" onClick={onClose}>
+                <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+                    <div className="modal-header">
+                        <h2>Create New Log</h2>
+                        <button className="close-button" onClick={onClose}>×</button>
                     </div>
 
-                    <div className="form-row">
-                        <div className="form-group">
-                            <label htmlFor="cuisine">Cuisine</label>
-                            <select
-                                id="cuisine"
-                                name="cuisine"
-                                value={formData.cuisine}
-                                onChange={handleChange}
-                            >
-                                <option value="">Select cuisine</option>
-                                {cuisineTypes.map((type) => (
-                                    <option key={type} value={type}>{type}</option>
-                                ))}
-                            </select>
+                    <form onSubmit={handleSubmit} className="log-form">
+                        <div className="form-row">
+                            <div className="form-group">
+                                <label htmlFor="restaurant_name">Restaurant Name *</label>
+                                {useAutocomplete ? (
+                                    <>
+                                        <RestaurantAutocomplete
+                                            onSelect={handlePlaceSelected}
+                                            defaultValue={formData.restaurant_name}
+                                            locationBias={formData.latitude && formData.longitude ? { lat: formData.latitude, lng: formData.longitude } : null}
+                                        />
+                                        <small style={{ color: '#888', fontSize: '0.85rem', marginTop: '4px', display: 'block' }}>
+                                            Or <button type="button" onClick={() => setUseAutocomplete(false)} style={{ background: 'none', border: 'none', color: '#007bff', cursor: 'pointer', textDecoration: 'underline', padding: 0 }}>type manually</button>
+                                        </small>
+                                    </>
+                                ) : (
+                                    <>
+                                        <input
+                                            id="restaurant_name"
+                                            name="restaurant_name"
+                                            type="text"
+                                            value={formData.restaurant_name}
+                                            onChange={handleChange}
+                                            required
+                                            placeholder="e.g., Joe's Pizza"
+                                        />
+                                        <small style={{ color: '#888', fontSize: '0.85rem', marginTop: '4px', display: 'block' }}>
+                                            Or <button type="button" onClick={() => setUseAutocomplete(true)} style={{ background: 'none', border: 'none', color: '#007bff', cursor: 'pointer', textDecoration: 'underline', padding: 0 }}>search with Google Places</button>
+                                        </small>
+                                    </>
+                                )}
+                            </div>
+
+                            <div className="form-group">
+                                <label htmlFor="location">Location</label>
+                                <input
+                                    id="location"
+                                    name="location"
+                                    type="text"
+                                    value={formData.location}
+                                    onChange={handleChange}
+                                    placeholder="e.g., Boston, MA"
+                                />
+                            </div>
                         </div>
 
                         <div className="form-row">
+                            <div className="form-group">
+                                <label htmlFor="cuisine">Cuisine</label>
+                                <select
+                                    id="cuisine"
+                                    name="cuisine"
+                                    value={formData.cuisine}
+                                    onChange={handleChange}
+                                >
+                                    <option value="">Select cuisine</option>
+                                    {cuisineTypes.map((type) => (
+                                        <option key={type} value={type}>{type}</option>
+                                    ))}
+                                </select>
+                            </div>
+
                             <div className="form-group">
                                 <label htmlFor="visit_type">Visit Type *</label>
                                 <select
@@ -284,7 +278,6 @@ const LogModal = ({ onClose, onLogCreated }) => {
                                 />
                             </div>
                         </div>
-
                         <div className="form-group checkbox-group">
                             <label className="checkbox-label">
                                 <input
@@ -300,22 +293,6 @@ const LogModal = ({ onClose, onLogCreated }) => {
                         <div className="form-section">
                             <h3>Ratings</h3>
                             <div className="form-row">
-                                <div className="form-group">
-                                    <label htmlFor="rating">Overall Rating *</label>
-                                    <select
-                                        id="rating"
-                                        name="rating"
-                                        value={formData.rating}
-                                        onChange={handleChange}
-                                        required
-                                    >
-                                        <option value="">Select</option>
-                                        {ratingOptions.map((rating) => (
-                                            <option key={rating} value={rating}>{rating}</option>
-                                        ))}
-                                    </select>
-                                </div>
-
                                 <div className="form-group">
                                     <label htmlFor="rating_food">Food</label>
                                     <select
@@ -362,57 +339,57 @@ const LogModal = ({ onClose, onLogCreated }) => {
                                                 ))}
                                             </select>
                                         </div>
-
-                                        <div className="form-group">
-                                            <label htmlFor="rating_value">Value</label>
-                                            <select
-                                                id="rating_value"
-                                                name="rating_value"
-                                                value={formData.rating_value}
-                                                onChange={handleChange}
-                                            >
-                                                <option value="">-</option>
-                                                {ratingOptions.map((rating) => (
-                                                    <option key={rating} value={rating}>{rating}</option>
-                                                ))}
-                                            </select>
-                                        </div>
                                     </>
                                 )}
 
-                                {!isDineIn && (
-                                    <>
-                                        <div className="form-group">
-                                            <label htmlFor="rating_packaging">Packaging</label>
-                                            <select
-                                                id="rating_packaging"
-                                                name="rating_packaging"
-                                                value={formData.rating_packaging}
-                                                onChange={handleChange}
-                                            >
-                                                <option value="">-</option>
-                                                {ratingOptions.map((rating) => (
-                                                    <option key={rating} value={rating}>{rating}</option>
-                                                ))}
-                                            </select>
-                                        </div>
-
-                                        <div className="form-group">
-                                            <label htmlFor="rating_store_service">Store Service</label>
-                                            <select
-                                                id="rating_store_service"
-                                                name="rating_store_service"
-                                                value={formData.rating_store_service}
-                                                onChange={handleChange}
-                                            >
-                                                <option value="">-</option>
-                                                {ratingOptions.map((rating) => (
-                                                    <option key={rating} value={rating}>{rating}</option>
-                                                ))}
-                                            </select>
-                                        </div>
-                                    </>
+                                {(isTakeout || isDelivery) && (
+                                    <div className="form-group">
+                                        <label htmlFor="rating_packaging">Packaging</label>
+                                        <select
+                                            id="rating_packaging"
+                                            name="rating_packaging"
+                                            value={formData.rating_packaging}
+                                            onChange={handleChange}
+                                        >
+                                            <option value="">-</option>
+                                            {ratingOptions.map((rating) => (
+                                                <option key={rating} value={rating}>{rating}</option>
+                                            ))}
+                                        </select>
+                                    </div>
                                 )}
+
+                                {isTakeout && (
+                                    <div className="form-group">
+                                        <label htmlFor="rating_store_service">Store Service</label>
+                                        <select
+                                            id="rating_store_service"
+                                            name="rating_store_service"
+                                            value={formData.rating_store_service}
+                                            onChange={handleChange}
+                                        >
+                                            <option value="">-</option>
+                                            {ratingOptions.map((rating) => (
+                                                <option key={rating} value={rating}>{rating}</option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                )}
+
+                                <div className="form-group">
+                                    <label htmlFor="rating_value">Value</label>
+                                    <select
+                                        id="rating_value"
+                                        name="rating_value"
+                                        value={formData.rating_value}
+                                        onChange={handleChange}
+                                    >
+                                        <option value="">-</option>
+                                        {ratingOptions.map((rating) => (
+                                            <option key={rating} value={rating}>{rating}</option>
+                                        ))}
+                                    </select>
+                                </div>
                             </div>
                         </div>
 
@@ -541,11 +518,10 @@ const LogModal = ({ onClose, onLogCreated }) => {
                                 {loading ? 'Creating...' : 'Create Log'}
                             </button>
                         </div>
-                    </div>
-                </form>
+                    </form>
+                </div>
             </div>
-        </div>
-    );
-};
+        );
+    };
 
-export default LogModal;
+    export default LogModal;

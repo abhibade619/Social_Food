@@ -40,6 +40,7 @@ CREATE TABLE logs (
     visit_date DATE NOT NULL DEFAULT CURRENT_DATE,
     
     -- Ratings (all optional, can be empty strings or numbers)
+    rating DECIMAL(3, 1),
     rating_food TEXT,
     rating_service TEXT,
     rating_ambience TEXT,
