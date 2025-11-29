@@ -52,6 +52,7 @@ CREATE TABLE logs (
     
     -- Experience/Review
     content TEXT,
+    is_first_time BOOLEAN DEFAULT FALSE,
     
     -- Photos (array of URLs)
     photos JSONB DEFAULT '[]',

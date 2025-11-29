@@ -10,7 +10,7 @@ const EditLogModal = ({ log, onClose, onLogUpdated }) => {
         location: log.location || '',
         cuisine: log.cuisine || '',
         visit_type: log.visit_type || 'Dine-in',
-        is_first_visit: log.is_first_visit || false,
+        is_first_time: log.is_first_time || false,
         rating: log.rating || '',
         rating_food: log.rating_food || '',
         rating_service: log.rating_service || '',
@@ -210,14 +210,13 @@ const EditLogModal = ({ log, onClose, onLogUpdated }) => {
                             />
                         </div>
                     </div>
-
                     <div className="form-group checkbox-group">
                         <label className="checkbox-label">
                             <input
                                 type="checkbox"
-                                name="is_first_visit"
-                                checked={formData.is_first_visit}
-                                onChange={handleChange}
+                                name="is_first_time"
+                                checked={formData.is_first_time}
+                                onChange={(e) => setFormData(prev => ({ ...prev, is_first_time: e.target.checked }))}
                             />
                             First time visiting?
                         </label>
@@ -434,8 +433,8 @@ const EditLogModal = ({ log, onClose, onLogUpdated }) => {
                         </button>
                     </div>
                 </form>
-            </div>
-        </div>
+            </div >
+        </div >
     );
 };
 

@@ -11,7 +11,7 @@ const LogModal = ({ onClose, onLogCreated }) => {
         location: '',
         cuisine: '',
         visit_type: 'Dine-in',
-        is_first_visit: false,
+        is_first_time: false,
         rating: '',
         rating_food: '',
         rating_service: '',
@@ -289,9 +289,9 @@ const LogModal = ({ onClose, onLogCreated }) => {
                             <label className="checkbox-label">
                                 <input
                                     type="checkbox"
-                                    name="is_first_visit"
-                                    checked={formData.is_first_visit}
-                                    onChange={(e) => setFormData(prev => ({ ...prev, is_first_visit: e.target.checked }))}
+                                    name="is_first_time"
+                                    checked={formData.is_first_time}
+                                    onChange={(e) => setFormData(prev => ({ ...prev, is_first_time: e.target.checked }))}
                                 />
                                 First time visiting?
                             </label>
