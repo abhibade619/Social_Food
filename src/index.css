@@ -578,6 +578,61 @@ label {
   transform: scale(1.05);
 }
 
+/* Premium User Search & Follow Button */
+.user-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border-color);
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.user-item:hover {
+  background-color: var(--surface-highlight);
+}
+
+.user-item-content {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.follow-btn {
+  padding: 6px 16px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+  min-width: 90px;
+}
+
+.follow-btn.not-following {
+  background: var(--primary-color);
+  color: var(--background-color);
+}
+
+.follow-btn.not-following:hover {
+  background: var(--primary-hover);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(212, 175, 55, 0.3);
+}
+
+.follow-btn.following {
+  background: transparent;
+  border: 1px solid var(--border-color);
+  color: var(--text-secondary);
+}
+
+.follow-btn.following:hover {
+  border-color: var(--text-primary);
+  color: var(--text-primary);
+  background: rgba(255, 255, 255, 0.05);
+}
+
 /* Premium Users List Styles */
 .users-list-container-premium {
   max-width: 800px;

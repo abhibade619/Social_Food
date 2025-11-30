@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../supabaseClient';
+import { useAuth } from '../context/AuthProvider';
 import MapComponent from './MapComponent';
 import LogCard from './LogCard';
 
