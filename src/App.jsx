@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useAuth } from './context/AuthProvider';
 import { supabase } from './supabaseClient';
 import Auth from './components/Auth';
+import UpdatePassword from './components/UpdatePassword';
 import ProfileSetup from './components/ProfileSetup';
 import Navbar from './components/Navbar';
 import Feed from './components/Feed';
@@ -19,7 +20,7 @@ import LogModal from './components/LogModal';
 import './App.css';
 
 function App() {
-  const { user, loading } = useAuth();
+  const { user, loading, passwordRecoveryMode } = useAuth();
   const [currentView, setCurrentView] = useState('feed');
   const [selectedRestaurant, setSelectedRestaurant] = useState(null);
   const [selectedUser, setSelectedUser] = useState(null);
@@ -83,6 +84,10 @@ function App() {
         <p>Loading...</p>
       </div>
     );
+  }
+
+  if (passwordRecoveryMode) {
+    return <UpdatePassword onComplete={() => window.location.href = '/'} />;
   }
 
   if (!user) {
