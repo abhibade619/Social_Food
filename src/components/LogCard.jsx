@@ -158,6 +158,18 @@ const LogCard = ({ log, onClick, showActions = false, onEdit, onDelete, onViewPr
 
                     {log.content && <p className="log-text">{log.content}</p>}
 
+                    {taggedUsers.length > 0 && (
+                        <div className="tagged-users-list">
+                            <span className="tag-icon">🏷️ with</span>
+                            {taggedUsers.map((tag, index) => (
+                                <span key={tag.user_id} className="tagged-user-name">
+                                    {tag.profiles?.full_name || 'Unknown'}
+                                    {index < taggedUsers.length - 1 ? ', ' : ''}
+                                </span>
+                            ))}
+                        </div>
+                    )}
+
                     {photos && photos.length > 0 && (
                         <div className={`log-photos-grid photos-${Math.min(photos.length, 4)}`}>
                             {photos.map((photo, index) => (

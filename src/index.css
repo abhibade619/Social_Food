@@ -678,6 +678,27 @@ label {
   color: var(--text-secondary);
 }
 
+/* Tagged Users in Log Card */
+.tagged-users-list {
+  margin-top: 8px;
+  margin-bottom: 12px;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  align-items: center;
+}
+
+.tag-icon {
+  margin-right: 4px;
+}
+
+.tagged-user-name {
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
 .list-header-premium {
   display: flex;
   align-items: center;
