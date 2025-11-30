@@ -13,6 +13,7 @@ import FollowersList from './components/FollowersList';
 import FollowingList from './components/FollowingList';
 import Wishlist from './components/Wishlist';
 import RestaurantPage from './components/RestaurantPage';
+import Notifications from './components/Notifications';
 import AccountInfo from './components/AccountInfo';
 import Settings from './components/Settings';
 import Diary from './components/Diary';
@@ -223,6 +224,8 @@ function App() {
         return <AccountInfo />;
       case 'settings':
         return <Settings />;
+      case 'notifications':
+        return <Notifications onNavigate={navigateTo} />;
       default:
         return <Feed />;
     }

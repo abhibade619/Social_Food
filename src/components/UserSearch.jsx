@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../supabaseClient';
+import FollowButton from './FollowButton';
 
 const UserSearch = ({ onUserSelect }) => {
     const [searchTerm, setSearchTerm] = useState('');
@@ -61,14 +62,19 @@ const UserSearch = ({ onUserSelect }) => {
                         className="user-item"
                         onClick={() => handleUserClick(user)}
                     >
-                        <img
-                            src={user.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.id}`}
-                            alt={user.username}
-                            className="user-avatar-small"
-                        />
-                        <div className="user-info">
-                            <p className="user-name">{user.full_name || 'Unknown User'}</p>
-                            <p className="username">@{user.username || 'unknown'}</p>
+                        <div className="user-item-content">
+                            <img
+                                src={user.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.id}`}
+                                alt={user.username}
+                                className="user-avatar-small"
+                            />
+                            <div className="user-info">
+                                <p className="user-name">{user.full_name || 'Unknown User'}</p>
+                                <p className="username">@{user.username || 'unknown'}</p>
+                            </div>
+                        </div>
+                        <div onClick={(e) => e.stopPropagation()}>
+                            <FollowButton targetUserId={user.id} />
                         </div>
                     </div>
                 ))}

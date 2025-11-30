@@ -4,8 +4,11 @@ import MapComponent from './MapComponent';
 import LogCard from './LogCard';
 
 const RestaurantPage = ({ restaurant, onBack, onNewLog, onViewProfile }) => {
+    const { user } = useAuth();
     const [logs, setLogs] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [isInWishlist, setIsInWishlist] = useState(false);
+    const [wishlistLoading, setWishlistLoading] = useState(false);
 
     // Parse coordinates if they exist
     const getCoordinates = () => {
@@ -19,7 +22,10 @@ const RestaurantPage = ({ restaurant, onBack, onNewLog, onViewProfile }) => {
 
     useEffect(() => {
         fetchRestaurantLogs();
-    }, [restaurant]);
+        if (user) {
+            checkWishlistStatus();
+        }
+    }, [restaurant, user]);
 
     const fetchRestaurantLogs = async () => {
         setLoading(true);
@@ -46,6 +52,75 @@ const RestaurantPage = ({ restaurant, onBack, onNewLog, onViewProfile }) => {
         }
     };
 
+    const checkWishlistStatus = async () => {
+        try {
+            let query = supabase
+                .from('wishlist')
+                .select('id')
+                .eq('user_id', user.id);
+
+            if (restaurant.place_id) {
+                query = query.eq('place_id', restaurant.place_id);
+            } else {
+                query = query.eq('restaurant_name', restaurant.name);
+            }
+
+            const { data, error } = await query;
+            if (error) throw error;
+            setIsInWishlist(data && data.length > 0);
+        } catch (error) {
+            console.error('Error checking wishlist:', error);
+        }
+    };
+
+    const toggleWishlist = async () => {
+        if (!user) return;
+        setWishlistLoading(true);
+        try {
+            if (isInWishlist) {
+                // Remove
+                let query = supabase
+                    .from('wishlist')
+                    .delete()
+                    .eq('user_id', user.id);
+
+                if (restaurant.place_id) {
+                    query = query.eq('place_id', restaurant.place_id);
+                } else {
+                    query = query.eq('restaurant_name', restaurant.name);
+                }
+
+                const { error } = await query;
+                if (error) throw error;
+                setIsInWishlist(false);
+            } else {
+                // Add
+                const { error } = await supabase
+                    .from('wishlist')
+                    .insert([{
+                        user_id: user.id,
+                        restaurant_name: restaurant.name,
+                        location: restaurant.location || restaurant.address,
+                        cuisine: restaurant.cuisine,
+                        place_id: restaurant.place_id
+                    }]);
+
+                if (error) throw error;
+                setIsInWishlist(true);
+            }
+        } catch (error) {
+            console.error('Error toggling wishlist:', error);
+            alert('Failed to update wishlist');
+        } finally {
+            setWishlistLoading(false);
+        }
+    };
+
+    // Calculate average rating
+    const averageRating = logs.length > 0
+        ? (logs.reduce((acc, log) => acc + (parseFloat(log.rating) || 0), 0) / logs.length).toFixed(1)
+        : null;
+
     return (
         <div className="restaurant-page container">
             <div className="restaurant-header-premium">
@@ -53,17 +128,30 @@ const RestaurantPage = ({ restaurant, onBack, onNewLog, onViewProfile }) => {
                 <div className="restaurant-hero">
                     <h1 className="restaurant-title-large">{restaurant.name || 'Restaurant Details'}</h1>
                     <div className="restaurant-badges">
-                        {restaurant.rating && <span className="badge-rating">⭐ {restaurant.rating}</span>}
+                        {averageRating ? (
+                            <span className="badge-rating">⭐ {averageRating} ({logs.length} logs)</span>
+                        ) : (
+                            restaurant.rating && <span className="badge-rating">⭐ {restaurant.rating}</span>
+                        )}
                         {restaurant.price_level && <span className="badge-price">{'$'.repeat(restaurant.price_level)}</span>}
                         <span className="badge-cuisine">{restaurant.cuisine || 'Restaurant'}</span>
                     </div>
-                    <button
-                        className="btn-primary"
-                        style={{ marginTop: '1rem' }}
-                        onClick={() => onNewLog(restaurant)}
-                    >
-                        📝 Log this visit
-                    </button>
+
+                    <div className="restaurant-actions">
+                        <button
+                            className="btn-primary"
+                            onClick={() => onNewLog(restaurant)}
+                        >
+                            📝 Log your visit
+                        </button>
+                        <button
+                            className={`btn-secondary ${isInWishlist ? 'active' : ''}`}
+                            onClick={toggleWishlist}
+                            disabled={wishlistLoading}
+                        >
+                            {isInWishlist ? '❤️ In Wishlist' : '🤍 Add to Wishlist'}
+                        </button>
+                    </div>
                 </div>
             </div>
 

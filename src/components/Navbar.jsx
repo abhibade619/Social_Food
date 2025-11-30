@@ -8,6 +8,7 @@ const Navbar = ({ currentView, setCurrentView, onNewLog }) => {
     const { user, signOut } = useAuth();
     const [location, setLocation] = useState('');
     const [avatarUrl, setAvatarUrl] = useState(null);
+    const [unreadCount, setUnreadCount] = useState(0);
 
     useEffect(() => {
         const savedLocation = localStorage.getItem('userLocation');
@@ -36,6 +37,44 @@ const Navbar = ({ currentView, setCurrentView, onNewLog }) => {
         window.addEventListener('profileUpdated', handleProfileUpdate);
         return () => window.removeEventListener('profileUpdated', handleProfileUpdate);
     }, [user]);
+
+    // Fetch unread notifications count
+    useEffect(() => {
+        if (user) {
+            fetchUnreadCount();
+            // Set up real-time subscription for notifications
+            const subscription = supabase
+                .channel('public:notifications')
+                .on('postgres_changes', {
+                    event: 'INSERT',
+                    schema: 'public',
+                    table: 'notifications',
+                    filter: `user_id=eq.${user.id}`
+                }, (payload) => {
+                    setUnreadCount(prev => prev + 1);
+                })
+                .subscribe();
+
+            return () => {
+                supabase.removeChannel(subscription);
+            };
+        }
+    }, [user]);
+
+    const fetchUnreadCount = async () => {
+        try {
+            const { count, error } = await supabase
+                .from('notifications')
+                .select('*', { count: 'exact', head: true })
+                .eq('user_id', user.id)
+                .eq('is_read', false);
+
+            if (error) throw error;
+            setUnreadCount(count || 0);
+        } catch (error) {
+            console.error('Error fetching unread notifications:', error);
+        }
+    };
 
     const loadUserProfile = async () => {
         if (!user) return;
@@ -134,6 +173,15 @@ const Navbar = ({ currentView, setCurrentView, onNewLog }) => {
                         onClick={() => setCurrentView('search')}
                     >
                         Search
+                    </button>
+
+                    <button
+                        className={`nav-link icon-btn ${currentView === 'notifications' ? 'active' : ''}`}
+                        onClick={() => setCurrentView('notifications')}
+                        title="Notifications"
+                    >
+                        🔔
+                        {unreadCount > 0 && <span className="notification-badge">{unreadCount}</span>}
                     </button>
 
                     <UserMenu

@@ -180,6 +180,20 @@ const LogModal = ({ onClose, onLogCreated, initialData = null }) => {
                     .insert(tagData);
 
                 if (tagError) console.error('Error tagging users:', tagError);
+
+                // Create notifications for tagged users
+                const notificationData = taggedFriends.map(friend => ({
+                    user_id: friend.id,
+                    type: 'tag',
+                    reference_id: logResult.id,
+                    message: `${user.user_metadata?.full_name || 'Someone'} tagged you in a log at ${formData.restaurant_name}`
+                }));
+
+                const { error: notifError } = await supabase
+                    .from('notifications')
+                    .insert(notificationData);
+
+                if (notifError) console.error('Error creating notifications:', notifError);
             }
 
             onLogCreated(logResult);
