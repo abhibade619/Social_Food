@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthProvider';
 import { calculateOverallRating } from '../utils/calculateRating';
 
-const LogCard = ({ log, onClick, showActions = false, onEdit, onDelete, onViewProfile, onAddToWishlist, onRestaurantClick }) => {
+const LogCard = ({ log, onClick, showActions = false, isDiaryView = false, onEdit, onDelete, onViewProfile, onAddToWishlist, onRestaurantClick }) => {
     const { user } = useAuth();
     const [lightboxImage, setLightboxImage] = useState(null);
     const [userProfile, setUserProfile] = useState(null);
