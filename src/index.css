@@ -640,6 +640,44 @@ label {
   padding: 20px;
 }
 
+/* Premium Friend Search Results in Modal */
+.friend-result-item.premium-result {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--border-color);
+  transition: background-color 0.2s;
+}
+
+.friend-result-item.premium-result:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+.friend-result-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid var(--border-color);
+}
+
+.friend-result-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.friend-result-info .friend-name {
+  font-weight: 500;
+  font-size: 0.95rem;
+  color: var(--text-primary);
+}
+
+.friend-result-info .friend-username {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+
 .list-header-premium {
   display: flex;
   align-items: center;

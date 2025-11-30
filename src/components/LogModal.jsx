@@ -457,10 +457,18 @@ const LogModal = ({ onClose, onLogCreated, initialData = null }) => {
                             {friendResults.map((friend) => (
                                 <div
                                     key={friend.id}
-                                    className="friend-result-item"
+                                    className="friend-result-item premium-result"
                                     onClick={() => addTaggedFriend(friend)}
                                 >
-                                    <div className="friend-name">{friend.full_name}</div>
+                                    <img
+                                        src={friend.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${friend.username}`}
+                                        alt={friend.username}
+                                        className="friend-result-avatar"
+                                    />
+                                    <div className="friend-result-info">
+                                        <div className="friend-name">{friend.full_name}</div>
+                                        <div className="friend-username">@{friend.username}</div>
+                                    </div>
                                 </div>
                             ))}
                         </div>
