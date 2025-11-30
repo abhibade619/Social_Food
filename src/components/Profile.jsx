@@ -135,6 +135,10 @@ const Profile = ({ onNavigate, onViewFollowers, onViewFollowing }) => {
 
             // Refresh profile
             await fetchProfile();
+
+            // Dispatch event to update Navbar
+            window.dispatchEvent(new Event('profileUpdated'));
+
             alert('Profile picture updated successfully!');
         } catch (error) {
             console.error('Error uploading avatar:', error);
@@ -169,19 +173,19 @@ const Profile = ({ onNavigate, onViewFollowers, onViewFollowing }) => {
     }
 
     return (
-        <div className="profile-container">
-            <div className="profile-header">
-                <div className="profile-avatar">
-                    {profile?.avatar_url ? (
-                        <img src={profile.avatar_url} alt="Profile" />
-                    ) : (
-                        <div className="avatar-placeholder">
-                            {(profile?.username || user.email)?.[0]?.toUpperCase()}
-                        </div>
-                    )}
-                </div>
+        <div className="profile-container-premium">
+            <div className="profile-header-premium">
+                <div className="profile-header-content">
+                    <div className="profile-avatar-premium">
+                        {profile?.avatar_url ? (
+                            <img src={profile.avatar_url} alt="Profile" />
+                        ) : (
+                            <div className="avatar-placeholder-premium">
+                                {(profile?.username || user.email)?.[0]?.toUpperCase()}
+                            </div>
+                        )}
+                    </div>
 
-                <div className="profile-info">
                     {editing ? (
                         <form onSubmit={handleUpdate} className="profile-form">
                             <div className="form-group">
@@ -241,18 +245,35 @@ const Profile = ({ onNavigate, onViewFollowers, onViewFollowing }) => {
                         </form>
                     ) : (
                         <>
-                            <h2>{profile?.full_name || 'No name set'}</h2>
-                            <p className="username">@{profile?.username || 'No username'}</p>
-                            <p className="email">{user.email}</p>
-                            {profile?.website && (
-                                <a href={profile.website} target="_blank" rel="noopener noreferrer" className="website">
-                                    {profile.website}
-                                </a>
-                            )}
+                            <h2 className="profile-name-premium">{profile?.full_name || 'No name set'}</h2>
+                            <p className="profile-username-premium">@{profile?.username || 'No username'}</p>
+
                             {profile?.bio && (
-                                <p className="profile-bio">{profile.bio}</p>
+                                <p className="profile-bio-premium">{profile.bio}</p>
                             )}
-                            <button className="btn-primary" onClick={() => setEditing(true)}>
+
+                            <div className="profile-stats-premium">
+                                <div className="stat-item-premium">
+                                    <span className="stat-value-premium">{userLogs.length}</span>
+                                    <span className="stat-label-premium">Logs</span>
+                                </div>
+                                <div
+                                    className="stat-item-premium"
+                                    onClick={() => onViewFollowers && onViewFollowers(user.id)}
+                                >
+                                    <span className="stat-value-premium">{followerCount}</span>
+                                    <span className="stat-label-premium">Followers</span>
+                                </div>
+                                <div
+                                    className="stat-item-premium"
+                                    onClick={() => onViewFollowing && onViewFollowing(user.id)}
+                                >
+                                    <span className="stat-value-premium">{followingCount}</span>
+                                    <span className="stat-label-premium">Following</span>
+                                </div>
+                            </div>
+
+                            <button className="btn-edit-profile" onClick={() => setEditing(true)}>
                                 Edit Profile
                             </button>
                         </>
@@ -260,31 +281,8 @@ const Profile = ({ onNavigate, onViewFollowers, onViewFollowing }) => {
                 </div>
             </div>
 
-            <div className="profile-stats">
-                <div className="stat">
-                    <span className="stat-value">{userLogs.length}</span>
-                    <span className="stat-label">Logs</span>
-                </div>
-                <div
-                    className="stat stat-clickable"
-                    onClick={() => onViewFollowers && onViewFollowers(user.id)}
-                    style={{ cursor: 'pointer' }}
-                >
-                    <span className="stat-value">{followerCount}</span>
-                    <span className="stat-label">Followers</span>
-                </div>
-                <div
-                    className="stat stat-clickable"
-                    onClick={() => onViewFollowing && onViewFollowing(user.id)}
-                    style={{ cursor: 'pointer' }}
-                >
-                    <span className="stat-value">{followingCount}</span>
-                    <span className="stat-label">Following</span>
-                </div>
-            </div>
-
             <div className="profile-logs">
-                <h3>My Logs</h3>
+                <h3 className="profile-section-title">My Logs</h3>
                 {userLogs.length > 0 ? (
                     <div className="logs-grid">
                         {userLogs.map((log) => (
@@ -300,3 +298,5 @@ const Profile = ({ onNavigate, onViewFollowers, onViewFollowing }) => {
 };
 
 export default Profile;
+
+

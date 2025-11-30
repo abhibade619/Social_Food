@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 
-const UserMenu = ({ user, onNavigate, onSignOut }) => {
+const UserMenu = ({ user, avatarUrl, onNavigate, onSignOut }) => {
     const [isOpen, setIsOpen] = useState(false);
 
     // Close menu when clicking outside
@@ -29,7 +29,7 @@ const UserMenu = ({ user, onNavigate, onSignOut }) => {
         <div className="user-menu">
             <div className="user-menu-trigger">
                 <img
-                    src={user?.user_metadata?.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user?.id}`}
+                    src={avatarUrl || user?.user_metadata?.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user?.id}`}
                     alt="Profile"
                     className="nav-avatar"
                     onClick={() => onNavigate('profile')}

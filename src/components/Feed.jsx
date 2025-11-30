@@ -171,3 +171,4 @@ const Feed = ({ onViewProfile, onRestaurantClick }) => {
 };
 
 export default Feed;
+
