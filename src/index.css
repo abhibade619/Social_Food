@@ -1512,3 +1512,25 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 input[type="date"]::-webkit-calendar-picker-indicator:hover {
   opacity: 1;
 }
+
+/* Forgot Password Link */
+.forgot-password-link {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 8px;
+}
+
+.text-link-btn {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  cursor: pointer;
+  padding: 0;
+  text-decoration: underline;
+  transition: color 0.2s;
+}
+
+.text-link-btn:hover {
+  color: var(--primary-color);
+}

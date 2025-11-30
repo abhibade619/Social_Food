@@ -142,7 +142,7 @@ const Profile = ({ onNavigate, onViewFollowers, onViewFollowing }) => {
             alert('Profile picture updated successfully!');
         } catch (error) {
             console.error('Error uploading avatar:', error);
-            alert('Failed to upload profile picture. Please try again.');
+            alert(`Failed to upload profile picture: ${error.message || error.error_description || 'Unknown error'}`);
         } finally {
             setUploading(false);
         }

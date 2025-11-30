@@ -3,13 +3,14 @@ import { useAuth } from '../context/AuthProvider';
 
 const Auth = () => {
     const [isSignUp, setIsSignUp] = useState(false);
+    const [isResetPassword, setIsResetPassword] = useState(false);
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [username, setUsername] = useState('');
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
     const [loading, setLoading] = useState(false);
-    const { signIn, signUp, isSupabaseConfigured } = useAuth();
+    const { signIn, signUp, resetPassword, isSupabaseConfigured } = useAuth();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -18,7 +19,12 @@ const Auth = () => {
         setLoading(true);
 
         try {
-            if (isSignUp) {
+            if (isResetPassword) {
+                const { error } = await resetPassword(email);
+                if (error) throw error;
+                setSuccess('✅ Password reset link sent! Check your email.');
+                // Don't clear email so they can see where it went
+            } else if (isSignUp) {
                 const { error } = await signUp(email, password, username);
                 if (error) throw error;
 
@@ -50,7 +56,9 @@ const Auth = () => {
                 <div className="auth-header">
                     <h1 className="auth-title">FoodSocial</h1>
                     <p className="auth-subtitle">
-                        {isSignUp ? 'Join the exclusive culinary circle.' : 'Welcome back, connoisseur.'}
+                        {isResetPassword
+                            ? 'Recover your account.'
+                            : (isSignUp ? 'Join the exclusive culinary circle.' : 'Welcome back, connoisseur.')}
                     </p>
                 </div>
 
@@ -62,7 +70,7 @@ const Auth = () => {
                 )}
 
                 <form onSubmit={handleSubmit} className="auth-form">
-                    {isSignUp && (
+                    {isSignUp && !isResetPassword && (
                         <div className="form-group">
                             <label htmlFor="username">Username</label>
                             <div className="input-wrapper">
@@ -94,44 +102,80 @@ const Auth = () => {
                         </div>
                     </div>
 
-                    <div className="form-group">
-                        <label htmlFor="password">Password</label>
-                        <div className="input-wrapper">
-                            <input
-                                id="password"
-                                type="password"
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                                placeholder="••••••••"
-                                required
-                                minLength={6}
-                                className="auth-input"
-                            />
+                    {!isResetPassword && (
+                        <div className="form-group">
+                            <label htmlFor="password">Password</label>
+                            <div className="input-wrapper">
+                                <input
+                                    id="password"
+                                    type="password"
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
+                                    placeholder="••••••••"
+                                    required
+                                    minLength={6}
+                                    className="auth-input"
+                                />
+                            </div>
+                            {!isSignUp && (
+                                <div className="forgot-password-link">
+                                    <button
+                                        type="button"
+                                        className="text-link-btn"
+                                        onClick={() => {
+                                            setIsResetPassword(true);
+                                            setError('');
+                                            setSuccess('');
+                                        }}
+                                    >
+                                        Forgot Password?
+                                    </button>
+                                </div>
+                            )}
                         </div>
-                    </div>
+                    )}
 
                     {error && <div className="error-message">{error}</div>}
                     {success && <div className="success-message">{success}</div>}
 
                     <button type="submit" className="btn-primary auth-submit-btn" disabled={loading}>
-                        {loading ? <div className="loading-spinner-small"></div> : (isSignUp ? 'Create Account' : 'Sign In')}
+                        {loading ? <div className="loading-spinner-small"></div> : (
+                            isResetPassword ? 'Send Reset Link' : (isSignUp ? 'Create Account' : 'Sign In')
+                        )}
                     </button>
                 </form>
 
                 <div className="auth-footer">
-                    <p className="auth-switch-text">
-                        {isSignUp ? 'Already a member?' : "New to FoodSocial?"}
-                    </p>
-                    <button
-                        type="button"
-                        onClick={() => {
-                            setIsSignUp(!isSignUp);
-                            setError('');
-                        }}
-                        className="auth-switch-btn"
-                    >
-                        {isSignUp ? 'Sign In' : "Create Account"}
-                    </button>
+                    {isResetPassword ? (
+                        <button
+                            type="button"
+                            onClick={() => {
+                                setIsResetPassword(false);
+                                setError('');
+                                setSuccess('');
+                            }}
+                            className="auth-switch-btn"
+                        >
+                            Back to Sign In
+                        </button>
+                    ) : (
+                        <>
+                            <p className="auth-switch-text">
+                                {isSignUp ? 'Already a member?' : "New to FoodSocial?"}
+                            </p>
+                            <button
+                                type="button"
+                                onClick={() => {
+                                    setIsSignUp(!isSignUp);
+                                    setError('');
+                                    setSuccess('');
+                                }}
+                                className="auth-switch-btn"
+                            >
+                                {isSignUp ? 'Sign In' : "Create Account"}
+                            </button>
+                        </>
+                    )}
                 </div>
             </div>
         </div>
