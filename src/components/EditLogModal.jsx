@@ -23,11 +23,22 @@ const EditLogModal = ({ log, onClose, onLogUpdated }) => {
         content: log.content || '',
         visit_date: log.visit_date || new Date().toISOString().split('T')[0],
     });
+    const [photos, setPhotos] = useState([]);
+    const [photoPreview, setPhotoPreview] = useState([]);
     const [taggedFriends, setTaggedFriends] = useState([]);
     const [friendSearch, setFriendSearch] = useState('');
     const [friendResults, setFriendResults] = useState([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
+
+    // Initialize photos from log
+    useEffect(() => {
+        if (log.photos) {
+            const existingPhotos = typeof log.photos === 'string' ? JSON.parse(log.photos) : log.photos;
+            setPhotos(existingPhotos); // For existing photos, we store the URL string
+            setPhotoPreview(existingPhotos);
+        }
+    }, [log.photos]);
 
     // Fetch existing tagged users
     useEffect(() => {
@@ -43,6 +54,57 @@ const EditLogModal = ({ log, onClose, onLogUpdated }) => {
         };
         fetchTaggedUsers();
     }, [log.id]);
+
+    const handlePhotoUpload = (e) => {
+        const files = Array.from(e.target.files);
+        if (files.length + photos.length > 5) {
+            setError('Maximum 5 photos allowed');
+            return;
+        }
+
+        // We store File objects for new uploads, and URL strings for existing ones
+        setPhotos([...photos, ...files]);
+
+        // Create preview URLs
+        const newPreviews = files.map(file => URL.createObjectURL(file));
+        setPhotoPreview([...photoPreview, ...newPreviews]);
+    };
+
+    const removePhoto = (index) => {
+        const newPhotos = photos.filter((_, i) => i !== index);
+        const newPreviews = photoPreview.filter((_, i) => i !== index);
+        setPhotos(newPhotos);
+        setPhotoPreview(newPreviews);
+    };
+
+    const uploadPhotos = async () => {
+        const photoUrls = [];
+
+        for (const photo of photos) {
+            if (typeof photo === 'string') {
+                // It's an existing photo URL
+                photoUrls.push(photo);
+            } else {
+                // It's a new File object
+                const fileExt = photo.name.split('.').pop();
+                const fileName = `${user.id}/${Date.now()}_${Math.random().toString(36).substring(7)}.${fileExt}`;
+
+                const { data, error } = await supabase.storage
+                    .from('log-photos')
+                    .upload(fileName, photo);
+
+                if (error) throw error;
+
+                const { data: { publicUrl } } = supabase.storage
+                    .from('log-photos')
+                    .getPublicUrl(fileName);
+
+                photoUrls.push(publicUrl);
+            }
+        }
+
+        return photoUrls;
+    };
 
     const handleChange = (e) => {
         const { name, value, type, checked } = e.target;
@@ -97,6 +159,9 @@ const EditLogModal = ({ log, onClose, onLogUpdated }) => {
         setError('');
 
         try {
+            // Upload new photos if any
+            const photoUrls = await uploadPhotos();
+
             const calculatedRating = calculateOverallRating(formData);
 
             const { data, error } = await supabase
@@ -104,6 +169,7 @@ const EditLogModal = ({ log, onClose, onLogUpdated }) => {
                 .update({
                     ...formData,
                     rating: calculatedRating,
+                    photos: photoUrls,
                     updated_at: new Date().toISOString()
                 })
                 .eq('id', log.id)
@@ -356,6 +422,36 @@ const EditLogModal = ({ log, onClose, onLogUpdated }) => {
                             rows={4}
                             placeholder="Share your thoughts about this dining experience..."
                         />
+                    </div>
+
+                    {/* Photos Section */}
+                    <div className="form-group">
+                        <label>Photos (Max 5)</label>
+                        <div className="photo-upload-container">
+                            <input
+                                type="file"
+                                accept="image/*"
+                                multiple
+                                onChange={handlePhotoUpload}
+                                style={{ display: 'none' }}
+                                id="edit-photo-upload"
+                            />
+                            <label htmlFor="edit-photo-upload" className="btn-secondary btn-sm">
+                                📷 Add Photos
+                            </label>
+                            <span className="photo-count">{photos.length}/5</span>
+                        </div>
+
+                        {photoPreview.length > 0 && (
+                            <div className="photo-previews">
+                                {photoPreview.map((preview, index) => (
+                                    <div key={index} className="photo-preview-item">
+                                        <img src={preview} alt={`Preview ${index}`} />
+                                        <button type="button" onClick={() => removePhoto(index)} className="remove-photo-btn">×</button>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
                     </div>
 
                     {/* Friend Tagging Section */}

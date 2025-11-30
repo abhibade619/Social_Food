@@ -57,15 +57,14 @@ const Feed = ({ onViewProfile, onRestaurantClick }) => {
 
             if (followingError) throw followingError;
 
-            // Create array of IDs: followed users + current user
+            // Create array of IDs: followed users only (exclude current user)
             const followingIds = followingData.map(f => f.following_id);
-            const allowedUserIds = [...followingIds, user.id];
 
             // 2. Fetch logs only from these users
             const { data, error } = await supabase
                 .from('logs')
                 .select('*')
-                .in('user_id', allowedUserIds)
+                .in('user_id', followingIds)
                 .order('created_at', { ascending: false });
 
             if (error) throw error;

@@ -57,7 +57,12 @@ const LogCard = ({ log, onClick, showActions = false, onEdit, onDelete, onViewPr
     };
 
     const formatDate = (dateString) => {
-        return new Date(dateString).toLocaleDateString('en-US', {
+        if (!dateString) return '';
+        // Append time to force local date interpretation or split string
+        // Assuming dateString is YYYY-MM-DD
+        const [year, month, day] = dateString.split('T')[0].split('-');
+        const date = new Date(year, month - 1, day);
+        return date.toLocaleDateString('en-US', {
             year: 'numeric', month: 'short', day: 'numeric'
         });
     };
@@ -72,86 +77,108 @@ const LogCard = ({ log, onClick, showActions = false, onEdit, onDelete, onViewPr
         return <div className="log-card glass-panel"><div className="loading">Loading...</div></div>;
     }
 
+    const [lightboxImage, setLightboxImage] = useState(null);
+
+    const openLightbox = (e, photo) => {
+        e.stopPropagation();
+        setLightboxImage(photo);
+    };
+
+    const closeLightbox = (e) => {
+        e.stopPropagation();
+        setLightboxImage(null);
+    };
+
     return (
-        <div className="log-card glass-panel premium-card" onClick={onClick}>
-            {showActions && (
-                <div className="menu-container" onClick={(e) => e.stopPropagation()}>
-                    <button
-                        className="menu-trigger"
-                        onClick={() => setShowMenu(!showMenu)}
-                    >
-                        ⋮
-                    </button>
-                    {showMenu && (
-                        <div className="action-menu">
-                            <button onClick={() => { setShowMenu(false); onEdit(log); }} className="menu-item">
-                                ✏️ Edit
-                            </button>
-                            <button onClick={() => { setShowMenu(false); onDelete(log.id); }} className="menu-item menu-item-danger">
-                                🗑️ Delete
-                            </button>
-                        </div>
-                    )}
-                </div>
-            )}
-
-            <div className="log-header">
-                <div className="user-info clickable" onClick={(e) => { e.stopPropagation(); onViewProfile && onViewProfile(log.user_id); }}>
-                    <div className="avatar-wrapper">
-                        <img
-                            src={userProfile?.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${log.user_id}`}
-                            alt={userProfile?.username || 'User'}
-                            className="user-avatar"
-                        />
-                    </div>
-                    <div className="log-user-info">
-                        <p className="log-user-name">{userProfile?.full_name || 'User'}</p>
-                        <p className="log-username">@{userProfile?.username || 'user'}</p>
-                    </div>
-                </div>
-                <span className="log-date">{formatDate(log.visit_date || log.created_at)}</span>
-            </div>
-
-            <div className="log-content">
-                <div className="log-title-row">
-                    <h3
-                        className="restaurant-name clickable-restaurant"
-                        onClick={(e) => {
-                            e.stopPropagation();
-                            if (onRestaurantClick) {
-                                onRestaurantClick({
-                                    name: log.restaurant_name,
-                                    place_id: log.place_id,
-                                    location: log.location,
-                                    latitude: log.latitude,
-                                    longitude: log.longitude
-                                });
-                            }
-                        }}
-                    >
-                        {log.restaurant_name}
-                    </h3>
-                    {hasRating && (
-                        <div className="log-rating-badge">
-                            <span className="rating-star">★</span>
-                            <span className="rating-value">{Number(displayRating).toFixed(1)}</span>
-                        </div>
-                    )}
-                </div>
-
-                {log.content && <p className="log-text">{log.content}</p>}
-
-                {photos && photos.length > 0 && (
-                    <div className={`log-photos-grid photos-${Math.min(photos.length, 4)}`}>
-                        {photos.map((photo, index) => (
-                            <div key={index} className="log-photo-wrapper">
-                                <img src={photo} alt={`Photo ${index + 1}`} className="log-photo" />
+        <>
+            <div className="log-card glass-panel premium-card" onClick={onClick}>
+                {showActions && (
+                    <div className="menu-container" onClick={(e) => e.stopPropagation()}>
+                        <button
+                            className="menu-trigger"
+                            onClick={() => setShowMenu(!showMenu)}
+                        >
+                            ⋮
+                        </button>
+                        {showMenu && (
+                            <div className="action-menu">
+                                <button onClick={() => { setShowMenu(false); onEdit(log); }} className="menu-item">
+                                    ✏️ Edit
+                                </button>
+                                <button onClick={() => { setShowMenu(false); onDelete(log.id); }} className="menu-item menu-item-danger">
+                                    🗑️ Delete
+                                </button>
                             </div>
-                        ))}
+                        )}
                     </div>
                 )}
+
+                <div className="log-header">
+                    <div className="user-info clickable" onClick={(e) => { e.stopPropagation(); onViewProfile && onViewProfile(log.user_id); }}>
+                        <div className="avatar-wrapper">
+                            <img
+                                src={userProfile?.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${log.user_id}`}
+                                alt={userProfile?.username || 'User'}
+                                className="user-avatar"
+                            />
+                        </div>
+                        <div className="log-user-info">
+                            <p className="log-user-name">{userProfile?.full_name || 'User'}</p>
+                            <p className="log-username">@{userProfile?.username || 'user'}</p>
+                        </div>
+                    </div>
+                    <span className="log-date">{formatDate(log.visit_date || log.created_at)}</span>
+                </div>
+
+                <div className="log-content">
+                    <div className="log-title-row">
+                        <h3
+                            className="restaurant-name clickable-restaurant"
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                if (onRestaurantClick) {
+                                    onRestaurantClick({
+                                        name: log.restaurant_name,
+                                        place_id: log.place_id,
+                                        location: log.location,
+                                        latitude: log.latitude,
+                                        longitude: log.longitude
+                                    });
+                                }
+                            }}
+                        >
+                            {log.restaurant_name}
+                        </h3>
+                        {hasRating && (
+                            <div className="log-rating-badge">
+                                <span className="rating-star">★</span>
+                                <span className="rating-value">{Number(displayRating).toFixed(1)}</span>
+                            </div>
+                        )}
+                    </div>
+
+                    {log.content && <p className="log-text">{log.content}</p>}
+
+                    {photos && photos.length > 0 && (
+                        <div className={`log-photos-grid photos-${Math.min(photos.length, 4)}`}>
+                            {photos.map((photo, index) => (
+                                <div key={index} className="log-photo-wrapper" onClick={(e) => openLightbox(e, photo)}>
+                                    <img src={photo} alt={`Photo ${index + 1}`} className="log-photo" />
+                                </div>
+                            ))}
+                        </div>
+                    )}
+                </div>
             </div>
-        </div>
+
+            {/* Lightbox Modal */}
+            {lightboxImage && (
+                <div className="lightbox-overlay" onClick={closeLightbox}>
+                    <button className="lightbox-close" onClick={closeLightbox}>×</button>
+                    <img src={lightboxImage} alt="Full size" className="lightbox-image" onClick={(e) => e.stopPropagation()} />
+                </div>
+            )}
+        </>
     );
 };
 

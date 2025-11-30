@@ -31,6 +31,33 @@ function App() {
   const [initialLogData, setInitialLogData] = useState(null);
   const [feedVersion, setFeedVersion] = useState(0);
 
+  // Handle browser back button
+  useEffect(() => {
+    const handlePopState = (event) => {
+      if (event.state && event.state.view) {
+        setCurrentView(event.state.view);
+        // Restore other state if needed (e.g. selectedRestaurant)
+        if (event.state.selectedRestaurant) setSelectedRestaurant(event.state.selectedRestaurant);
+        if (event.state.selectedUser) setSelectedUser(event.state.selectedUser);
+      } else {
+        setCurrentView('feed');
+      }
+    };
+
+    window.addEventListener('popstate', handlePopState);
+
+    // Set initial state
+    window.history.replaceState({ view: 'feed' }, '');
+
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, []);
+
+  // Helper to change view and push to history
+  const navigateTo = (view, state = {}) => {
+    setCurrentView(view);
+    window.history.pushState({ view, ...state }, '');
+  };
+
   useEffect(() => {
     if (user) {
       checkProfileCompletion();
@@ -69,7 +96,7 @@ function App() {
     setFeedVersion(v => v + 1);
     setShowLogModal(false);
     setInitialLogData(null);
-    setCurrentView('feed'); // Optional: switch to feed to see new log
+    navigateTo('feed'); // Optional: switch to feed to see new log
   };
 
   const handleNewLog = (data = null) => {
@@ -100,22 +127,22 @@ function App() {
 
   const handleNavigateToRestaurant = (restaurantData) => {
     setSelectedRestaurant(restaurantData);
-    setCurrentView('restaurant');
+    navigateTo('restaurant', { selectedRestaurant: restaurantData });
   };
 
   const handleNavigateToProfile = (userId) => {
     setSelectedUser({ id: userId });
-    setCurrentView('userProfile');
+    navigateTo('userProfile', { selectedUser: { id: userId } });
   };
 
   const handleViewFollowers = (userId) => {
     setListTargetUser(userId);
-    setCurrentView('followers');
+    navigateTo('followers');
   };
 
   const handleViewFollowing = (userId) => {
     setListTargetUser(userId);
-    setCurrentView('following');
+    navigateTo('following');
   };
 
   const renderView = () => {
@@ -123,7 +150,7 @@ function App() {
       return (
         <RestaurantPage
           restaurant={selectedRestaurant}
-          onBack={() => setCurrentView('search')}
+          onBack={() => navigateTo('search')}
           onNewLog={handleNewLog}
           onViewProfile={handleNavigateToProfile}
         />
@@ -134,7 +161,7 @@ function App() {
       return (
         <UserProfile
           userId={selectedUser.id}
-          onBack={() => setCurrentView('search')}
+          onBack={() => navigateTo('search')}
           onNavigate={handleNavigateToProfile}
           onViewFollowers={handleViewFollowers}
           onViewFollowing={handleViewFollowing}
@@ -147,7 +174,7 @@ function App() {
       return (
         <FollowersList
           userId={listTargetUser || user.id}
-          onBack={() => setCurrentView('profile')} // Ideally back to previous view, but profile is safe fallback
+          onBack={() => navigateTo('profile')} // Ideally back to previous view, but profile is safe fallback
           onNavigate={handleNavigateToProfile}
         />
       );
@@ -157,7 +184,7 @@ function App() {
       return (
         <FollowingList
           userId={listTargetUser || user.id}
-          onBack={() => setCurrentView('profile')}
+          onBack={() => navigateTo('profile')}
           onNavigate={handleNavigateToProfile}
         />
       );
@@ -169,14 +196,14 @@ function App() {
           key={feedVersion} // Force re-render/refetch when version changes
           onViewProfile={(userId) => {
             setSelectedUser({ id: userId });
-            setCurrentView('userProfile');
+            navigateTo('userProfile', { selectedUser: { id: userId } });
           }}
           onRestaurantClick={handleNavigateToRestaurant}
         />;
       case 'search':
         return (
           <Search
-            setCurrentView={setCurrentView}
+            setCurrentView={navigateTo}
             setSelectedRestaurant={setSelectedRestaurant}
             setSelectedUser={setSelectedUser}
             onRestaurantClick={handleNavigateToRestaurant}
@@ -184,7 +211,7 @@ function App() {
         );
       case 'profile':
         return <Profile
-          onNavigate={setCurrentView}
+          onNavigate={navigateTo}
           onViewFollowers={handleViewFollowers}
           onViewFollowing={handleViewFollowing}
         />;
@@ -205,7 +232,7 @@ function App() {
     <div className="app">
       <Navbar
         currentView={currentView}
-        setCurrentView={setCurrentView}
+        setCurrentView={navigateTo}
         onNewLog={() => handleNewLog(null)}
       />
       <main className="main-content">{renderView()}</main>
