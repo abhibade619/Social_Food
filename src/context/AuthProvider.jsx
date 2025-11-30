@@ -11,6 +11,12 @@ export const AuthProvider = ({ children }) => {
     const [passwordRecoveryMode, setPasswordRecoveryMode] = useState(false);
 
     useEffect(() => {
+        // Check for recovery mode in URL immediately
+        const hash = window.location.hash;
+        if (hash && hash.includes('type=recovery')) {
+            setPasswordRecoveryMode(true);
+        }
+
         // Get initial session
         supabase.auth.getSession().then(({ data: { session } }) => {
             setUser(session?.user ?? null);
@@ -19,6 +25,7 @@ export const AuthProvider = ({ children }) => {
 
         // Listen for auth changes
         const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+            console.log('Auth event:', event); // Debugging
             setUser(session?.user ?? null);
             setLoading(false);
 
