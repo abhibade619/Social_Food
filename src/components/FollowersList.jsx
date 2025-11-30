@@ -45,39 +45,36 @@ const FollowersList = ({ userId, onBack, onNavigate }) => {
     }
 
     return (
-        <div className="followers-container">
-            {onBack && (
-                <button className="back-button" onClick={onBack}>
-                    ← Back
-                </button>
-            )}
-
-            <h2>Followers</h2>
+        <div className="users-list-container-premium">
+            <div className="list-header-premium">
+                <h2>Followers</h2>
+                <span className="count-badge">{followers.length}</span>
+            </div>
 
             {followers.length === 0 ? (
-                <div className="empty-state">
-                    <p className="empty-icon">👥</p>
+                <div className="empty-state glass-panel">
+                    <div className="empty-icon">👥</div>
                     <p className="empty-title">No followers yet</p>
                     <p className="empty-description">
                         When people follow this user, they'll appear here
                     </p>
                 </div>
             ) : (
-                <div className="users-list">
+                <div className="users-grid-premium">
                     {followers.map(follower => (
                         <div
                             key={follower.id}
-                            className="user-result-card clickable"
+                            className="user-card-premium clickable"
                             onClick={() => onNavigate && onNavigate(follower.id)}
                         >
                             <img
                                 src={follower.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${follower.username}`}
                                 alt={follower.username}
-                                className="user-result-avatar"
+                                className="user-card-avatar"
                             />
-                            <div className="user-result-info">
-                                <p className="user-result-name">{follower.full_name || 'No name'}</p>
-                                <p className="user-result-username">@{follower.username || 'unknown'}</p>
+                            <div className="user-card-info">
+                                <p className="user-card-name">{follower.full_name || 'No name'}</p>
+                                <p className="user-card-username">@{follower.username || 'unknown'}</p>
                             </div>
                         </div>
                     ))}
