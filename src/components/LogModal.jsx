@@ -5,12 +5,12 @@ import { cuisineTypes, visitTypes, ratingOptions, returnIntentOptions } from '..
 import RestaurantAutocomplete from './RestaurantAutocomplete';
 import { calculateOverallRating } from '../utils/calculateRating';
 
-const LogModal = ({ onClose, onLogCreated }) => {
+const LogModal = ({ onClose, onLogCreated, initialData = null }) => {
     const { user } = useAuth();
     const [formData, setFormData] = useState({
-        restaurant_name: '',
-        location: '',
-        cuisine: '',
+        restaurant_name: initialData?.name || '',
+        location: initialData?.location || '',
+        cuisine: initialData?.cuisine || '',
         visit_type: 'Dine-in',
         is_first_time: false,
         rating: '',
@@ -23,10 +23,10 @@ const LogModal = ({ onClose, onLogCreated }) => {
         return_intent: '',
         content: '',
         visit_date: new Date().toISOString().split('T')[0],
-        place_id: '',
-        latitude: null,
-        longitude: null,
-        full_address: '',
+        place_id: initialData?.place_id || '',
+        latitude: initialData?.latitude || null,
+        longitude: initialData?.longitude || null,
+        full_address: initialData?.address || '',
     });
     const [photos, setPhotos] = useState([]);
     const [photoPreview, setPhotoPreview] = useState([]);
@@ -35,7 +35,9 @@ const LogModal = ({ onClose, onLogCreated }) => {
     const [friendResults, setFriendResults] = useState([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
-    const [useAutocomplete, setUseAutocomplete] = useState(true);
+    // If we have initial data (like place_id), start in manual mode (autocomplete disabled) 
+    // so the user sees the pre-filled info. Otherwise, default to autocomplete.
+    const [useAutocomplete, setUseAutocomplete] = useState(!initialData?.place_id);
 
     const handleChange = (e) => {
         const { name, value } = e.target;

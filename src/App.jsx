@@ -27,6 +27,7 @@ function App() {
   const [profileComplete, setProfileComplete] = useState(true);
   const [checkingProfile, setCheckingProfile] = useState(true);
   const [showLogModal, setShowLogModal] = useState(false);
+  const [initialLogData, setInitialLogData] = useState(null);
   const [feedVersion, setFeedVersion] = useState(0);
 
   useEffect(() => {
@@ -66,7 +67,13 @@ function App() {
   const handleLogCreated = () => {
     setFeedVersion(v => v + 1);
     setShowLogModal(false);
+    setInitialLogData(null);
     setCurrentView('feed'); // Optional: switch to feed to see new log
+  };
+
+  const handleNewLog = (data = null) => {
+    setInitialLogData(data);
+    setShowLogModal(true);
   };
 
   if (loading || checkingProfile) {
@@ -112,6 +119,7 @@ function App() {
         <RestaurantPage
           restaurant={selectedRestaurant}
           onBack={() => setCurrentView('search')}
+          onNewLog={handleNewLog}
         />
       );
     }
@@ -192,14 +200,18 @@ function App() {
       <Navbar
         currentView={currentView}
         setCurrentView={setCurrentView}
-        onNewLog={() => setShowLogModal(true)}
+        onNewLog={() => handleNewLog(null)}
       />
       <main className="main-content">{renderView()}</main>
 
       {showLogModal && (
         <LogModal
-          onClose={() => setShowLogModal(false)}
+          onClose={() => {
+            setShowLogModal(false);
+            setInitialLogData(null);
+          }}
           onLogCreated={handleLogCreated}
+          initialData={initialLogData}
         />
       )}
     </div>

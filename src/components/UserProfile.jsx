@@ -81,7 +81,7 @@ const UserProfile = ({ userId, onNavigate, onRestaurantClick, onViewFollowers, o
     const isOwnProfile = currentUser?.id === userId;
 
     if (loading) {
-        return <div className="loading-state">Loading profile...</div>;
+        return <div className="loading">Loading profile...</div>;
     }
 
     if (error) {
@@ -89,83 +89,74 @@ const UserProfile = ({ userId, onNavigate, onRestaurantClick, onViewFollowers, o
     }
 
     return (
-        <div className="user-profile-container">
-            {/* Profile Header */}
-            <div className="profile-header">
-                <div className="profile-cover">
-                    {profile?.cover_photo_url && (
-                        <img src={profile.cover_photo_url} alt="Cover" className="cover-photo" />
-                    )}
-                </div>
-
-                <div className="profile-info-section">
-                    <div className="profile-avatar-container">
-                        <img
-                            src={profile?.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${profile?.username}`}
-                            alt={profile?.username}
-                            className="profile-avatar-large"
-                        />
-                    </div>
-
-                    <div className="profile-details">
-                        <div className="profile-name-section">
-                            <h1 className="profile-full-name">{profile?.full_name || 'No name'}</h1>
-                            <p className="profile-username">@{profile?.username || 'unknown'}</p>
-                        </div>
-
-                        {!isOwnProfile && (
-                            <FollowButton targetUserId={userId} targetUsername={profile?.username} />
+        <div className="profile-container-premium">
+            <div className="profile-header-premium">
+                <div className="profile-header-content">
+                    <div className="profile-avatar-premium">
+                        {profile?.avatar_url ? (
+                            <img src={profile.avatar_url} alt="Profile" />
+                        ) : (
+                            <div className="avatar-placeholder-premium">
+                                {(profile?.username || 'U')?.[0]?.toUpperCase()}
+                            </div>
                         )}
                     </div>
 
+                    <h2 className="profile-name-premium">{profile?.full_name || 'No name set'}</h2>
+                    <p className="profile-username-premium">@{profile?.username || 'unknown'}</p>
+
                     {profile?.bio && (
-                        <p className="profile-bio">{profile.bio}</p>
+                        <p className="profile-bio-premium">{profile.bio}</p>
                     )}
 
-                    {/* Stats */}
-                    <div className="profile-stats">
-                        <div className="stat-item">
-                            <span className="stat-value">{stats.totalLogs}</span>
-                            <span className="stat-label">Logs</span>
+                    <div className="profile-stats-premium">
+                        <div className="stat-item-premium">
+                            <span className="stat-value-premium">{stats.totalLogs}</span>
+                            <span className="stat-label-premium">Logs</span>
                         </div>
-                        <div className="stat-item clickable" onClick={() => onViewFollowers && onViewFollowers(userId)}>
-                            <span className="stat-value">{stats.followers}</span>
-                            <span className="stat-label">Followers</span>
+                        <div
+                            className="stat-item-premium"
+                            onClick={() => onViewFollowers && onViewFollowers(userId)}
+                        >
+                            <span className="stat-value-premium">{stats.followers}</span>
+                            <span className="stat-label-premium">Followers</span>
                         </div>
-                        <div className="stat-item clickable" onClick={() => onViewFollowing && onViewFollowing(userId)}>
-                            <span className="stat-value">{stats.following}</span>
-                            <span className="stat-label">Following</span>
+                        <div
+                            className="stat-item-premium"
+                            onClick={() => onViewFollowing && onViewFollowing(userId)}
+                        >
+                            <span className="stat-value-premium">{stats.following}</span>
+                            <span className="stat-label-premium">Following</span>
                         </div>
                     </div>
+
+                    {!isOwnProfile && (
+                        <div style={{ marginTop: '1rem' }}>
+                            <FollowButton targetUserId={userId} targetUsername={profile?.username} />
+                        </div>
+                    )}
                 </div>
             </div>
 
-            {/* User's Logs */}
-            <div className="profile-logs-section">
-                <h2 className="section-title">Logs</h2>
-
-                {logs.length === 0 ? (
-                    <div className="empty-state">
-                        <p className="empty-icon">📝</p>
-                        <p className="empty-title">No logs yet</p>
-                        <p className="empty-description">
-                            {isOwnProfile
-                                ? 'Start sharing your dining experiences!'
-                                : `${profile?.full_name} hasn't posted any logs yet.`}
-                        </p>
-                    </div>
-                ) : (
+            <div className="profile-logs">
+                <h3 className="profile-section-title">Logs</h3>
+                {logs.length > 0 ? (
                     <div className="logs-grid">
-                        {logs.map(log => (
+                        {logs.map((log) => (
                             <LogCard
                                 key={log.id}
                                 log={log}
                                 onViewProfile={onNavigate}
-                                onClick={() => console.log("Log clicked:", log.id)} // Placeholder for now
                                 onRestaurantClick={onRestaurantClick}
                             />
                         ))}
                     </div>
+                ) : (
+                    <p className="no-logs">
+                        {isOwnProfile
+                            ? 'No logs yet. Start sharing your dining experiences!'
+                            : `${profile?.full_name} hasn't posted any logs yet.`}
+                    </p>
                 )}
             </div>
         </div>

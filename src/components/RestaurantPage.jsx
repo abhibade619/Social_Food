@@ -3,7 +3,7 @@ import { supabase } from '../supabaseClient';
 import MapComponent from './MapComponent';
 import LogCard from './LogCard';
 
-const RestaurantPage = ({ restaurant, onBack }) => {
+const RestaurantPage = ({ restaurant, onBack, onNewLog }) => {
     const [logs, setLogs] = useState([]);
     const [loading, setLoading] = useState(true);
 
@@ -57,6 +57,13 @@ const RestaurantPage = ({ restaurant, onBack }) => {
                         {restaurant.price_level && <span className="badge-price">{'$'.repeat(restaurant.price_level)}</span>}
                         <span className="badge-cuisine">{restaurant.cuisine || 'Restaurant'}</span>
                     </div>
+                    <button
+                        className="btn-primary"
+                        style={{ marginTop: '1rem' }}
+                        onClick={() => onNewLog(restaurant)}
+                    >
+                        📝 Log this visit
+                    </button>
                 </div>
             </div>
 
