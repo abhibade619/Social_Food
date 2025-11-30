@@ -86,16 +86,20 @@ const Diary = ({ onRestaurantClick }) => {
 
             if (timeFilter === 'week') {
                 filterDate.setDate(now.getDate() - 7);
-            } else if (timeFilter === '90days') {
-                filterDate.setDate(now.getDate() - 90);
+                filtered = filtered.filter(log => new Date(log.visit_date) >= filterDate);
+            } else if (timeFilter === 'month') {
+                // Filter for current month
+                filtered = filtered.filter(log => {
+                    const logDate = new Date(log.visit_date);
+                    return logDate.getMonth() === now.getMonth() && logDate.getFullYear() === now.getFullYear();
+                });
             } else if (timeFilter === 'year') {
-                filterDate.setFullYear(now.getFullYear() - 1);
+                // Filter for current year
+                filtered = filtered.filter(log => {
+                    const logDate = new Date(log.visit_date);
+                    return logDate.getFullYear() === now.getFullYear();
+                });
             }
-
-            filtered = filtered.filter(log => {
-                const logDate = new Date(log.visit_date);
-                return logDate >= filterDate;
-            });
         }
 
         // Cuisine filter
@@ -159,59 +163,6 @@ const Diary = ({ onRestaurantClick }) => {
             </div>
 
             <div className="diary-layout-premium">
-                {/* Left Sidebar - Category Filters */}
-                <aside className="diary-sidebar glass-panel">
-                    <div className="filter-group">
-                        <h3>Cuisines</h3>
-                        <div className="filter-list">
-                            <button
-                                className={`filter-item ${cuisineFilter === 'all' ? 'active' : ''}`}
-                                onClick={() => setCuisineFilter('all')}
-                            >
-                                All Cuisines
-                            </button>
-                            {uniqueCuisines.length > 0 ? (
-                                uniqueCuisines.map(cuisine => (
-                                    <button
-                                        key={cuisine}
-                                        className={`filter-item ${cuisineFilter === cuisine ? 'active' : ''}`}
-                                        onClick={() => setCuisineFilter(cuisine)}
-                                    >
-                                        {cuisine}
-                                    </button>
-                                ))
-                            ) : (
-                                <p className="filter-empty">No cuisines yet</p>
-                            )}
-                        </div>
-                    </div>
-
-                    <div className="filter-group">
-                        <h3>Locations</h3>
-                        <div className="filter-list">
-                            <button
-                                className={`filter-item ${locationFilter === 'all' ? 'active' : ''}`}
-                                onClick={() => setLocationFilter('all')}
-                            >
-                                All Locations
-                            </button>
-                            {uniqueLocations.length > 0 ? (
-                                uniqueLocations.map(location => (
-                                    <button
-                                        key={location}
-                                        className={`filter-item ${locationFilter === location ? 'active' : ''}`}
-                                        onClick={() => setLocationFilter(location)}
-                                    >
-                                        {location}
-                                    </button>
-                                ))
-                            ) : (
-                                <p className="filter-empty">No locations yet</p>
-                            )}
-                        </div>
-                    </div>
-                </aside>
-
                 {/* Main Content */}
                 <main className="diary-main">
                     {loading && <div className="loading-spinner"></div>}
@@ -237,6 +188,53 @@ const Diary = ({ onRestaurantClick }) => {
                         ))}
                     </div>
                 </main>
+
+                {/* Right Sidebar - Filters */}
+                <aside className="diary-sidebar glass-panel">
+                    <h3>Filters</h3>
+
+                    <div className="filter-group">
+                        <label>Time Period</label>
+                        <select
+                            value={timeFilter}
+                            onChange={(e) => setTimeFilter(e.target.value)}
+                            className="filter-select"
+                        >
+                            <option value="all">All Time</option>
+                            <option value="week">This Week</option>
+                            <option value="month">This Month</option>
+                            <option value="year">This Year</option>
+                        </select>
+                    </div>
+
+                    <div className="filter-group">
+                        <label>Cuisine</label>
+                        <select
+                            value={cuisineFilter}
+                            onChange={(e) => setCuisineFilter(e.target.value)}
+                            className="filter-select"
+                        >
+                            <option value="all">All Cuisines</option>
+                            {uniqueCuisines.map(cuisine => (
+                                <option key={cuisine} value={cuisine}>{cuisine}</option>
+                            ))}
+                        </select>
+                    </div>
+
+                    <div className="filter-group">
+                        <label>Location</label>
+                        <select
+                            value={locationFilter}
+                            onChange={(e) => setLocationFilter(e.target.value)}
+                            className="filter-select"
+                        >
+                            <option value="all">All Locations</option>
+                            {uniqueLocations.map(location => (
+                                <option key={location} value={location}>{location}</option>
+                            ))}
+                        </select>
+                    </div>
+                </aside>
             </div>
 
             {showModal && (
