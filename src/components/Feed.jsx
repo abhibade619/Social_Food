@@ -49,10 +49,23 @@ const Feed = ({ onViewProfile, onRestaurantClick }) => {
     const fetchLogs = async () => {
         setLoading(true);
         try {
+            // 1. Get list of users the current user follows
+            const { data: followingData, error: followingError } = await supabase
+                .from('follows')
+                .select('following_id')
+                .eq('follower_id', user.id);
+
+            if (followingError) throw followingError;
+
+            // Create array of IDs: followed users + current user
+            const followingIds = followingData.map(f => f.following_id);
+            const allowedUserIds = [...followingIds, user.id];
+
+            // 2. Fetch logs only from these users
             const { data, error } = await supabase
                 .from('logs')
                 .select('*')
-                .neq('user_id', user.id) // Exclude own logs from feed
+                .in('user_id', allowedUserIds)
                 .order('created_at', { ascending: false });
 
             if (error) throw error;

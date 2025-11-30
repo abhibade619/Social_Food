@@ -125,6 +125,7 @@ function App() {
           restaurant={selectedRestaurant}
           onBack={() => setCurrentView('search')}
           onNewLog={handleNewLog}
+          onViewProfile={handleNavigateToProfile}
         />
       );
     }

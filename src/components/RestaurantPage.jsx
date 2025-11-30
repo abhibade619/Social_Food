@@ -3,7 +3,7 @@ import { supabase } from '../supabaseClient';
 import MapComponent from './MapComponent';
 import LogCard from './LogCard';
 
-const RestaurantPage = ({ restaurant, onBack, onNewLog }) => {
+const RestaurantPage = ({ restaurant, onBack, onNewLog, onViewProfile }) => {
     const [logs, setLogs] = useState([]);
     const [loading, setLoading] = useState(true);
 
@@ -118,7 +118,11 @@ const RestaurantPage = ({ restaurant, onBack, onNewLog }) => {
                     ) : logs.length > 0 ? (
                         <div className="logs-stack">
                             {logs.map((log) => (
-                                <LogCard key={log.id} log={log} />
+                                <LogCard
+                                    key={log.id}
+                                    log={log}
+                                    onViewProfile={onViewProfile}
+                                />
                             ))}
                         </div>
                     ) : (
