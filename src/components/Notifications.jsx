@@ -47,10 +47,28 @@ const Notifications = ({ onNavigate }) => {
         }
     };
 
-    const handleNotificationClick = (notification) => {
+    const handleNotificationClick = async (notification) => {
         if (notification.type === 'tag' && notification.reference_id) {
-            // Navigate to diary or specific log if possible
-            // For now, let's go to diary as the log will be there
+            // Check if already added to diary (optional optimization, but for now just ask)
+            // or just ask.
+            const confirmAdd = window.confirm("Do you want to add this memory to your diary?");
+
+            if (confirmAdd) {
+                try {
+                    const { error } = await supabase
+                        .from('tagged_users')
+                        .update({ show_in_diary: true })
+                        .eq('log_id', notification.reference_id)
+                        .eq('user_id', user.id);
+
+                    if (error) throw error;
+                    alert("Added to your diary!");
+                } catch (err) {
+                    console.error("Error adding to diary:", err);
+                    alert("Failed to add to diary. Please try again.");
+                }
+            }
+
             onNavigate('diary');
         } else if (notification.type === 'follow' && notification.reference_id) {
             // Navigate to the user's profile

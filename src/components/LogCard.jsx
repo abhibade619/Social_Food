@@ -88,6 +88,14 @@ const LogCard = ({ log, onClick, showActions = false, onEdit, onDelete, onViewPr
         setLightboxImage(null);
     };
 
+    const isTaggedView = isDiaryView && user && user.id !== log.user_id;
+
+    const displayUser = isTaggedView ? {
+        avatar_url: user.user_metadata?.avatar_url,
+        full_name: user.user_metadata?.full_name,
+        username: user.user_metadata?.username || user.email?.split('@')[0]
+    } : userProfile;
+
     return (
         <>
             <div className="log-card glass-panel premium-card" onClick={onClick}>
@@ -113,23 +121,29 @@ const LogCard = ({ log, onClick, showActions = false, onEdit, onDelete, onViewPr
                 )}
 
                 <div className="log-header">
-                    <div className="user-info clickable" onClick={(e) => { e.stopPropagation(); onViewProfile && onViewProfile(log.user_id); }}>
+                    <div className="user-info clickable" onClick={(e) => { e.stopPropagation(); onViewProfile && onViewProfile(isTaggedView ? user.id : log.user_id); }}>
                         <div className="avatar-wrapper">
                             <img
-                                src={userProfile?.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${log.user_id}`}
-                                alt={userProfile?.username || 'User'}
+                                src={displayUser?.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${isTaggedView ? user.id : log.user_id}`}
+                                alt={displayUser?.username || 'User'}
                                 className="user-avatar"
                             />
                         </div>
                         <div className="log-user-info">
-                            <p className="log-user-name">{userProfile?.full_name || 'User'}</p>
-                            <p className="log-username">@{userProfile?.username || 'user'}</p>
+                            <p className="log-user-name">{displayUser?.full_name || 'User'}</p>
+                            <p className="log-username">@{displayUser?.username || 'user'}</p>
                         </div>
                     </div>
                     <span className="log-date">{formatDate(log.visit_date || log.created_at)}</span>
                 </div>
 
                 <div className="log-content">
+                    {isTaggedView && (
+                        <div className="tagged-by-attribution">
+                            <span className="tag-icon">🏷️</span>
+                            Tagged by <span className="tagged-by-name">{userProfile?.full_name || 'Unknown'}</span>
+                        </div>
+                    )}
                     <div className="log-title-row">
                         <h3
                             className="restaurant-name clickable-restaurant"

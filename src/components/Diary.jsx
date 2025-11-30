@@ -38,11 +38,12 @@ const Diary = ({ onRestaurantClick }) => {
 
             if (ownError) throw ownError;
 
-            // Fetch logs where user is tagged
+            // Fetch logs where user is tagged AND accepted to show in diary
             const { data: taggedData, error: taggedError } = await supabase
                 .from('tagged_users')
                 .select('log_id')
-                .eq('user_id', user.id);
+                .eq('user_id', user.id)
+                .eq('show_in_diary', true);
 
             if (taggedError) throw taggedError;
 
@@ -180,6 +181,7 @@ const Diary = ({ onRestaurantClick }) => {
                                 key={log.id}
                                 log={log}
                                 showActions={true}
+                                isDiaryView={true}
                                 onEdit={handleEdit}
                                 onDelete={handleDelete}
                                 onClick={() => handleEdit(log)}
