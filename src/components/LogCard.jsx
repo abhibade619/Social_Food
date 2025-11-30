@@ -6,6 +6,7 @@ import { calculateOverallRating } from '../utils/calculateRating';
 
 const LogCard = ({ log, onClick, showActions = false, onEdit, onDelete, onViewProfile, onAddToWishlist, onRestaurantClick }) => {
     const { user } = useAuth();
+    const [lightboxImage, setLightboxImage] = useState(null);
     const [userProfile, setUserProfile] = useState(null);
     const [taggedUsers, setTaggedUsers] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -76,8 +77,6 @@ const LogCard = ({ log, onClick, showActions = false, onEdit, onDelete, onViewPr
     if (loading) {
         return <div className="log-card glass-panel"><div className="loading">Loading...</div></div>;
     }
-
-    const [lightboxImage, setLightboxImage] = useState(null);
 
     const openLightbox = (e, photo) => {
         e.stopPropagation();
