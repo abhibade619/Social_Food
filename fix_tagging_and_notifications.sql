@@ -1,10 +1,13 @@
 -- Fix Tagging and Notifications
 
--- 1. Create tagged_users table if it doesn't exist
-CREATE TABLE IF NOT EXISTS public.tagged_users (
+-- 1. Re-create tagged_users table to ensure correct Foreign Keys
+-- We drop it first to ensure the FK change is applied if the table already exists
+DROP TABLE IF EXISTS public.tagged_users;
+
+CREATE TABLE public.tagged_users (
     id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
     log_id UUID REFERENCES public.logs(id) ON DELETE CASCADE NOT NULL,
-    user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE NOT NULL,
+    user_id UUID REFERENCES public.profiles(id) ON DELETE CASCADE NOT NULL, -- Changed to reference profiles for easier joining
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     UNIQUE(log_id, user_id)
 );

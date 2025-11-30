@@ -179,7 +179,10 @@ const LogModal = ({ onClose, onLogCreated, initialData = null }) => {
                     .from('tagged_users')
                     .insert(tagData);
 
-                if (tagError) console.error('Error tagging users:', tagError);
+                if (tagError) {
+                    console.error('Error tagging users:', tagError);
+                    alert(`Failed to tag friends: ${tagError.message}`);
+                }
 
                 // Create notifications for tagged users
                 const notificationData = taggedFriends.map(friend => ({
@@ -485,8 +488,8 @@ const LogModal = ({ onClose, onLogCreated, initialData = null }) => {
                         </button>
                     </div>
                 </form>
-            </div>
-        </div>
+            </div >
+        </div >
     );
 };
 
