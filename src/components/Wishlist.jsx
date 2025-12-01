@@ -84,100 +84,122 @@ const Wishlist = () => {
     }
 
     return (
-        <div className="wishlist-container">
-            <div className="wishlist-header">
+        <div className="wishlist-container container">
+            <div className="wishlist-header-premium">
                 <h2>My Wishlist</h2>
                 <button
                     className="btn-primary"
-                    onClick={() => setShowAddForm(!showAddForm)}
+                    onClick={() => setShowAddForm(true)}
                 >
-                    {showAddForm ? 'Cancel' : '+ Add Restaurant'}
+                    + Add Restaurant
                 </button>
             </div>
 
             {showAddForm && (
-                <div className="add-wishlist-form">
-                    <form onSubmit={handleAdd}>
-                        <div className="form-group">
-                            <label htmlFor="restaurant_name">Restaurant Name *</label>
-                            <input
-                                id="restaurant_name"
-                                type="text"
-                                required
-                                value={formData.restaurant_name}
-                                onChange={(e) => setFormData({ ...formData, restaurant_name: e.target.value })}
-                                placeholder="e.g., Joe's Pizza"
-                            />
+                <div className="add-wishlist-modal" onClick={(e) => {
+                    if (e.target.className === 'add-wishlist-modal') setShowAddForm(false);
+                }}>
+                    <div className="add-wishlist-content">
+                        <div className="add-wishlist-header">
+                            <h3>Add to Wishlist</h3>
+                            <button className="close-button" onClick={() => setShowAddForm(false)}>×</button>
                         </div>
-                        <div className="form-group">
-                            <label htmlFor="location">Location</label>
-                            <input
-                                id="location"
-                                type="text"
-                                value={formData.location}
-                                onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-                                placeholder="e.g., Downtown LA"
-                            />
-                        </div>
-                        <div className="form-group">
-                            <label htmlFor="cuisine">Cuisine</label>
-                            <input
-                                id="cuisine"
-                                type="text"
-                                value={formData.cuisine}
-                                onChange={(e) => setFormData({ ...formData, cuisine: e.target.value })}
-                                placeholder="e.g., Italian"
-                            />
-                        </div>
-                        <div className="form-group">
-                            <label htmlFor="notes">Notes</label>
-                            <textarea
-                                id="notes"
-                                rows="3"
-                                value={formData.notes}
-                                onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-                                placeholder="Why do you want to try this place?"
-                            />
-                        </div>
-                        <button type="submit" className="btn-primary">Add to Wishlist</button>
-                    </form>
+                        <form onSubmit={handleAdd}>
+                            <div className="form-group">
+                                <label htmlFor="restaurant_name">Restaurant Name *</label>
+                                <input
+                                    id="restaurant_name"
+                                    type="text"
+                                    required
+                                    value={formData.restaurant_name}
+                                    onChange={(e) => setFormData({ ...formData, restaurant_name: e.target.value })}
+                                    placeholder="e.g., Joe's Pizza"
+                                    autoFocus
+                                />
+                            </div>
+                            <div className="form-group">
+                                <label htmlFor="location">Location</label>
+                                <input
+                                    id="location"
+                                    type="text"
+                                    value={formData.location}
+                                    onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+                                    placeholder="e.g., Downtown LA"
+                                />
+                            </div>
+                            <div className="form-group">
+                                <label htmlFor="cuisine">Cuisine</label>
+                                <input
+                                    id="cuisine"
+                                    type="text"
+                                    value={formData.cuisine}
+                                    onChange={(e) => setFormData({ ...formData, cuisine: e.target.value })}
+                                    placeholder="e.g., Italian"
+                                />
+                            </div>
+                            <div className="form-group">
+                                <label htmlFor="notes">Notes</label>
+                                <textarea
+                                    id="notes"
+                                    rows="3"
+                                    value={formData.notes}
+                                    onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
+                                    placeholder="Why do you want to try this place?"
+                                />
+                            </div>
+                            <div className="modal-actions">
+                                <button type="button" className="btn-secondary" onClick={() => setShowAddForm(false)}>Cancel</button>
+                                <button type="submit" className="btn-primary">Add to Wishlist</button>
+                            </div>
+                        </form>
+                    </div>
                 </div>
             )}
 
             {wishlist.length === 0 ? (
-                <div className="empty-state">
-                    <p className="empty-icon">📝</p>
-                    <p className="empty-title">Your wishlist is empty</p>
+                <div className="empty-state glass-panel">
+                    <span className="empty-icon">✨</span>
+                    <h3 className="empty-title">Your wishlist is empty</h3>
                     <p className="empty-description">
-                        Add restaurants you want to try later!
+                        Start adding restaurants you want to visit!
                     </p>
                 </div>
             ) : (
                 <div className="wishlist-grid">
                     {wishlist.map(item => (
-                        <div key={item.id} className="wishlist-card">
+                        <div key={item.id} className="wishlist-card-premium">
                             <div className="wishlist-card-header">
                                 <h3>{item.restaurant_name}</h3>
                                 <button
-                                    className="remove-btn"
+                                    className="remove-btn-icon"
                                     onClick={() => handleRemove(item.id)}
                                     title="Remove from wishlist"
                                 >
                                     🗑️
                                 </button>
                             </div>
-                            {item.location && (
-                                <p className="wishlist-location">📍 {item.location}</p>
-                            )}
-                            {item.cuisine && (
-                                <p className="wishlist-cuisine">🍽️ {item.cuisine}</p>
-                            )}
-                            {item.notes && (
-                                <p className="wishlist-notes">{item.notes}</p>
-                            )}
-                            <p className="wishlist-date">
-                                Added {new Date(item.created_at).toLocaleDateString()}
-                            </p>
+                            <div className="wishlist-card-body">
+                                {item.location && (
+                                    <div className="wishlist-info-row">
+                                        <span className="wishlist-icon">📍</span>
+                                        <span>{item.location}</span>
+                                    </div>
+                                )}
+                                {item.cuisine && (
+                                    <div className="wishlist-info-row">
+                                        <span className="wishlist-icon">🍽️</span>
+                                        <span>{item.cuisine}</span>
+                                    </div>
+                                )}
+                                {item.notes && (
+                                    <div className="wishlist-notes">
+                                        "{item.notes}"
+                                    </div>
+                                )}
+                            </div>
+                            <div className="wishlist-footer">
+                                <span>Added {new Date(item.created_at).toLocaleDateString()}</span>
+                            </div>
                         </div>
                     ))}
                 </div>
