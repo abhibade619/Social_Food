@@ -18,7 +18,15 @@ const Notifications = ({ onNavigate }) => {
         try {
             const { data, error } = await supabase
                 .from('notifications')
-                .select('*')
+                .select(`
+                    *,
+                    sender:from_user_id (
+                        id,
+                        full_name,
+                        username,
+                        avatar_url
+                    )
+                `)
                 .eq('user_id', user.id)
                 .order('created_at', { ascending: false });
 
@@ -40,8 +48,6 @@ const Notifications = ({ onNavigate }) => {
                 .eq('is_read', false);
 
             if (error) throw error;
-            // Update local state to reflect read status if needed, 
-            // but we usually just want to clear the badge count.
         } catch (error) {
             console.error('Error marking notifications as read:', error);
         }
@@ -49,8 +55,6 @@ const Notifications = ({ onNavigate }) => {
 
     const handleNotificationClick = async (notification) => {
         if (notification.type === 'tag' && notification.reference_id) {
-            // Check if already added to diary (optional optimization, but for now just ask)
-            // or just ask.
             const confirmAdd = window.confirm("Do you want to add this memory to your diary?");
 
             if (confirmAdd) {
@@ -70,12 +74,11 @@ const Notifications = ({ onNavigate }) => {
             }
 
             onNavigate('diary');
-        } else if (notification.type === 'follow' && notification.reference_id) {
+        } else if (notification.type === 'follow') {
             // Navigate to the user's profile
-            // We need a way to navigate to a specific user profile
-            // Assuming onNavigate can handle user IDs or we have a specific prop
-            // For now, let's just go to feed or followers
-            onNavigate('feed'); // Placeholder
+            if (notification.from_user_id) {
+                onNavigate('userProfile', { selectedUser: { id: notification.from_user_id } });
+            }
         }
     };
 
@@ -107,7 +110,15 @@ const Notifications = ({ onNavigate }) => {
                                 {notification.type === 'tag' ? '🏷️' : notification.type === 'follow' ? '👤' : '🔔'}
                             </div>
                             <div className="notification-content">
-                                <p className="notification-message">{notification.message}</p>
+                                <p className="notification-message">
+                                    {notification.message || (
+                                        notification.type === 'follow' && notification.sender ? (
+                                            <span>
+                                                <strong>{notification.sender.full_name || notification.sender.username}</strong> started following you.
+                                            </span>
+                                        ) : 'New notification'
+                                    )}
+                                </p>
                                 <span className="notification-time">
                                     {new Date(notification.created_at).toLocaleDateString()} {new Date(notification.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                                 </span>
