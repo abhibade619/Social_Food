@@ -19,7 +19,7 @@ const Search = ({ setCurrentView, setSelectedRestaurant, setSelectedUser }) => {
     return (
         <div className="search-page container">
             <div className="search-header-premium">
-                <h1>Search</h1>
+
                 <div className="segmented-control">
                     <button
                         className={`segment-btn ${activeTab === 'restaurants' ? 'active' : ''}`}
