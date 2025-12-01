@@ -2882,8 +2882,9 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover {
 
 .wishlist-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
   gap: var(--spacing-lg);
+  width: 100%;
 }
 
 .wishlist-card-premium {
@@ -2895,6 +2896,8 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover {
   position: relative;
   display: flex;
   flex-direction: column;
+  min-height: 200px;
+  /* Ensure minimum height */
 }
 
 .wishlist-card-premium:hover {
