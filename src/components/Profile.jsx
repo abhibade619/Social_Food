@@ -53,14 +53,46 @@ const Profile = ({ onNavigate, onViewFollowers, onViewFollowing }) => {
 
     const fetchUserLogs = async () => {
         try {
-            const { data, error } = await supabase
+            // Fetch user's own logs
+            const { data: ownLogs, error: ownError } = await supabase
                 .from('logs')
                 .select('*')
                 .eq('user_id', user.id)
                 .order('created_at', { ascending: false });
 
-            if (error) throw error;
-            setUserLogs(data || []);
+            if (ownError) throw ownError;
+
+            // Fetch logs where user is tagged AND accepted
+            const { data: taggedData, error: taggedError } = await supabase
+                .from('tagged_users')
+                .select('log_id')
+                .eq('user_id', user.id)
+                .eq('show_in_diary', true);
+
+            if (taggedError) throw taggedError;
+
+            let taggedLogs = [];
+            if (taggedData && taggedData.length > 0) {
+                const taggedLogIds = taggedData.map(t => t.log_id);
+                const { data: taggedLogsData, error: taggedLogsError } = await supabase
+                    .from('logs')
+                    .select('*')
+                    .in('id', taggedLogIds)
+                    .order('created_at', { ascending: false });
+
+                if (!taggedLogsError && taggedLogsData) {
+                    taggedLogs = taggedLogsData;
+                }
+            }
+
+            // Combine and sort
+            const allLogs = [...(ownLogs || []), ...taggedLogs];
+            // Deduplicate based on ID just in case
+            const uniqueLogs = Array.from(new Map(allLogs.map(log => [log.id, log])).values());
+
+            uniqueLogs.sort((a, b) => new Date(b.visit_date || b.created_at) - new Date(a.visit_date || a.created_at));
+
+            setUserLogs(uniqueLogs);
         } catch (error) {
             console.error('Error fetching user logs:', error);
         }
@@ -286,7 +318,7 @@ const Profile = ({ onNavigate, onViewFollowers, onViewFollowing }) => {
                 {userLogs.length > 0 ? (
                     <div className="logs-grid">
                         {userLogs.map((log) => (
-                            <LogCard key={log.id} log={log} />
+                            <LogCard key={log.id} log={log} isDiaryView={true} />
                         ))}
                     </div>
                 ) : (

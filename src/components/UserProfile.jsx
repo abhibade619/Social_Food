@@ -51,17 +51,48 @@ const UserProfile = ({ userId, onNavigate, onRestaurantClick, onViewFollowers, o
     };
 
     const fetchLogs = async () => {
-        const { data, error } = await supabase
+        // Fetch user's own logs
+        const { data: ownLogs, error: ownError } = await supabase
             .from('logs')
             .select('*')
             .eq('user_id', userId)
             .order('visit_date', { ascending: false })
             .limit(20);
-        if (error) {
-            console.error('fetchLogs error:', error);
-            throw error;
+
+        if (ownError) {
+            console.error('fetchLogs error:', ownError);
+            throw ownError;
         }
-        return data || [];
+
+        // Fetch logs where user is tagged AND accepted
+        const { data: taggedData, error: taggedError } = await supabase
+            .from('tagged_users')
+            .select('log_id')
+            .eq('user_id', userId)
+            .eq('show_in_diary', true);
+
+        if (taggedError) {
+            console.error('fetchTaggedLogs error:', taggedError);
+            // Don't throw, just log
+        }
+
+        let taggedLogs = [];
+        if (taggedData && taggedData.length > 0) {
+            const taggedLogIds = taggedData.map(t => t.log_id);
+            const { data: taggedLogsData } = await supabase
+                .from('logs')
+                .select('*')
+                .in('id', taggedLogIds)
+                .order('visit_date', { ascending: false });
+
+            if (taggedLogsData) taggedLogs = taggedLogsData;
+        }
+
+        const allLogs = [...(ownLogs || []), ...taggedLogs];
+        const uniqueLogs = Array.from(new Map(allLogs.map(log => [log.id, log])).values());
+        uniqueLogs.sort((a, b) => new Date(b.visit_date) - new Date(a.visit_date));
+
+        return uniqueLogs;
     };
 
     const fetchStats = async () => {
@@ -146,6 +177,7 @@ const UserProfile = ({ userId, onNavigate, onRestaurantClick, onViewFollowers, o
                             <LogCard
                                 key={log.id}
                                 log={log}
+                                isDiaryView={true}
                                 onViewProfile={onNavigate}
                                 onRestaurantClick={onRestaurantClick}
                             />
