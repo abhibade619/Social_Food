@@ -18,11 +18,12 @@ import AccountInfo from './components/AccountInfo';
 import Settings from './components/Settings';
 import Diary from './components/Diary';
 import LogModal from './components/LogModal';
+import Home from './components/Home';
 import './App.css';
 
 function App() {
   const { user, loading, passwordRecoveryMode } = useAuth();
-  const [currentView, setCurrentView] = useState('feed');
+  const [currentView, setCurrentView] = useState('home');
   const [selectedRestaurant, setSelectedRestaurant] = useState(null);
   const [selectedUser, setSelectedUser] = useState(null);
   const [listTargetUser, setListTargetUser] = useState(null); // New state for followers/following lists
@@ -43,7 +44,7 @@ function App() {
       if (window.history.state.listTargetUser) setListTargetUser(window.history.state.listTargetUser);
     } else {
       // Only set default if no state exists
-      window.history.replaceState({ view: 'feed' }, '');
+      window.history.replaceState({ view: 'home' }, '');
     }
 
     const handlePopState = (event) => {
@@ -202,6 +203,8 @@ function App() {
     }
 
     switch (currentView) {
+      case 'home':
+        return <Home onRestaurantClick={handleNavigateToRestaurant} />;
       case 'feed':
         return <Feed
           key={feedVersion} // Force re-render/refetch when version changes

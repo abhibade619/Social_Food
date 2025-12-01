@@ -142,7 +142,7 @@ const Navbar = ({ currentView, setCurrentView, onNewLog }) => {
         <nav className="navbar glass-panel">
             <div className="navbar-content container">
                 <div className="navbar-left">
-                    <div className="logo" onClick={() => setCurrentView('feed')}>
+                    <div className="logo" onClick={() => setCurrentView('home')}>
                         <span className="logo-icon">🍽️</span>
                         <span className="logo-text">FoodSocial</span>
                     </div>
