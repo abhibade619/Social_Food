@@ -111,7 +111,7 @@ const RestaurantPage = ({ restaurant, onBack, onNewLog, onViewProfile }) => {
             }
         } catch (error) {
             console.error('Error toggling wishlist:', error);
-            alert('Failed to update wishlist');
+            alert(`Failed to update wishlist: ${error.message || JSON.stringify(error)}`);
         } finally {
             setWishlistLoading(false);
         }
