@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthProvider';
 import { calculateOverallRating } from '../utils/calculateRating';
 
-const LogCard = ({ log, onClick, showActions = false, isDiaryView = false, onEdit, onDelete, onViewProfile, onAddToWishlist, onRestaurantClick }) => {
+const LogCard = ({ log, onClick, showActions = false, isDiaryView = false, profileOwner = null, onEdit, onDelete, onViewProfile, onAddToWishlist, onRestaurantClick }) => {
     const { user } = useAuth();
     const [lightboxImage, setLightboxImage] = useState(null);
     const [userProfile, setUserProfile] = useState(null);
@@ -88,12 +88,21 @@ const LogCard = ({ log, onClick, showActions = false, isDiaryView = false, onEdi
         setLightboxImage(null);
     };
 
-    const isTaggedView = isDiaryView && user && user.id !== log.user_id;
+    // Determine if this is a "tagged entry" view
+    // It is a tagged entry if:
+    // 1. We are in a diary/profile view (isDiaryView=true)
+    // 2. We have a target profile owner (profileOwner) OR we fallback to current user if not provided (for backward compat)
+    // 3. The log author is NOT the profile owner
+    const targetProfile = profileOwner || (isDiaryView ? user : null);
+    const isTaggedEntry = isDiaryView && targetProfile && targetProfile.id !== log.user_id;
 
-    const displayUser = isTaggedView ? {
-        avatar_url: user.user_metadata?.avatar_url,
-        full_name: user.user_metadata?.full_name,
-        username: user.user_metadata?.username || user.email?.split('@')[0]
+    // If it's a tagged entry, we show the PROFILE OWNER'S info at the top (because it's on THEIR timeline)
+    // Otherwise, we show the LOG AUTHOR'S info
+    const displayUser = isTaggedEntry ? {
+        id: targetProfile.id,
+        avatar_url: targetProfile.user_metadata?.avatar_url || targetProfile.avatar_url,
+        full_name: targetProfile.user_metadata?.full_name || targetProfile.full_name,
+        username: targetProfile.user_metadata?.username || targetProfile.username || targetProfile.email?.split('@')[0]
     } : userProfile;
 
     return (
@@ -121,10 +130,10 @@ const LogCard = ({ log, onClick, showActions = false, isDiaryView = false, onEdi
                 )}
 
                 <div className="log-header">
-                    <div className="user-info clickable" onClick={(e) => { e.stopPropagation(); onViewProfile && onViewProfile(isTaggedView ? user.id : log.user_id); }}>
+                    <div className="user-info clickable" onClick={(e) => { e.stopPropagation(); onViewProfile && onViewProfile(displayUser.id || log.user_id); }}>
                         <div className="avatar-wrapper">
                             <img
-                                src={displayUser?.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${isTaggedView ? user.id : log.user_id}`}
+                                src={displayUser?.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${displayUser?.id || log.user_id}`}
                                 alt={displayUser?.username || 'User'}
                                 className="user-avatar"
                             />
@@ -138,7 +147,7 @@ const LogCard = ({ log, onClick, showActions = false, isDiaryView = false, onEdi
                 </div>
 
                 <div className="log-content">
-                    {isTaggedView && (
+                    {isTaggedEntry && (
                         <div className="tagged-by-attribution">
                             <span className="tag-icon">🏷️</span>
                             Tagged by <span className="tagged-by-name">{userProfile?.full_name || 'Unknown'}</span>

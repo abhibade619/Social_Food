@@ -33,22 +33,32 @@ function App() {
   const [feedVersion, setFeedVersion] = useState(0);
 
   // Handle browser back button
+  // Handle browser back button and initial load
   useEffect(() => {
+    // Check for existing state on mount (fix for refresh)
+    if (window.history.state && window.history.state.view) {
+      setCurrentView(window.history.state.view);
+      if (window.history.state.selectedRestaurant) setSelectedRestaurant(window.history.state.selectedRestaurant);
+      if (window.history.state.selectedUser) setSelectedUser(window.history.state.selectedUser);
+      if (window.history.state.listTargetUser) setListTargetUser(window.history.state.listTargetUser);
+    } else {
+      // Only set default if no state exists
+      window.history.replaceState({ view: 'feed' }, '');
+    }
+
     const handlePopState = (event) => {
       if (event.state && event.state.view) {
         setCurrentView(event.state.view);
-        // Restore other state if needed (e.g. selectedRestaurant)
+        // Restore other state if needed
         if (event.state.selectedRestaurant) setSelectedRestaurant(event.state.selectedRestaurant);
         if (event.state.selectedUser) setSelectedUser(event.state.selectedUser);
+        if (event.state.listTargetUser) setListTargetUser(event.state.listTargetUser);
       } else {
         setCurrentView('feed');
       }
     };
 
     window.addEventListener('popstate', handlePopState);
-
-    // Set initial state
-    window.history.replaceState({ view: 'feed' }, '');
 
     return () => window.removeEventListener('popstate', handlePopState);
   }, []);

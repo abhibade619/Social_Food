@@ -318,7 +318,7 @@ const Profile = ({ onNavigate, onViewFollowers, onViewFollowing }) => {
                 {userLogs.length > 0 ? (
                     <div className="logs-grid">
                         {userLogs.map((log) => (
-                            <LogCard key={log.id} log={log} isDiaryView={true} />
+                            <LogCard key={log.id} log={log} isDiaryView={true} profileOwner={user} />
                         ))}
                     </div>
                 ) : (

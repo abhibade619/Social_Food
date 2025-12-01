@@ -182,6 +182,7 @@ const Diary = ({ onRestaurantClick }) => {
                                 log={log}
                                 showActions={true}
                                 isDiaryView={true}
+                                profileOwner={user}
                                 onEdit={handleEdit}
                                 onDelete={handleDelete}
                                 onClick={() => handleEdit(log)}
