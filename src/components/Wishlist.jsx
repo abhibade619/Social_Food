@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { supabase } from '../supabaseClient';
 import { useAuth } from '../context/AuthProvider';
 
-const Wishlist = () => {
+const Wishlist = ({ onRestaurantClick }) => {
     const { user } = useAuth();
     const [wishlist, setWishlist] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -62,7 +62,8 @@ const Wishlist = () => {
         }
     };
 
-    const handleRemove = async (id) => {
+    const handleRemove = async (e, id) => {
+        e.stopPropagation(); // Prevent card click
         if (!confirm('Remove this restaurant from your wishlist?')) return;
 
         try {
@@ -76,6 +77,19 @@ const Wishlist = () => {
         } catch (error) {
             console.error('Error removing from wishlist:', error);
             alert('Failed to remove restaurant. Please try again.');
+        }
+    };
+
+    const handleCardClick = (item) => {
+        if (onRestaurantClick) {
+            // Construct a restaurant object compatible with RestaurantPage
+            const restaurantData = {
+                name: item.restaurant_name,
+                vicinity: item.location,
+                place_id: item.place_id, // Ensure this is saved/fetched
+                geometry: { location: { lat: 0, lng: 0 } } // Placeholder if missing
+            };
+            onRestaurantClick(restaurantData);
         }
     };
 
@@ -167,12 +181,17 @@ const Wishlist = () => {
             ) : (
                 <div className="wishlist-grid">
                     {wishlist.map(item => (
-                        <div key={item.id} className="wishlist-card-premium">
+                        <div
+                            key={item.id}
+                            className="wishlist-card-premium"
+                            onClick={() => handleCardClick(item)}
+                            style={{ cursor: 'pointer' }}
+                        >
                             <div className="wishlist-card-header">
                                 <h3>{item.restaurant_name}</h3>
                                 <button
                                     className="remove-btn-icon"
-                                    onClick={() => handleRemove(item.id)}
+                                    onClick={(e) => handleRemove(e, item.id)}
                                     title="Remove from wishlist"
                                 >
                                     🗑️

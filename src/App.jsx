@@ -230,7 +230,7 @@ function App() {
           onViewFollowing={handleViewFollowing}
         />;
       case 'wishlist':
-        return <Wishlist />;
+        return <Wishlist onRestaurantClick={handleNavigateToRestaurant} />;
       case 'diary':
         return <Diary onRestaurantClick={handleNavigateToRestaurant} />;
       case 'account':
