@@ -8,6 +8,7 @@ const FollowingList = ({ userId, onBack, onNavigate }) => {
     const [loading, setLoading] = useState(true);
 
     const [searchQuery, setSearchQuery] = useState('');
+    const [showSearch, setShowSearch] = useState(false);
 
     useEffect(() => {
         fetchFollowing();
@@ -54,20 +55,32 @@ const FollowingList = ({ userId, onBack, onNavigate }) => {
     return (
         <div className="users-list-container-premium">
             <div className="list-header-premium">
-                <h2>Following</h2>
-                <span className="count-badge">{following.length}</span>
+                <div className="list-title-row">
+                    <h2>Following</h2>
+                    <span className="count-badge">{following.length}</span>
+                </div>
+                <button
+                    className={`search-toggle-btn ${showSearch ? 'active' : ''}`}
+                    onClick={() => setShowSearch(!showSearch)}
+                    title="Search following"
+                >
+                    🔍
+                </button>
             </div>
 
-            <div className="list-search-container">
-                <span className="search-icon">🔍</span>
-                <input
-                    type="text"
-                    placeholder="Search following..."
-                    className="list-search-input"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                />
-            </div>
+            {showSearch && (
+                <div className="list-search-container slide-down">
+                    <span className="search-icon">🔍</span>
+                    <input
+                        type="text"
+                        placeholder="Search following..."
+                        className="list-search-input"
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        autoFocus
+                    />
+                </div>
+            )}
 
             {filteredFollowing.length === 0 ? (
                 <div className="empty-state glass-panel">

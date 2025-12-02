@@ -3177,9 +3177,59 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover {
 
 .list-header-premium {
   display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-lg);
+}
+
+.list-title-row {
+  display: flex;
   align-items: center;
   gap: var(--spacing-sm);
-  margin-bottom: var(--spacing-lg);
+}
+
+.search-toggle-btn {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--text-secondary);
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all var(--transition-base);
+  font-size: 1.1rem;
+}
+
+.search-toggle-btn:hover,
+.search-toggle-btn.active {
+  background: rgba(255, 107, 107, 0.1);
+  color: var(--primary-color);
+  border-color: rgba(255, 107, 107, 0.3);
+  transform: scale(1.05);
+}
+
+.list-search-container.slide-down {
+  animation: slideDown 0.3s ease-out forwards;
+  transform-origin: top;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px) scaleY(0.95);
+    max-height: 0;
+    margin-bottom: 0;
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scaleY(1);
+    max-height: 60px;
+    margin-bottom: var(--spacing-lg);
+  }
 }
 
 .list-header-premium h2 {
