@@ -102,7 +102,7 @@ const Wishlist = ({ onRestaurantClick }) => {
             <div className="wishlist-header-premium">
                 <h2>My Wishlist</h2>
                 <button
-                    className="btn-primary"
+                    className="premium-button"
                     onClick={() => setShowAddForm(true)}
                 >
                     + Add Restaurant
@@ -179,7 +179,7 @@ const Wishlist = ({ onRestaurantClick }) => {
                     </p>
                 </div>
             ) : (
-                <div className="wishlist-grid">
+                <div className="wishlist-grid-premium">
                     {wishlist.map(item => (
                         <div
                             key={item.id}

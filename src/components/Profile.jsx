@@ -206,7 +206,7 @@ const Profile = ({ onNavigate, onViewFollowers, onViewFollowing }) => {
 
     return (
         <div className="profile-container-premium">
-            <div className="profile-header-premium">
+            <div className="profile-header-premium profile-hero-gradient">
                 <div className="profile-header-content">
                     <div className="profile-avatar-premium">
                         {profile?.avatar_url ? (
@@ -219,7 +219,8 @@ const Profile = ({ onNavigate, onViewFollowers, onViewFollowing }) => {
                     </div>
 
                     {editing ? (
-                        <form onSubmit={handleUpdate} className="profile-form">
+                        <form onSubmit={handleUpdate} className="profile-form glass-panel">
+                            {/* Form content remains same but wrapped in glass-panel */}
                             <div className="form-group">
                                 <label htmlFor="username">Username</label>
                                 <input
@@ -227,6 +228,7 @@ const Profile = ({ onNavigate, onViewFollowers, onViewFollowing }) => {
                                     type="text"
                                     value={formData.username}
                                     onChange={(e) => setFormData({ ...formData, username: e.target.value })}
+                                    className="premium-input"
                                 />
                             </div>
                             <div className="form-group">
@@ -236,6 +238,7 @@ const Profile = ({ onNavigate, onViewFollowers, onViewFollowing }) => {
                                     type="text"
                                     value={formData.full_name}
                                     onChange={(e) => setFormData({ ...formData, full_name: e.target.value })}
+                                    className="premium-input"
                                 />
                             </div>
                             <div className="form-group">
@@ -245,6 +248,7 @@ const Profile = ({ onNavigate, onViewFollowers, onViewFollowing }) => {
                                     type="url"
                                     value={formData.website}
                                     onChange={(e) => setFormData({ ...formData, website: e.target.value })}
+                                    className="premium-input"
                                 />
                             </div>
                             <div className="form-group">
@@ -255,6 +259,7 @@ const Profile = ({ onNavigate, onViewFollowers, onViewFollowing }) => {
                                     value={formData.bio}
                                     onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
                                     placeholder="Tell us about yourself..."
+                                    className="premium-input"
                                 />
                             </div>
                             <div className="form-group">
@@ -265,11 +270,12 @@ const Profile = ({ onNavigate, onViewFollowers, onViewFollowing }) => {
                                     accept="image/*"
                                     onChange={handleAvatarUpload}
                                     disabled={uploading}
+                                    className="premium-input"
                                 />
                                 {uploading && <p className="upload-status">Uploading...</p>}
                             </div>
                             <div className="form-actions">
-                                <button type="submit" className="btn-primary">Save</button>
+                                <button type="submit" className="premium-button">Save</button>
                                 <button type="button" className="btn-secondary" onClick={() => setEditing(false)}>
                                     Cancel
                                 </button>
@@ -286,26 +292,29 @@ const Profile = ({ onNavigate, onViewFollowers, onViewFollowing }) => {
 
                             <div className="profile-stats-premium">
                                 <div className="stat-item-premium">
+                                    <span className="stat-icon">📝</span>
                                     <span className="stat-value-premium">{userLogs.length}</span>
                                     <span className="stat-label-premium">Logs</span>
                                 </div>
                                 <div
-                                    className="stat-item-premium"
+                                    className="stat-item-premium clickable"
                                     onClick={() => onViewFollowers && onViewFollowers(user.id)}
                                 >
+                                    <span className="stat-icon">👥</span>
                                     <span className="stat-value-premium">{followerCount}</span>
                                     <span className="stat-label-premium">Followers</span>
                                 </div>
                                 <div
-                                    className="stat-item-premium"
+                                    className="stat-item-premium clickable"
                                     onClick={() => onViewFollowing && onViewFollowing(user.id)}
                                 >
+                                    <span className="stat-icon">👣</span>
                                     <span className="stat-value-premium">{followingCount}</span>
                                     <span className="stat-label-premium">Following</span>
                                 </div>
                             </div>
 
-                            <button className="btn-edit-profile" onClick={() => setEditing(true)}>
+                            <button className="btn-edit-profile-premium" onClick={() => setEditing(true)}>
                                 Edit Profile
                             </button>
                         </>

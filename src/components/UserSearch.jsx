@@ -59,18 +59,18 @@ const UserSearch = ({ onUserSelect }) => {
                 {!loading && users.map((user) => (
                     <div
                         key={user.id}
-                        className="user-item"
+                        className="premium-user-item"
                         onClick={() => handleUserClick(user)}
                     >
-                        <div className="user-item-content">
+                        <div className="user-item-content" style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
                             <img
                                 src={user.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.id}`}
                                 alt={user.username}
-                                className="user-avatar-small"
+                                className="premium-avatar-small"
                             />
                             <div className="user-info">
-                                <p className="user-name">{user.full_name || 'Unknown User'}</p>
-                                <p className="username">@{user.username || 'unknown'}</p>
+                                <p className="user-name" style={{ margin: 0, fontWeight: 600 }}>{user.full_name || 'Unknown User'}</p>
+                                <p className="username" style={{ margin: 0, fontSize: '0.85rem', color: 'var(--text-secondary)' }}>@{user.username || 'unknown'}</p>
                             </div>
                         </div>
                         <div onClick={(e) => e.stopPropagation()}>

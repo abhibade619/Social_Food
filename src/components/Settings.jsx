@@ -17,10 +17,12 @@ const Settings = () => {
     };
 
     return (
-        <div className="settings-container">
-            <h2>Settings</h2>
+        <div className="settings-container settings-panel">
+            <div className="section-header-premium">
+                <h2>Settings</h2>
+            </div>
 
-            <div className="settings-section">
+            <div className="settings-card">
                 <h3>Notifications</h3>
                 <div className="setting-item">
                     <div className="setting-info">
@@ -53,7 +55,7 @@ const Settings = () => {
                 </div>
             </div>
 
-            <div className="settings-section">
+            <div className="settings-card">
                 <h3>Privacy</h3>
                 <div className="setting-item">
                     <div className="setting-info">
@@ -86,11 +88,13 @@ const Settings = () => {
                 </div>
             </div>
 
-            <div className="settings-section">
-                <h3>Account</h3>
-                <button className="btn-secondary settings-button">Change Password</button>
-                <button className="btn-secondary settings-button">Download My Data</button>
-                <button className="btn-danger settings-button">Delete Account</button>
+            <div className="settings-card">
+                <h3>Account Management</h3>
+                <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+                    <button className="btn-secondary settings-button">Change Password</button>
+                    <button className="btn-secondary settings-button">Download My Data</button>
+                    <button className="btn-delete-account">Delete Account</button>
+                </div>
             </div>
         </div>
     );

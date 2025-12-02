@@ -77,7 +77,7 @@ const Home = ({ onRestaurantClick }) => {
                             onClick={() => onRestaurantClick(rest)}
                         >
                             <div className="card-image" style={{ backgroundImage: `url(${rest.image})` }}>
-                                <span className="rating-badge">⭐ {rest.rating}</span>
+                                <span className="rating-badge-overlay">⭐ {rest.rating}</span>
                             </div>
                             <div className="card-info">
                                 <h3>{rest.name}</h3>
@@ -101,7 +101,7 @@ const Home = ({ onRestaurantClick }) => {
                             onClick={() => onRestaurantClick(rest)}
                         >
                             <div className="card-image" style={{ backgroundImage: `url(${rest.image})` }}>
-                                <span className="rating-badge">⭐ {rest.rating}</span>
+                                <span className="rating-badge-overlay">⭐ {rest.rating}</span>
                             </div>
                             <div className="card-info">
                                 <h3>{rest.name}</h3>

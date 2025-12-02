@@ -99,14 +99,14 @@ const Notifications = ({ onNavigate }) => {
                     </p>
                 </div>
             ) : (
-                <div className="notifications-list">
+                <div className="notifications-list-premium">
                     {notifications.map((notification) => (
                         <div
                             key={notification.id}
-                            className={`notification-item glass-panel ${!notification.is_read ? 'unread' : ''}`}
+                            className={`premium-notification-item ${!notification.is_read ? 'unread' : ''}`}
                             onClick={() => handleNotificationClick(notification)}
                         >
-                            <div className="notification-icon">
+                            <div className="notification-icon-premium">
                                 {notification.type === 'tag' ? '🏷️' : notification.type === 'follow' ? '👤' : '🔔'}
                             </div>
                             <div className="notification-content">

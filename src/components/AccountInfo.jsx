@@ -15,45 +15,59 @@ const AccountInfo = () => {
 
     return (
         <div className="account-info-container">
-            <h2>Account Information</h2>
+            <div className="section-header-premium">
+                <h2>Account Information</h2>
+            </div>
 
-            <div className="info-card">
-                <div className="info-section">
+            <div className="account-grid">
+                <div className="info-summary-card">
                     <h3>Profile Details</h3>
-                    <div className="info-row">
-                        <span className="info-label">Email:</span>
+                    <div className="info-row-premium">
+                        <span className="info-label-premium">
+                            <span className="info-icon">📧</span> Email
+                        </span>
                         <span className="info-value">{user?.email || 'N/A'}</span>
                     </div>
-                    <div className="info-row">
-                        <span className="info-label">User ID:</span>
-                        <span className="info-value info-value-mono">{user?.id || 'N/A'}</span>
+                    <div className="info-row-premium">
+                        <span className="info-label-premium">
+                            <span className="info-icon">🆔</span> User ID
+                        </span>
+                        <span className="info-value info-value-mono" style={{ fontSize: '0.8rem' }}>{user?.id?.substring(0, 8)}...</span>
                     </div>
-                    <div className="info-row">
-                        <span className="info-label">Account Created:</span>
+                    <div className="info-row-premium">
+                        <span className="info-label-premium">
+                            <span className="info-icon">📅</span> Joined
+                        </span>
                         <span className="info-value">{formatDate(user?.created_at)}</span>
                     </div>
-                    <div className="info-row">
-                        <span className="info-label">Last Sign In:</span>
+                    <div className="info-row-premium">
+                        <span className="info-label-premium">
+                            <span className="info-icon">🕒</span> Last Seen
+                        </span>
                         <span className="info-value">{formatDate(user?.last_sign_in_at)}</span>
                     </div>
                 </div>
 
-                <div className="info-section">
+                <div className="info-summary-card">
                     <h3>Account Status</h3>
-                    <div className="info-row">
-                        <span className="info-label">Email Verified:</span>
-                        <span className={`info-badge ${user?.email_confirmed_at ? 'badge-success' : 'badge-warning'}`}>
-                            {user?.email_confirmed_at ? '✓ Verified' : '⚠ Not Verified'}
+                    <div className="info-row-premium">
+                        <span className="info-label-premium">
+                            <span className="info-icon">🛡️</span> Verification
+                        </span>
+                        <span className={`premium-badge ${user?.email_confirmed_at ? 'success' : 'warning'}`}>
+                            {user?.email_confirmed_at ? 'Verified' : 'Unverified'}
                         </span>
                     </div>
-                    <div className="info-row">
-                        <span className="info-label">Account Type:</span>
-                        <span className="info-badge badge-info">Standard</span>
+                    <div className="info-row-premium">
+                        <span className="info-label-premium">
+                            <span className="info-icon">👤</span> Type
+                        </span>
+                        <span className="premium-badge info">Standard</span>
                     </div>
                 </div>
             </div>
 
-            <div className="info-actions">
+            <div className="info-actions" style={{ marginTop: '2rem' }}>
                 <p className="info-note">
                     Need to update your profile? Go to the <strong>Profile</strong> page to edit your username, name, and other details.
                 </p>

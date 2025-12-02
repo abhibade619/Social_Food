@@ -158,7 +158,7 @@ const Diary = ({ onRestaurantClick }) => {
                     <h1>My Culinary Journal</h1>
                     <p className="diary-subtitle">Documenting your gastronomic adventures.</p>
                 </div>
-                <button className="btn-primary new-entry-btn" onClick={() => setShowModal(true)}>
+                <button className="premium-button new-entry-btn" onClick={() => setShowModal(true)}>
                     <span className="plus-icon">+</span> New Entry
                 </button>
             </div>

@@ -135,7 +135,7 @@ const LogCard = ({ log, onClick, showActions = false, isDiaryView = false, profi
                             <img
                                 src={displayUser?.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${displayUser?.id || log.user_id}`}
                                 alt={displayUser?.username || 'User'}
-                                className="user-avatar"
+                                className="user-avatar premium-avatar"
                             />
                         </div>
                         <div className="log-user-info">
@@ -172,7 +172,7 @@ const LogCard = ({ log, onClick, showActions = false, isDiaryView = false, profi
                             {log.restaurant_name}
                         </h3>
                         {hasRating && (
-                            <div className="log-rating-badge">
+                            <div className="premium-rating-pill">
                                 <span className="rating-star">★</span>
                                 <span className="rating-value">{Number(displayRating).toFixed(1)}</span>
                             </div>

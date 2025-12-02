@@ -54,7 +54,8 @@ const Auth = () => {
         <div className="auth-container">
             <div className="auth-card glass-panel fade-in">
                 <div className="auth-header">
-                    <h1 className="auth-title">FoodSocial</h1>
+                    <h1 className="auth-title premium-gradient-text">FoodSocial</h1>
+                    <p className="auth-tagline">Savor every moment.</p>
                     <p className="auth-subtitle">
                         {isResetPassword
                             ? 'Recover your account.'
@@ -71,52 +72,47 @@ const Auth = () => {
 
                 <form onSubmit={handleSubmit} className="auth-form">
                     {isSignUp && !isResetPassword && (
-                        <div className="form-group">
-                            <label htmlFor="username">Username</label>
-                            <div className="input-wrapper">
-                                <input
-                                    id="username"
-                                    type="text"
-                                    value={username}
-                                    onChange={(e) => setUsername(e.target.value)}
-                                    placeholder="@username"
-                                    required
-                                    className="auth-input"
-                                />
-                            </div>
+                        <div className="form-group floating-label-group">
+                            <input
+                                id="username"
+                                type="text"
+                                value={username}
+                                onChange={(e) => setUsername(e.target.value)}
+                                placeholder=" "
+                                required
+                                className="premium-input"
+                            />
+                            <label htmlFor="username" className="floating-label">Username</label>
                         </div>
                     )}
 
-                    <div className="form-group">
-                        <label htmlFor="email">Email Address</label>
-                        <div className="input-wrapper">
-                            <input
-                                id="email"
-                                type="email"
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                                placeholder="name@example.com"
-                                required
-                                className="auth-input"
-                            />
-                        </div>
+                    <div className="form-group floating-label-group">
+                        <input
+                            id="email"
+                            type="email"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            placeholder=" "
+                            required
+                            className="premium-input"
+                        />
+                        <label htmlFor="email" className="floating-label">Email Address</label>
                     </div>
 
                     {!isResetPassword && (
-                        <div className="form-group">
-                            <label htmlFor="password">Password</label>
-                            <div className="input-wrapper">
-                                <input
-                                    id="password"
-                                    type="password"
-                                    value={password}
-                                    onChange={(e) => setPassword(e.target.value)}
-                                    placeholder="••••••••"
-                                    required
-                                    minLength={6}
-                                    className="auth-input"
-                                />
-                            </div>
+                        <div className="form-group floating-label-group">
+                            <input
+                                id="password"
+                                type="password"
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                placeholder=" "
+                                required
+                                minLength={6}
+                                className="premium-input"
+                            />
+                            <label htmlFor="password" className="floating-label">Password</label>
+
                             {!isSignUp && (
                                 <div className="forgot-password-link">
                                     <button
@@ -138,7 +134,7 @@ const Auth = () => {
                     {error && <div className="error-message">{error}</div>}
                     {success && <div className="success-message">{success}</div>}
 
-                    <button type="submit" className="btn-primary auth-submit-btn" disabled={loading}>
+                    <button type="submit" className="premium-button auth-submit-btn" disabled={loading}>
                         {loading ? <div className="loading-spinner-small"></div> : (
                             isResetPassword ? 'Send Reset Link' : (isSignUp ? 'Create Account' : 'Sign In')
                         )}

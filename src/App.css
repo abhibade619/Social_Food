@@ -1,3 +1,132 @@
+:root {
+  --primary-color: #ff6b6b;
+  --secondary-color: #ff8e53;
+  --primary-gradient: linear-gradient(135deg, #ff6b6b, #ff8e53);
+  --bg-dark: #0f0f0f;
+  --bg-card: #1e1e1e;
+  --bg-hover: #2a2a2a;
+  --bg-tertiary: #252525;
+  --text-primary: #ffffff;
+  --text-secondary: #b0b0b0;
+  --text-tertiary: #808080;
+  --text-gold: #ffd700;
+  --border-color: #333333;
+  --border-radius: 12px;
+  --border-radius-sm: 8px;
+  --border-radius-lg: 20px;
+  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.1);
+  --shadow-md: 0 4px 8px rgba(0, 0, 0, 0.2);
+  --shadow-lg: 0 8px 16px rgba(0, 0, 0, 0.3);
+  --shadow-glow: 0 0 20px rgba(255, 107, 107, 0.3);
+  --font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  --spacing-xs: 0.5rem;
+  --spacing-sm: 0.75rem;
+  --spacing-md: 1rem;
+  --spacing-lg: 1.5rem;
+  --spacing-xl: 2rem;
+  --transition-fast: 0.2s ease;
+  --transition-base: 0.3s ease;
+  --transition-slow: 0.5s ease;
+
+  /* Glassmorphism */
+  --glass-bg: rgba(30, 30, 30, 0.6);
+  --glass-border: 1px solid rgba(255, 255, 255, 0.1);
+  --glass-blur: blur(12px);
+}
+
+body {
+  background-color: var(--bg-dark);
+  color: var(--text-primary);
+  font-family: var(--font-family);
+  margin: 0;
+  min-height: 100vh;
+  line-height: 1.6;
+}
+
+/* Premium Utilities */
+.glass-panel {
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  border: var(--glass-border);
+  box-shadow: var(--shadow-lg);
+}
+
+.premium-gradient-text {
+  background: var(--primary-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.premium-button {
+  background: var(--primary-gradient);
+  color: white;
+  border: none;
+  padding: 0.8rem 1.5rem;
+  border-radius: var(--border-radius-sm);
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition-base);
+  box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
+}
+
+.premium-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(255, 107, 107, 0.5);
+}
+
+.premium-input {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--text-primary);
+  padding: 1rem;
+  border-radius: var(--border-radius-sm);
+  transition: var(--transition-base);
+  width: 100%;
+}
+
+.premium-input:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  background: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 0 0 4px rgba(255, 107, 107, 0.1);
+}
+
+/* Floating Labels */
+.floating-label-group {
+  position: relative;
+  margin-bottom: var(--spacing-lg);
+}
+
+.floating-label {
+  position: absolute;
+  left: 1rem;
+  top: 1rem;
+  color: var(--text-tertiary);
+  pointer-events: none;
+  transition: 0.2s ease all;
+  background: transparent;
+}
+
+.premium-input:focus~.floating-label,
+.premium-input:not(:placeholder-shown)~.floating-label {
+  top: -0.5rem;
+  left: 0.8rem;
+  font-size: 0.8rem;
+  color: var(--primary-color);
+  background: var(--bg-card);
+  padding: 0 0.4rem;
+}
+
+.auth-tagline {
+  text-align: center;
+  color: var(--text-gold);
+  font-size: 0.9rem;
+  margin-bottom: var(--spacing-sm);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
 /* App-specific styles */
 
 /* Auth Page */
