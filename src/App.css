@@ -3583,3 +3583,21 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover {
   letter-spacing: 0.5px;
   display: inline-block;
 }
+
+/* Consistent Search Input */
+.premium-search-input {
+  width: 100%;
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+  background: var(--surface-color);
+  color: var(--text-primary);
+  font-size: 1rem;
+  transition: all 0.2s ease;
+}
+
+.premium-search-input:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 2px rgba(255, 215, 0, 0.1);
+}

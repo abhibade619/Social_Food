@@ -231,16 +231,7 @@ const RestaurantAutocomplete = ({ onPlaceSelected, defaultValue = '', locationBi
                 value={inputValue}
                 onChange={handleInputChange}
                 placeholder="Search for a restaurant..."
-                className="autocomplete-input"
-                style={{
-                    width: '100%',
-                    padding: '12px',
-                    borderRadius: '8px',
-                    border: '1px solid var(--border-color)',
-                    background: 'var(--surface-color)',
-                    color: 'var(--text-primary)',
-                    fontSize: '1rem'
-                }}
+                className="premium-search-input"
             />
 
             {showSuggestions && (suggestions.length > 0 || loading) && (

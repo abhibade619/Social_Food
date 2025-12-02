@@ -49,7 +49,7 @@ const UserSearch = ({ onUserSelect }) => {
             <input
                 type="text"
                 placeholder="Search for users..."
-                className="search-input"
+                className="premium-search-input"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
             />
