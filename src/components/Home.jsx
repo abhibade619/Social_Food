@@ -1,3 +1,5 @@
+import { useState, useEffect } from 'react';
+import { useAuth } from '../context/AuthProvider';
 import SuggestedFriends from './SuggestedFriends';
 
 const Home = ({ onRestaurantClick }) => {
