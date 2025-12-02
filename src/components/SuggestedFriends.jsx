@@ -1,9 +1,8 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../supabaseClient';
 import { useAuth } from '../context/AuthProvider';
-import { Link } from 'react-router-dom';
 
-const SuggestedFriends = () => {
+const SuggestedFriends = ({ onViewProfile }) => {
     const { user } = useAuth();
     const [suggestions, setSuggestions] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -89,17 +88,23 @@ const SuggestedFriends = () => {
             <div className="suggested-list">
                 {suggestions.map(profile => (
                     <div key={profile.id} className="suggested-item">
-                        <Link to={`/profile/${profile.id}`} className="suggested-avatar-link">
+                        <div
+                            className="suggested-avatar-link clickable"
+                            onClick={() => onViewProfile && onViewProfile(profile.id)}
+                        >
                             <img
                                 src={profile.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${profile.id}`}
                                 alt={profile.username}
                                 className="suggested-avatar"
                             />
-                        </Link>
+                        </div>
                         <div className="suggested-info">
-                            <Link to={`/profile/${profile.id}`} className="suggested-name">
+                            <div
+                                className="suggested-name clickable"
+                                onClick={() => onViewProfile && onViewProfile(profile.id)}
+                            >
                                 {profile.full_name || profile.username}
-                            </Link>
+                            </div>
                             <span className="suggested-username">@{profile.username}</span>
                         </div>
                         <button

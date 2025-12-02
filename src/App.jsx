@@ -207,7 +207,10 @@ function App() {
 
     switch (currentView) {
       case 'home':
-        return <Home onRestaurantClick={handleNavigateToRestaurant} />;
+        return <Home
+          onRestaurantClick={handleNavigateToRestaurant}
+          onViewProfile={handleNavigateToProfile}
+        />;
       case 'feed':
         return <Feed
           key={feedVersion} // Force re-render/refetch when version changes

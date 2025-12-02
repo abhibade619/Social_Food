@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthProvider';
 import SuggestedFriends from './SuggestedFriends';
 
-const Home = ({ onRestaurantClick }) => {
+const Home = ({ onRestaurantClick, onViewProfile }) => {
     const { user } = useAuth();
     const [location, setLocation] = useState({ name: '', lat: null, lng: null });
     const [selectedCuisine, setSelectedCuisine] = useState('all');
@@ -91,7 +91,7 @@ const Home = ({ onRestaurantClick }) => {
 
             {/* Suggested Friends Section */}
             <section className="feed-section">
-                <SuggestedFriends />
+                <SuggestedFriends onViewProfile={onViewProfile} />
             </section>
 
             {/* Top Rated Section */}
