@@ -7,6 +7,8 @@ const FollowersList = ({ userId, onBack, onNavigate }) => {
     const [followers, setFollowers] = useState([]);
     const [loading, setLoading] = useState(true);
 
+    const [searchQuery, setSearchQuery] = useState('');
+
     useEffect(() => {
         fetchFollowers();
     }, [userId]);
@@ -40,6 +42,11 @@ const FollowersList = ({ userId, onBack, onNavigate }) => {
         }
     };
 
+    const filteredFollowers = followers.filter(follower =>
+        (follower.full_name && follower.full_name.toLowerCase().includes(searchQuery.toLowerCase())) ||
+        (follower.username && follower.username.toLowerCase().includes(searchQuery.toLowerCase()))
+    );
+
     if (loading) {
         return <div className="loading">Loading followers...</div>;
     }
@@ -51,17 +58,30 @@ const FollowersList = ({ userId, onBack, onNavigate }) => {
                 <span className="count-badge">{followers.length}</span>
             </div>
 
-            {followers.length === 0 ? (
+            <div className="list-search-container">
+                <span className="search-icon">🔍</span>
+                <input
+                    type="text"
+                    placeholder="Search followers..."
+                    className="list-search-input"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                />
+            </div>
+
+            {filteredFollowers.length === 0 ? (
                 <div className="empty-state glass-panel">
                     <div className="empty-icon">👥</div>
-                    <p className="empty-title">No followers yet</p>
+                    <p className="empty-title">
+                        {searchQuery ? 'No matches found' : 'No followers yet'}
+                    </p>
                     <p className="empty-description">
-                        When people follow this user, they'll appear here
+                        {searchQuery ? `No followers matching "${searchQuery}"` : "When people follow this user, they'll appear here"}
                     </p>
                 </div>
             ) : (
                 <div className="users-grid-premium">
-                    {followers.map(follower => (
+                    {filteredFollowers.map(follower => (
                         <div
                             key={follower.id}
                             className="user-card-premium clickable"
