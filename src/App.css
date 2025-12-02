@@ -2339,12 +2339,18 @@ body {
   width: 100%;
   height: 100%;
   cursor: pointer;
+  background: #000;
+  /* Dark background for letterboxing */
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .log-photo {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
+  /* Ensure full image is visible */
   transition: transform 0.3s ease;
 }
 
@@ -3482,4 +3488,96 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+/* Suggested Friends Styles */
+.suggested-friends-container {
+  padding: var(--spacing-md);
+  margin-bottom: var(--spacing-lg);
+  border-radius: var(--border-radius);
+}
+
+.suggested-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: var(--spacing-md);
+  padding-bottom: var(--spacing-sm);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.suggested-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.suggested-item {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.suggested-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--border-color);
+}
+
+.suggested-info {
+  flex: 1;
+  overflow: hidden;
+}
+
+.suggested-name {
+  display: block;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  text-decoration: none;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.suggested-username {
+  display: block;
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+
+.follow-btn-small {
+  padding: 4px 12px;
+  font-size: 0.8rem;
+  background: var(--primary-color);
+  color: white;
+  border: none;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.follow-btn-small:hover {
+  background: var(--secondary-color);
+  transform: translateY(-1px);
+}
+
+/* Visit Badge Styles */
+.visit-badge-container {
+  margin-bottom: var(--spacing-xs);
+}
+
+.visit-badge {
+  background: rgba(255, 215, 0, 0.15);
+  color: #FFD700;
+  border: 1px solid rgba(255, 215, 0, 0.3);
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  display: inline-block;
 }

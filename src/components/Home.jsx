@@ -1,5 +1,4 @@
-import { useState, useEffect } from 'react';
-import { useAuth } from '../context/AuthProvider';
+import SuggestedFriends from './SuggestedFriends';
 
 const Home = ({ onRestaurantClick }) => {
     const { user } = useAuth();
@@ -86,6 +85,11 @@ const Home = ({ onRestaurantClick }) => {
                         </div>
                     ))}
                 </div>
+            </section>
+
+            {/* Suggested Friends Section */}
+            <section className="feed-section">
+                <SuggestedFriends />
             </section>
 
             {/* Top Rated Section */}

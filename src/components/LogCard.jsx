@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthProvider';
 import { calculateOverallRating } from '../utils/calculateRating';
 
-const LogCard = ({ log, onClick, showActions = false, isDiaryView = false, profileOwner = null, onEdit, onDelete, onViewProfile, onAddToWishlist, onRestaurantClick }) => {
+const LogCard = ({ log, onClick, showActions = false, isDiaryView = false, profileOwner = null, onEdit, onDelete, onViewProfile, onAddToWishlist, onRestaurantClick, ...props }) => {
     const { user } = useAuth();
     const [lightboxImage, setLightboxImage] = useState(null);
     const [userProfile, setUserProfile] = useState(null);
@@ -136,6 +136,10 @@ const LogCard = ({ log, onClick, showActions = false, isDiaryView = false, profi
                                 src={displayUser?.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${displayUser?.id || log.user_id}`}
                                 alt={displayUser?.username || 'User'}
                                 className="user-avatar premium-avatar"
+                                onError={(e) => {
+                                    e.target.onerror = null;
+                                    e.target.src = `https://api.dicebear.com/7.x/avataaars/svg?seed=${displayUser?.id || log.user_id}`;
+                                }}
                             />
                         </div>
                         <div className="log-user-info">
@@ -153,6 +157,16 @@ const LogCard = ({ log, onClick, showActions = false, isDiaryView = false, profi
                             Tagged by <span className="tagged-by-name">{userProfile?.full_name || 'Unknown'}</span>
                         </div>
                     )}
+
+                    {/* Visit Count Badge - Only show in Diary View if visited more than once */}
+                    {isDiaryView && props.visitNumber > 0 && (
+                        <div className="visit-badge-container">
+                            <span className="visit-badge">
+                                {props.visitNumber}{props.visitNumber === 1 ? 'st' : props.visitNumber === 2 ? 'nd' : props.visitNumber === 3 ? 'rd' : 'th'} Visit
+                            </span>
+                        </div>
+                    )}
+
                     <div className="log-title-row">
                         <h3
                             className="restaurant-name clickable-restaurant"

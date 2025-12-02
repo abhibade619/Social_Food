@@ -151,6 +151,29 @@ const Diary = ({ onRestaurantClick }) => {
     const uniqueCuisines = [...new Set(logs.map(log => log.cuisine).filter(Boolean))];
     const uniqueLocations = [...new Set(logs.map(log => log.location).filter(Boolean))];
 
+    // Calculate visit counts per restaurant
+    const visitCounts = logs.reduce((acc, log) => {
+        const name = log.restaurant_name?.toLowerCase().trim();
+        if (name) {
+            acc[name] = (acc[name] || 0) + 1;
+        }
+        return acc;
+    }, {});
+
+    // Helper to get visit number for a specific log (chronological order)
+    const getVisitNumber = (log) => {
+        const name = log.restaurant_name?.toLowerCase().trim();
+        if (!name) return 0;
+
+        // Filter logs for this restaurant and sort by date ascending
+        const restaurantLogs = logs
+            .filter(l => l.restaurant_name?.toLowerCase().trim() === name)
+            .sort((a, b) => new Date(a.visit_date || a.created_at) - new Date(b.visit_date || b.created_at));
+
+        // Find index (1-based)
+        return restaurantLogs.findIndex(l => l.id === log.id) + 1;
+    };
+
     return (
         <div className="diary-container container">
             <div className="diary-header-premium">
@@ -187,6 +210,8 @@ const Diary = ({ onRestaurantClick }) => {
                                 onDelete={handleDelete}
                                 onClick={() => handleEdit(log)}
                                 onRestaurantClick={onRestaurantClick}
+                                visitNumber={getVisitNumber(log)}
+                                totalVisits={visitCounts[log.restaurant_name?.toLowerCase().trim()] || 0}
                             />
                         ))}
                     </div>
