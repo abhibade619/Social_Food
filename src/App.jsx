@@ -67,6 +67,9 @@ function App() {
   // Helper to change view and push to history
   const navigateTo = (view, state = {}) => {
     setCurrentView(view);
+    if (state.selectedUser) setSelectedUser(state.selectedUser);
+    if (state.selectedRestaurant) setSelectedRestaurant(state.selectedRestaurant);
+    if (state.listTargetUser) setListTargetUser(state.listTargetUser);
     window.history.pushState({ view, ...state }, '');
   };
 
