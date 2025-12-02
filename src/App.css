@@ -76,13 +76,15 @@ body {
 }
 
 .premium-input {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(0, 0, 0, 0.3);
+  /* Darker background for better contrast */
+  border: 1px solid rgba(255, 255, 255, 0.2);
   color: var(--text-primary);
   padding: 1rem;
   border-radius: var(--border-radius-sm);
   transition: var(--transition-base);
   width: 100%;
+  font-size: 1rem;
 }
 
 .premium-input:focus {
@@ -140,13 +142,19 @@ body {
 }
 
 .auth-card {
-  background: var(--bg-card);
+  background: rgba(30, 30, 30, 0.85);
+  /* More opaque background */
+  backdrop-filter: blur(20px);
+  /* Stronger blur */
   padding: var(--spacing-xl);
-  border-radius: var(--border-radius);
-  box-shadow: var(--shadow-lg);
+  border-radius: var(--border-radius-lg);
+  /* Larger radius */
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+  /* Deeper shadow */
   width: 100%;
-  max-width: 450px;
-  border: 1px solid var(--border-color);
+  max-width: 420px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  /* Brighter border */
   animation: fadeIn var(--transition-slow);
 }
 
