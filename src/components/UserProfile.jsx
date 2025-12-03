@@ -111,13 +111,11 @@ const UserProfile = ({ userId, onNavigate, onRestaurantClick, onViewFollowers, o
 
     const isOwnProfile = currentUser?.id === userId;
 
+    const [showAvatarView, setShowAvatarView] = useState(false);
+
     if (loading) {
         return <div className="loading">Loading profile...</div>;
     }
-
-    const [showAvatarView, setShowAvatarView] = useState(false);
-
-    // ... (existing code)
 
     if (error) {
         return <div className="error-state">Error: {error}</div>;
