@@ -3645,17 +3645,41 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover {
   border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.suggested-title {
-  font-size: 1.1rem;
-  font-weight: 600;
-  margin-bottom: 1rem;
-  color: var(--text-primary);
+/* Force Grid Layout for Log Photos */
+.log-photos-grid {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)) !important;
+  gap: 0.5rem !important;
+  margin-top: 1rem !important;
+  width: 100% !important;
 }
 
-.suggested-list {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
+.log-photo-wrapper {
+  position: relative;
+  width: 100%;
+  padding-top: 56.25%;
+  /* 16:9 Aspect Ratio container */
+  background: #111;
+  /* Dark background for letterboxing */
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.log-photo {
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: contain !important;
+  /* Ensure full image is visible */
+  border-radius: 12px !important;
+  max-height: 180px !important;
+  /* Cap height as requested */
+  margin: auto !important;
+  /* Center if smaller */
+  bottom: 0 !important;
+  right: 0 !important;
 }
 
 .suggested-user-card {

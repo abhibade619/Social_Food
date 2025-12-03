@@ -131,7 +131,7 @@ const Profile = ({ onNavigate, onViewFollowers, onViewFollowing }) => {
         const isJpeg = file.type === 'image/jpeg' || file.type === 'image/jpg' || /\.(jpg|jpeg)$/i.test(file.name);
 
         if (!isJpeg) {
-            alert("Please upload the image in JPEG or JPG format so that you can change it.");
+            alert("Please upload the image in JPEG or JPG format");
             console.log("Upload rejected: Not a JPEG/JPG file");
             return;
         }
