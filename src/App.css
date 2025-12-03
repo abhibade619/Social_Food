@@ -3645,50 +3645,43 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover {
   border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-/* Grid container for photos in a log card */
-.log-photos-grid {
-  display: grid !important;
-  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)) !important;
-  gap: 0.5rem !important;
-  margin-top: 0.75rem !important;
-  width: 100% !important;
-  border-radius: 12px !important;
+/* New Clean Log Media Styles */
+.log-media-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 8px;
+  margin-top: 12px;
+  width: 100%;
 }
 
-/* Thumbnail box */
-.log-photo-wrapper {
-  position: relative !important;
-  width: 100% !important;
-  height: 160px !important;
-  /* Small fixed thumbnail height */
-  background: #000 !important;
-  /* Dark background for letterboxing */
-  border-radius: 12px !important;
-  overflow: hidden !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  cursor: pointer !important;
+.log-media-wrapper {
+  position: relative;
+  width: 100%;
+  height: 200px;
+  /* Fixed height for consistency */
+  background: #0a0a0a;
+  /* Premium dark background */
+  border-radius: 12px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  cursor: pointer;
+  transition: transform 0.2s ease;
 }
 
-/* Actual img element */
-.log-photo {
-  width: 100% !important;
-  height: 100% !important;
-  object-fit: contain !important;
-  /* Full image visible inside thumbnail */
-  max-width: 100% !important;
-  max-height: 100% !important;
-  transition: transform 0.2s ease !important;
-  margin: 0 !important;
-  /* Reset any auto margins */
-  top: auto !important;
-  /* Reset positioning */
-  left: auto !important;
+.log-media-wrapper:hover {
+  transform: scale(1.02);
+  border-color: rgba(255, 255, 255, 0.2);
 }
 
-.log-photo:hover {
-  transform: scale(1.03) !important;
+.log-media-image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  /* CRITICAL: Ensures full image is visible */
+  display: block;
 }
 
 .suggested-user-card {

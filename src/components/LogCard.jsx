@@ -208,10 +208,10 @@ const LogCard = ({ log, onClick, showActions = false, isDiaryView = false, profi
                     )}
 
                     {photos && photos.length > 0 && (
-                        <div className={`log-photos-grid photos-${Math.min(photos.length, 4)}`}>
+                        <div className="log-media-grid">
                             {photos.map((photo, index) => (
-                                <div key={index} className="log-photo-wrapper" onClick={(e) => openLightbox(e, photo)}>
-                                    <img src={photo} alt={`Photo ${index + 1}`} className="log-photo" />
+                                <div key={index} className="log-media-wrapper" onClick={(e) => openLightbox(e, photo)}>
+                                    <img src={photo} alt={`Photo ${index + 1}`} className="log-media-image" />
                                 </div>
                             ))}
                         </div>
