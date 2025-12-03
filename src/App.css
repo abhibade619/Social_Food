@@ -4497,7 +4497,7 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover {
   max-width: 1200px;
   margin: 0 auto;
   /* much smaller top padding so it sits close to the navbar */
-  padding: 0.75rem 1rem 2rem;
+  padding: 0.25rem 1rem 2rem;
   display: flex;
   flex-direction: column;
   align-items: center;
