@@ -3615,6 +3615,13 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover {
   box-shadow: 0 0 0 2px rgba(255, 107, 107, 0.2);
 }
 
+/* Unified Search Wrapper */
+.search-component-wrapper {
+  position: relative;
+  width: 100%;
+  margin-bottom: var(--spacing-md);
+}
+
 /* Auth Card Enhancement */
 .auth-card {
   background: rgba(20, 20, 20, 0.95);

@@ -45,7 +45,7 @@ const UserSearch = ({ onUserSelect }) => {
     };
 
     return (
-        <div className="user-search">
+        <div className="search-component-wrapper">
             <input
                 type="text"
                 placeholder="Search for users..."

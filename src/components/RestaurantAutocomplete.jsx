@@ -225,7 +225,7 @@ const RestaurantAutocomplete = ({ onPlaceSelected, defaultValue = '', locationBi
     };
 
     return (
-        <div className="restaurant-autocomplete-wrapper" ref={wrapperRef} style={{ position: 'relative' }}>
+        <div className="search-component-wrapper" ref={wrapperRef}>
             <input
                 type="text"
                 value={inputValue}
