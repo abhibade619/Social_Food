@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { supabase } from '../supabaseClient';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthProvider';
@@ -11,6 +11,7 @@ const LogCard = ({ log, onClick, showActions = false, isDiaryView = false, profi
     const [taggedUsers, setTaggedUsers] = useState([]);
     const [loading, setLoading] = useState(true);
     const [showMenu, setShowMenu] = useState(false);
+    const menuRef = useRef(null);
 
     // Calculate rating if not present
     const displayRating = log.rating || calculateOverallRating(log);
@@ -20,6 +21,23 @@ const LogCard = ({ log, onClick, showActions = false, isDiaryView = false, profi
         fetchUserProfile();
         fetchTaggedUsers();
     }, [log.user_id, log.id]);
+
+    // Handle click outside menu
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (menuRef.current && !menuRef.current.contains(event.target)) {
+                setShowMenu(false);
+            }
+        };
+
+        if (showMenu) {
+            document.addEventListener('mousedown', handleClickOutside);
+        }
+
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, [showMenu]);
 
     const fetchUserProfile = async () => {
         try {
@@ -109,7 +127,7 @@ const LogCard = ({ log, onClick, showActions = false, isDiaryView = false, profi
         <>
             <div className="log-card glass-panel premium-card" onClick={onClick}>
                 {showActions && (
-                    <div className="menu-container" onClick={(e) => e.stopPropagation()}>
+                    <div className="menu-container" ref={menuRef} onClick={(e) => e.stopPropagation()}>
                         <button
                             className="menu-trigger"
                             onClick={() => setShowMenu(!showMenu)}
