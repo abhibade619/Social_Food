@@ -48,6 +48,26 @@ const FollowingList = ({ userId, onBack, onNavigate }) => {
         (user.username && user.username.toLowerCase().includes(searchQuery.toLowerCase()))
     );
 
+    const handleUnfollow = async (targetId, e) => {
+        e.stopPropagation();
+        if (!window.confirm('Are you sure you want to unfollow this user?')) return;
+
+        try {
+            const { error } = await supabase
+                .from('follows')
+                .delete()
+                .eq('follower_id', currentUser.id)
+                .eq('following_id', targetId);
+
+            if (error) throw error;
+
+            setFollowing(following.filter(user => user.id !== targetId));
+        } catch (error) {
+            console.error('Error unfollowing:', error);
+            alert('Failed to unfollow user');
+        }
+    };
+
     if (loading) {
         return <div className="loading">Loading following...</div>;
     }
@@ -60,11 +80,14 @@ const FollowingList = ({ userId, onBack, onNavigate }) => {
                     <span className="count-badge">{following.length}</span>
                 </div>
                 <button
-                    className={`search-toggle-btn ${showSearch ? 'active' : ''}`}
+                    className={`search-btn-premium ${showSearch ? 'active' : ''}`}
                     onClick={() => setShowSearch(!showSearch)}
                     title="Search following"
                 >
-                    🔍
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    </svg>
                 </button>
             </div>
 
@@ -109,6 +132,14 @@ const FollowingList = ({ userId, onBack, onNavigate }) => {
                                 <p className="user-card-name">{user.full_name || 'No name'}</p>
                                 <p className="user-card-username">@{user.username || 'unknown'}</p>
                             </div>
+                            {currentUser && currentUser.id === userId && (
+                                <button
+                                    className="btn-unfollow-premium"
+                                    onClick={(e) => handleUnfollow(user.id, e)}
+                                >
+                                    Unfollow
+                                </button>
+                            )}
                         </div>
                     ))}
                 </div>

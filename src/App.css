@@ -4232,13 +4232,106 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover {
 }
 
 /* --- Password Toggle Button --- */
+/* --- Password Toggle Button --- */
 .password-toggle-btn {
-  transition: color 0.2s;
+  transition: all 0.2s;
+  color: rgba(255, 255, 255, 0.6) !important;
+  background: rgba(0, 0, 0, 0.2) !important;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  border: none;
+  cursor: pointer;
+  z-index: 10;
 }
 
 .password-toggle-btn:hover {
-  color: var(--text-primary) !important;
+  color: var(--primary-color) !important;
+  background: rgba(255, 255, 255, 0.1) !important;
 }
+
+/* --- Premium Search Button --- */
+.search-btn-premium {
+  background: var(--primary-gradient);
+  border: none;
+  color: white;
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 12px rgba(255, 107, 107, 0.3);
+}
+
+.search-btn-premium:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(255, 107, 107, 0.4);
+}
+
+/* --- Unfollow Button --- */
+.btn-unfollow-premium {
+  background: transparent;
+  border: 1px solid rgba(255, 107, 107, 0.5);
+  color: #ff6b6b;
+  padding: 6px 16px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-unfollow-premium:hover {
+  background: rgba(255, 107, 107, 0.1);
+  border-color: #ff6b6b;
+  transform: translateY(-1px);
+}
+
+/* --- Log Image Navigation --- */
+.log-image-nav-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(0, 0, 0, 0.6);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  z-index: 10;
+  backdrop-filter: blur(4px);
+}
+
+.log-image-nav-btn:hover {
+  background: rgba(0, 0, 0, 0.8);
+  transform: translateY(-50%) scale(1.1);
+  border-color: var(--primary-color);
+  color: var(--primary-color);
+}
+
+.log-image-nav-btn.prev {
+  left: 10px;
+}
+
+.log-image-nav-btn.next {
+  right: 10px;
+}
+
 
 
 /* --- Delete Account UI --- */

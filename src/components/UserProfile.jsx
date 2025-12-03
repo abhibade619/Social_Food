@@ -115,15 +115,35 @@ const UserProfile = ({ userId, onNavigate, onRestaurantClick, onViewFollowers, o
         return <div className="loading">Loading profile...</div>;
     }
 
+    const [showAvatarView, setShowAvatarView] = useState(false);
+
+    // ... (existing code)
+
     if (error) {
         return <div className="error-state">Error: {error}</div>;
     }
 
     return (
         <div className="profile-container-premium">
+            {/* Avatar View Modal */}
+            {showAvatarView && profile?.avatar_url && (
+                <div className="avatar-view-modal" onClick={() => setShowAvatarView(false)}>
+                    <img
+                        src={profile.avatar_url}
+                        alt="Profile"
+                        className="avatar-view-image"
+                        onClick={(e) => e.stopPropagation()}
+                    />
+                </div>
+            )}
+
             <div className="profile-header-premium">
                 <div className="profile-header-content">
-                    <div className="profile-avatar-premium">
+                    <div
+                        className="profile-avatar-premium"
+                        onClick={() => profile?.avatar_url && setShowAvatarView(true)}
+                        style={{ cursor: profile?.avatar_url ? 'pointer' : 'default' }}
+                    >
                         {profile?.avatar_url ? (
                             <img src={profile.avatar_url} alt="Profile" />
                         ) : (
