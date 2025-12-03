@@ -1,3 +1,6 @@
+import { useState, useEffect } from 'react';
+import { supabase } from '../supabaseClient';
+import { useAuth } from '../context/AuthProvider';
 import FollowButton from './FollowButton';
 
 const FollowersList = ({ userId, onBack, onNavigate }) => {
