@@ -122,6 +122,37 @@ const RestaurantPage = ({ restaurant, onBack, onNewLog, onViewProfile }) => {
         ? (logs.reduce((acc, log) => acc + (parseFloat(log.rating) || 0), 0) / logs.length).toFixed(1)
         : null;
 
+    // Lightbox State
+    const [lightboxIndex, setLightboxIndex] = useState(null);
+    const [allPhotos, setAllPhotos] = useState([]);
+
+    useEffect(() => {
+        if (logs.length > 0) {
+            const photos = logs.flatMap(log => {
+                return typeof log.photos === 'string' ? JSON.parse(log.photos) : (log.photos || []);
+            });
+            setAllPhotos(photos);
+        }
+    }, [logs]);
+
+    const openLightbox = (index) => {
+        setLightboxIndex(index);
+    };
+
+    const closeLightbox = () => {
+        setLightboxIndex(null);
+    };
+
+    const nextImage = (e) => {
+        e.stopPropagation();
+        setLightboxIndex((prev) => (prev + 1) % allPhotos.length);
+    };
+
+    const prevImage = (e) => {
+        e.stopPropagation();
+        setLightboxIndex((prev) => (prev - 1 + allPhotos.length) % allPhotos.length);
+    };
+
     return (
         <div className="restaurant-page container">
             <div className="restaurant-header-premium">
@@ -130,7 +161,7 @@ const RestaurantPage = ({ restaurant, onBack, onNewLog, onViewProfile }) => {
                     <h1 className="restaurant-title-large">{restaurant.name || 'Restaurant Details'}</h1>
                     <div className="restaurant-badges">
                         {averageRating ? (
-                            <span className="badge-rating">⭐ {averageRating} ({logs.length} logs)</span>
+                            <span className="badge-rating">⭐ {averageRating} ({logs.length} {logs.length === 1 ? 'log' : 'logs'})</span>
                         ) : (
                             restaurant.rating && <span className="badge-rating">⭐ {restaurant.rating}</span>
                         )}
@@ -199,14 +230,11 @@ const RestaurantPage = ({ restaurant, onBack, onNewLog, onViewProfile }) => {
                 {/* Right Column: Logs/Reviews */}
                 <div className="restaurant-logs-column">
                     {/* Media Section */}
-                    {logs.some(log => log.photos && (typeof log.photos === 'string' ? JSON.parse(log.photos).length > 0 : log.photos.length > 0)) && (
+                    {allPhotos.length > 0 && (
                         <div className="restaurant-media-section glass-panel info-card-premium" style={{ marginBottom: '2rem' }}>
                             <h3 className="section-title-premium" style={{ fontSize: '1.2rem', marginBottom: '1rem' }}>Photos</h3>
                             <div className="restaurant-media-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(80px, 1fr))', gap: '8px' }}>
-                                {logs.flatMap(log => {
-                                    const photos = typeof log.photos === 'string' ? JSON.parse(log.photos) : log.photos;
-                                    return photos || [];
-                                }).slice(0, 12).map((photo, index) => (
+                                {allPhotos.slice(0, 12).map((photo, index) => (
                                     <div
                                         key={index}
                                         className="restaurant-media-item"
@@ -218,7 +246,7 @@ const RestaurantPage = ({ restaurant, onBack, onNewLog, onViewProfile }) => {
                                             overflow: 'hidden',
                                             cursor: 'pointer'
                                         }}
-                                        onClick={() => window.open(photo, '_blank')}
+                                        onClick={() => openLightbox(index)}
                                     >
                                         <img
                                             src={photo}
@@ -263,6 +291,27 @@ const RestaurantPage = ({ restaurant, onBack, onNewLog, onViewProfile }) => {
                     )}
                 </div>
             </div>
+
+            {/* Lightbox Modal */}
+            {lightboxIndex !== null && (
+                <div className="lightbox-overlay" onClick={closeLightbox}>
+                    <button className="lightbox-close" onClick={closeLightbox}>×</button>
+
+                    {allPhotos.length > 1 && (
+                        <>
+                            <button className="log-image-nav-btn prev" onClick={prevImage}>‹</button>
+                            <button className="log-image-nav-btn next" onClick={nextImage}>›</button>
+                        </>
+                    )}
+
+                    <img
+                        src={allPhotos[lightboxIndex]}
+                        alt={`Photo ${lightboxIndex + 1}`}
+                        className="lightbox-image"
+                        onClick={(e) => e.stopPropagation()}
+                    />
+                </div>
+            )}
         </div>
     );
 };

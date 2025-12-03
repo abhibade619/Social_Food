@@ -1,6 +1,4 @@
-import { useState, useEffect } from 'react';
-import { supabase } from '../supabaseClient';
-import { useAuth } from '../context/AuthProvider';
+import FollowButton from './FollowButton';
 
 const FollowersList = ({ userId, onBack, onNavigate }) => {
     const { user: currentUser } = useAuth();
@@ -111,6 +109,9 @@ const FollowersList = ({ userId, onBack, onNavigate }) => {
                             <div className="user-card-info">
                                 <p className="user-card-name">{follower.full_name || 'No name'}</p>
                                 <p className="user-card-username">@{follower.username || 'unknown'}</p>
+                            </div>
+                            <div onClick={(e) => e.stopPropagation()}>
+                                <FollowButton targetUserId={follower.id} />
                             </div>
                         </div>
                     ))}

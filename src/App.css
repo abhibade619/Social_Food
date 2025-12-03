@@ -3648,8 +3648,8 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover {
 /* New Clean Log Media Styles */
 .log-media-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
-  gap: 8px;
+  grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+  gap: 6px;
   margin-top: 12px;
   width: 100%;
 }
@@ -4510,6 +4510,27 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover {
   flex-direction: column;
   align-items: center;
   text-align: center;
+}
+
+@media (min-width: 768px) {
+  .profile-container-premium {
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 3rem;
+    padding-top: 4rem;
+  }
+
+  .profile-header-content {
+    flex-direction: row;
+    align-items: center;
+    text-align: left;
+    gap: 2rem;
+  }
+
+  .profile-form {
+    margin: 0;
+    /* Reset margin for desktop */
+  }
 }
 
 .profile-form {
