@@ -18,7 +18,9 @@ const initialize = () => {
         initialized = true;
         console.log('Google Maps API options set.');
     } else if (!apiKey) {
-        console.error('Google Maps API key is missing from environment variables.');
+        console.error('Google Maps API key is missing from environment variables. Check VITE_GOOGLE_MAPS_API_KEY.');
+    } else {
+        console.log('Google Maps already initialized.');
     }
 };
 

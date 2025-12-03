@@ -291,18 +291,32 @@ const Profile = ({ onNavigate, onViewFollowers, onViewFollowing }) => {
                             </div>
                             <div className="form-group">
                                 <label htmlFor="avatar">Profile Picture</label>
-                                <input
-                                    id="avatar"
-                                    type="file"
-                                    accept="image/*"
-                                    onChange={handleAvatarUpload}
-                                    disabled={uploading}
-                                    className="premium-input"
-                                />
-                                {uploading && <p className="upload-status">Uploading...</p>}
+                                <div className="file-input-wrapper">
+                                    <input
+                                        id="avatar"
+                                        type="file"
+                                        accept="image/*"
+                                        onChange={handleAvatarUpload}
+                                        disabled={uploading}
+                                        className="hidden-input"
+                                        style={{ display: 'none' }}
+                                    />
+                                    <label htmlFor="avatar" className="file-input-label premium-input clickable">
+                                        {uploading ? 'Uploading...' : (
+                                            <>
+                                                <span className="file-name">
+                                                    {profile?.avatar_url
+                                                        ? profile.avatar_url.split('/').pop().split('?')[0]
+                                                        : 'Choose a file...'}
+                                                </span>
+                                                <span className="btn-secondary btn-sm">Change</span>
+                                            </>
+                                        )}
+                                    </label>
+                                </div>
                             </div>
                             <div className="form-actions">
-                                <button type="submit" className="premium-button">Save</button>
+                                <button type="submit" className="premium-button">Save Changes</button>
                                 <button type="button" className="btn-secondary" onClick={() => setEditing(false)}>
                                     Cancel
                                 </button>
@@ -319,7 +333,6 @@ const Profile = ({ onNavigate, onViewFollowers, onViewFollowing }) => {
 
                             <div className="profile-stats-premium">
                                 <div className="stat-item-premium">
-                                    <span className="stat-icon">📝</span>
                                     <span className="stat-value-premium">{userLogs.length}</span>
                                     <span className="stat-label-premium">Logs</span>
                                 </div>
@@ -327,7 +340,6 @@ const Profile = ({ onNavigate, onViewFollowers, onViewFollowing }) => {
                                     className="stat-item-premium clickable"
                                     onClick={() => onViewFollowers && onViewFollowers(user.id)}
                                 >
-                                    <span className="stat-icon">👥</span>
                                     <span className="stat-value-premium">{followerCount}</span>
                                     <span className="stat-label-premium">Followers</span>
                                 </div>
@@ -335,13 +347,12 @@ const Profile = ({ onNavigate, onViewFollowers, onViewFollowing }) => {
                                     className="stat-item-premium clickable"
                                     onClick={() => onViewFollowing && onViewFollowing(user.id)}
                                 >
-                                    <span className="stat-icon">👣</span>
                                     <span className="stat-value-premium">{followingCount}</span>
                                     <span className="stat-label-premium">Following</span>
                                 </div>
                             </div>
 
-                            <button className="btn-edit-profile-premium" onClick={() => setEditing(true)}>
+                            <button className="premium-button btn-edit-profile-premium" onClick={() => setEditing(true)}>
                                 Edit Profile
                             </button>
                         </>
