@@ -3837,3 +3837,26 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover {
   margin-bottom: 0.5rem !important;
   letter-spacing: -1px;
 }
+
+/* FORCE FULL-IMAGE THUMBNAIL BEHAVIOR */
+.log-photo {
+  object-fit: contain !important;
+  width: 100% !important;
+  height: 100% !important;
+  max-height: 180px !important;
+  background: #000 !important;
+  /* For clean letterboxing */
+  border-radius: 12px !important;
+}
+
+
+.log-photo-wrapper {
+  background: #000 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  overflow: hidden !important;
+  border-radius: 12px;
+  height: 180px !important;
+  /* Thumbnail height */
+}
