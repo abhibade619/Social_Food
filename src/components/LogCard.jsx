@@ -266,11 +266,7 @@ const LogCard = ({ log, onClick, showActions = false, isDiaryView = false, profi
                         onClick={(e) => e.stopPropagation()}
                     />
 
-                    {photos.length > 1 && (
-                        <div className="lightbox-counter">
-                            {lightboxIndex + 1} / {photos.length}
-                        </div>
-                    )}
+
                 </div>
             )}
         </>

@@ -3648,7 +3648,7 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover {
 /* New Clean Log Media Styles */
 .log-media-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
   gap: 8px;
   margin-top: 12px;
   width: 100%;
@@ -3657,8 +3657,8 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover {
 .log-media-wrapper {
   position: relative;
   width: 100%;
-  height: 200px;
-  /* Fixed height for consistency */
+  height: 120px;
+  /* Reduced height for "tiny" look */
   background: #0a0a0a;
   /* Premium dark background */
   border-radius: 12px;
@@ -4457,4 +4457,21 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover {
     transform: scale(1);
     opacity: 1;
   }
+}
+
+/* Form Group Alignment Fix */
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 1.5rem;
+  text-align: left;
+  /* Ensure left alignment */
+}
+
+.form-group label {
+  font-weight: 600;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  margin-left: 4px;
 }
