@@ -4514,22 +4514,43 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover {
 
 @media (min-width: 768px) {
   .profile-container-premium {
-    flex-direction: row;
-    align-items: flex-start;
-    gap: 3rem;
-    padding-top: 4rem;
+    flex-direction: column;
+    /* Keep vertical layout for page */
+    max-width: 900px;
+    /* Wider container */
+  }
+
+  .profile-header-premium {
+    padding: 2rem;
+    /* More padding */
   }
 
   .profile-header-content {
     flex-direction: row;
     align-items: center;
     text-align: left;
-    gap: 2rem;
+    gap: 2.5rem;
+    justify-content: flex-start;
+  }
+
+  .profile-avatar-premium {
+    width: 120px;
+    height: 120px;
+    font-size: 3rem;
+    /* Larger avatar on desktop */
+  }
+
+  .profile-stats-premium {
+    justify-content: flex-start;
+    /* Align stats to left */
+    gap: 3rem;
   }
 
   .profile-form {
     margin: 0;
     /* Reset margin for desktop */
+    width: 100%;
+    max-width: 600px;
   }
 }
 
