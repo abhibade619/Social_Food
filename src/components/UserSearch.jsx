@@ -67,6 +67,10 @@ const UserSearch = ({ onUserSelect }) => {
                                 src={user.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.id}`}
                                 alt={user.username}
                                 className="premium-avatar-small"
+                                onError={(e) => {
+                                    e.target.onerror = null;
+                                    e.target.src = `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.id}`;
+                                }}
                             />
                             <div className="user-info">
                                 <p className="user-name" style={{ margin: 0, fontWeight: 600 }}>{user.full_name || 'Unknown User'}</p>

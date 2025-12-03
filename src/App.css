@@ -3620,15 +3620,50 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover {
   position: relative;
   width: 100%;
   margin-bottom: var(--spacing-md);
+  box-sizing: border-box;
+  /* Ensure padding doesn't affect width */
+}
+
+/* Log Card Photo Fix - Small but Full */
+.log-photos-grid {
+  display: grid;
+  gap: 4px;
+  border-radius: var(--border-radius);
+  overflow: hidden;
+  margin-top: auto;
+  height: 220px;
+  /* Fixed height for the container */
+  width: 100%;
+  background: #000;
+  /* Black background for letterboxing */
+}
+
+.log-photo-wrapper {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.log-photo {
+  width: 100%;
+  height: 100%;
+  object-fit: contain !important;
+  /* Ensure full image is visible */
+  max-height: 100%;
+  max-width: 100%;
+  transition: transform 0.3s ease;
 }
 
 /* Auth Card Enhancement */
 .auth-card {
   background: rgba(20, 20, 20, 0.95);
-  /* Darker, more premium */
   backdrop-filter: blur(20px);
   padding: 3rem;
-  /* More breathing room */
   border-radius: 24px;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
   width: 100%;
@@ -3636,6 +3671,23 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover {
   border: 1px solid rgba(255, 255, 255, 0.08);
   position: relative;
   overflow: hidden;
+}
+
+/* Premium Input - Centered Text */
+.premium-input {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--text-primary);
+  padding: 0 1rem;
+  /* Remove top/bottom padding, use height/line-height */
+  height: 48px;
+  /* Fixed height */
+  line-height: 46px;
+  /* Center text vertically (height - borders) */
+  border-radius: var(--border-radius-sm);
+  transition: var(--transition-base);
+  width: 100%;
+  font-size: 1rem;
 }
 
 /* Gradient Top Border for Auth Card */
