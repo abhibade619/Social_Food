@@ -12,6 +12,8 @@ const Profile = ({ onNavigate, onViewFollowers, onViewFollowing }) => {
     const [editing, setEditing] = useState(false);
     const [followerCount, setFollowerCount] = useState(0);
     const [followingCount, setFollowingCount] = useState(0);
+    const [visitedRestaurants, setVisitedRestaurants] = useState([]);
+    const [activeTab, setActiveTab] = useState('logs'); // 'logs' or 'visited'
     const [uploading, setUploading] = useState(false);
     const [formData, setFormData] = useState({
         username: '',
@@ -30,9 +32,12 @@ const Profile = ({ onNavigate, onViewFollowers, onViewFollowing }) => {
     const [showAvatarView, setShowAvatarView] = useState(false);
 
     useEffect(() => {
-        fetchProfile();
-        fetchUserLogs();
-        fetchFollowCounts();
+        if (user) {
+            fetchProfile();
+            fetchUserLogs();
+            fetchVisited();
+            fetchFollowCounts();
+        }
     }, [user]);
 
     const fetchProfile = async () => {
@@ -105,6 +110,21 @@ const Profile = ({ onNavigate, onViewFollowers, onViewFollowing }) => {
             setUserLogs(uniqueLogs);
         } catch (error) {
             console.error('Error fetching user logs:', error);
+        }
+    };
+
+    const fetchVisited = async () => {
+        try {
+            const { data, error } = await supabase
+                .from('visited_restaurants')
+                .select('*')
+                .eq('user_id', user.id)
+                .order('created_at', { ascending: false });
+
+            if (error) throw error;
+            setVisitedRestaurants(data || []);
+        } catch (error) {
+            console.error('Error fetching visited restaurants:', error);
         }
     };
 
@@ -443,6 +463,10 @@ const Profile = ({ onNavigate, onViewFollowers, onViewFollowing }) => {
                                     <span className="stat-value-premium">{userLogs.length}</span>
                                     <span className="stat-label-premium">Logs</span>
                                 </div>
+                                <div className="stat-item-premium">
+                                    <span className="stat-value-premium">{visitedRestaurants.length}</span>
+                                    <span className="stat-label-premium">Visited</span>
+                                </div>
                                 <div
                                     className="stat-item-premium clickable"
                                     onClick={() => onViewFollowers && onViewFollowers(user.id)}
@@ -467,16 +491,83 @@ const Profile = ({ onNavigate, onViewFollowers, onViewFollowing }) => {
                 </div>
             </div>
 
-            <div className="profile-logs-section">
-                <h3 className="profile-section-title">My Logs</h3>
-                {userLogs.length > 0 ? (
-                    <div className="logs-grid">
-                        {userLogs.map((log) => (
-                            <LogCard key={log.id} log={log} isDiaryView={true} profileOwner={user} />
-                        ))}
+            <div className="profile-tabs" style={{ display: 'flex', justifyContent: 'center', gap: '2rem', marginBottom: '2rem', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
+                <button
+                    className={`tab-button ${activeTab === 'logs' ? 'active' : ''}`}
+                    onClick={() => setActiveTab('logs')}
+                    style={{
+                        background: 'none',
+                        border: 'none',
+                        color: activeTab === 'logs' ? 'var(--primary-color)' : 'var(--text-secondary)',
+                        padding: '1rem',
+                        fontSize: '1.1rem',
+                        fontWeight: '600',
+                        cursor: 'pointer',
+                        borderBottom: activeTab === 'logs' ? '2px solid var(--primary-color)' : 'none'
+                    }}
+                >
+                    Logs
+                </button>
+                <button
+                    className={`tab-button ${activeTab === 'visited' ? 'active' : ''}`}
+                    onClick={() => setActiveTab('visited')}
+                    style={{
+                        background: 'none',
+                        border: 'none',
+                        color: activeTab === 'visited' ? 'var(--primary-color)' : 'var(--text-secondary)',
+                        padding: '1rem',
+                        fontSize: '1.1rem',
+                        fontWeight: '600',
+                        cursor: 'pointer',
+                        borderBottom: activeTab === 'visited' ? '2px solid var(--primary-color)' : 'none'
+                    }}
+                >
+                    Visited
+                </button>
+            </div>
+
+            <div className="profile-content">
+                {activeTab === 'logs' ? (
+                    <div className="profile-logs-section">
+                        {userLogs.length > 0 ? (
+                            <div className="logs-grid">
+                                {userLogs.map((log) => (
+                                    <LogCard key={log.id} log={log} isDiaryView={true} profileOwner={user} />
+                                ))}
+                            </div>
+                        ) : (
+                            <p className="no-logs">No logs yet. Start sharing your dining experiences!</p>
+                        )}
                     </div>
                 ) : (
-                    <p className="no-logs">No logs yet. Start sharing your dining experiences!</p>
+                    <div className="visited-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '1.5rem' }}>
+                        {visitedRestaurants.length > 0 ? (
+                            visitedRestaurants.map((place) => (
+                                <div key={place.id} className="visited-card glass-panel" style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                                    <h3 style={{ fontSize: '1.2rem', margin: 0 }}>{place.restaurant_name}</h3>
+                                    <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>{place.location}</p>
+                                    <div style={{ marginTop: 'auto', paddingTop: '1rem' }}>
+                                        <button
+                                            className="btn-secondary btn-sm"
+                                            onClick={() => onNavigate && onNavigate('restaurant', {
+                                                selectedRestaurant: {
+                                                    place_id: place.place_id,
+                                                    name: place.restaurant_name,
+                                                    address: place.location
+                                                }
+                                            })}
+                                        >
+                                            View Details
+                                        </button>
+                                    </div>
+                                </div>
+                            ))
+                        ) : (
+                            <p className="no-logs" style={{ gridColumn: '1/-1', textAlign: 'center' }}>
+                                No visited restaurants marked yet.
+                            </p>
+                        )}
+                    </div>
                 )}
             </div>
         </div>

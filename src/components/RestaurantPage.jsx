@@ -10,6 +10,9 @@ const RestaurantPage = ({ restaurant, onBack, onNewLog, onViewProfile }) => {
     const [loading, setLoading] = useState(true);
     const [isInWishlist, setIsInWishlist] = useState(false);
     const [wishlistLoading, setWishlistLoading] = useState(false);
+    const [isVisited, setIsVisited] = useState(false);
+    const [visitedLoading, setVisitedLoading] = useState(false);
+    const [stats, setStats] = useState({ visitedCount: 0, wishlistCount: 0 });
 
     // Parse coordinates if they exist
     const getCoordinates = () => {
@@ -23,8 +26,10 @@ const RestaurantPage = ({ restaurant, onBack, onNewLog, onViewProfile }) => {
 
     useEffect(() => {
         fetchRestaurantLogs();
+        fetchStats();
         if (user) {
             checkWishlistStatus();
+            checkVisitedStatus();
         }
     }, [restaurant, user]);
 
@@ -74,6 +79,60 @@ const RestaurantPage = ({ restaurant, onBack, onNewLog, onViewProfile }) => {
         }
     };
 
+    const checkVisitedStatus = async () => {
+        try {
+            let query = supabase
+                .from('visited_restaurants')
+                .select('id')
+                .eq('user_id', user.id);
+
+            if (restaurant.place_id) {
+                query = query.eq('place_id', restaurant.place_id);
+            } else {
+                query = query.eq('restaurant_name', restaurant.name);
+            }
+
+            const { data, error } = await query;
+            if (error) throw error;
+            setIsVisited(data && data.length > 0);
+        } catch (error) {
+            console.error('Error checking visited:', error);
+        }
+    };
+
+    const fetchStats = async () => {
+        try {
+            // Count visited
+            let visitedQuery = supabase
+                .from('visited_restaurants')
+                .select('id', { count: 'exact', head: true });
+
+            if (restaurant.place_id) {
+                visitedQuery = visitedQuery.eq('place_id', restaurant.place_id);
+            } else {
+                visitedQuery = visitedQuery.eq('restaurant_name', restaurant.name);
+            }
+            const { count: visitedCount } = await visitedQuery;
+
+            // Count wishlist
+            let wishlistQuery = supabase
+                .from('wishlist')
+                .select('id', { count: 'exact', head: true });
+
+            if (restaurant.place_id) {
+                wishlistQuery = wishlistQuery.eq('place_id', restaurant.place_id);
+            } else {
+                wishlistQuery = wishlistQuery.eq('restaurant_name', restaurant.name);
+            }
+            const { count: wishlistCount } = await wishlistQuery;
+
+            setStats({ visitedCount: visitedCount || 0, wishlistCount: wishlistCount || 0 });
+
+        } catch (error) {
+            console.error("Error fetching stats:", error);
+        }
+    };
+
     const toggleWishlist = async () => {
         if (!user) return;
         setWishlistLoading(true);
@@ -94,6 +153,7 @@ const RestaurantPage = ({ restaurant, onBack, onNewLog, onViewProfile }) => {
                 const { error } = await query;
                 if (error) throw error;
                 setIsInWishlist(false);
+                setStats(prev => ({ ...prev, wishlistCount: Math.max(0, prev.wishlistCount - 1) }));
             } else {
                 // Add
                 const { error } = await supabase
@@ -108,12 +168,59 @@ const RestaurantPage = ({ restaurant, onBack, onNewLog, onViewProfile }) => {
 
                 if (error) throw error;
                 setIsInWishlist(true);
+                setStats(prev => ({ ...prev, wishlistCount: prev.wishlistCount + 1 }));
             }
         } catch (error) {
             console.error('Error toggling wishlist:', error);
             alert(`Failed to update wishlist: ${error.message || JSON.stringify(error)}`);
         } finally {
             setWishlistLoading(false);
+        }
+    };
+
+    const toggleVisited = async () => {
+        if (!user) return;
+        setVisitedLoading(true);
+        try {
+            if (isVisited) {
+                // Remove
+                let query = supabase
+                    .from('visited_restaurants')
+                    .delete()
+                    .eq('user_id', user.id);
+
+                if (restaurant.place_id) {
+                    query = query.eq('place_id', restaurant.place_id);
+                } else {
+                    query = query.eq('restaurant_name', restaurant.name);
+                }
+
+                const { error } = await query;
+                if (error) throw error;
+                setIsVisited(false);
+                setStats(prev => ({ ...prev, visitedCount: Math.max(0, prev.visitedCount - 1) }));
+            } else {
+                // Add
+                const payload = {
+                    user_id: user.id,
+                    place_id: restaurant.place_id || 'unknown', // Fallback if no place_id
+                    restaurant_name: restaurant.name,
+                    location: restaurant.location || restaurant.address
+                };
+
+                const { error } = await supabase
+                    .from('visited_restaurants')
+                    .insert([payload]);
+
+                if (error) throw error;
+                setIsVisited(true);
+                setStats(prev => ({ ...prev, visitedCount: prev.visitedCount + 1 }));
+            }
+        } catch (error) {
+            console.error('Error toggling visited:', error);
+            alert(`Failed to update visited status: ${error.message || JSON.stringify(error)}`);
+        } finally {
+            setVisitedLoading(false);
         }
     };
 
@@ -169,12 +276,24 @@ const RestaurantPage = ({ restaurant, onBack, onNewLog, onViewProfile }) => {
                         <span className="badge-cuisine">{restaurant.cuisine || 'Restaurant'}</span>
                     </div>
 
+                    <div className="restaurant-stats-badges" style={{ display: 'flex', gap: '1rem', marginTop: '0.5rem', fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
+                        <span>👥 {stats.visitedCount} visited</span>
+                        <span>❤️ {stats.wishlistCount} wishlisted</span>
+                    </div>
+
                     <div className="restaurant-actions" style={{ display: 'flex', gap: '1rem', marginTop: '1rem' }}>
                         <button
                             className="btn-primary"
                             onClick={() => onNewLog(restaurant)}
                         >
                             📝 Log your visit
+                        </button>
+                        <button
+                            className={`btn-secondary ${isVisited ? 'active' : ''}`}
+                            onClick={toggleVisited}
+                            disabled={visitedLoading}
+                        >
+                            {isVisited ? '✅ Visited' : 'Mark Visited'}
                         </button>
                         <button
                             className={`btn-secondary ${isInWishlist ? 'active' : ''}`}
