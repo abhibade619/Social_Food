@@ -15,7 +15,15 @@ import Wishlist from './components/Wishlist';
 import RestaurantPage from './components/RestaurantPage';
 import Notifications from './components/Notifications';
 import AccountInfo from './components/AccountInfo';
-import Settings from './components/Settings';
+import ChangePassword from './components/ChangePassword';
+
+// ... imports
+
+// Inside App component
+      case 'change-password':
+return <ChangePassword onBack={() => navigateTo('account')} />;
+      case 'settings':
+// ...
 import Diary from './components/Diary';
 import LogModal from './components/LogModal';
 import Home from './components/Home';
@@ -240,7 +248,9 @@ function App() {
       case 'diary':
         return <Diary onRestaurantClick={handleNavigateToRestaurant} />;
       case 'account':
-        return <AccountInfo />;
+        return <AccountInfo onNavigate={navigateTo} />;
+      case 'change-password':
+        return <ChangePassword onBack={() => navigateTo('account')} />;
       case 'settings':
         return <Settings />;
       case 'notifications':

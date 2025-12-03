@@ -22,336 +22,10 @@ const Profile = ({ onNavigate, onViewFollowers, onViewFollowing }) => {
 
     // Cropper State
     const [showCropper, setShowCropper] = useState(false);
-    const [imageSrc, setImageSrc] = useState(null);
-    const [crop, setCrop] = useState({ x: 0, y: 0 });
-    const [zoom, setZoom] = useState(1);
-    const [isDragging, setIsDragging] = useState(false);
-    const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
-
-    useEffect(() => {
-        fetchProfile();
-        fetchUserLogs();
-        fetchFollowCounts();
-    }, [user]);
-
-    const fetchProfile = async () => {
-        try {
-            const { data, error } = await supabase
-                .from('profiles')
-                .select('*')
-                .eq('id', user.id)
-                .single();
-
-            if (error && error.code !== 'PGRST116') throw error;
-
-            if (data) {
-                setProfile(data);
-                setFormData({
-                    username: data.username || '',
-                    full_name: data.full_name || '',
-                    bio: data.bio || '',
-                    website: data.website || '',
-                });
-            }
-        } catch (error) {
-            console.error('Error fetching profile:', error);
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    const fetchUserLogs = async () => {
-        try {
-            // Fetch user's own logs
-            const { data: ownLogs, error: ownError } = await supabase
-                .from('logs')
-                .select('*')
-                .eq('user_id', user.id)
-                .order('created_at', { ascending: false });
-
-            if (ownError) throw ownError;
-
-            // Fetch logs where user is tagged AND accepted
-            const { data: taggedData, error: taggedError } = await supabase
-                .from('tagged_users')
-                .select('log_id')
-                .eq('user_id', user.id)
-                .eq('show_in_diary', true);
-
-            if (taggedError) throw taggedError;
-
-            let taggedLogs = [];
-            if (taggedData && taggedData.length > 0) {
-                const taggedLogIds = taggedData.map(t => t.log_id);
-                const { data: taggedLogsData, error: taggedLogsError } = await supabase
-                    .from('logs')
-                    .select('*')
-                    .in('id', taggedLogIds)
-                    .order('created_at', { ascending: false });
-
-                if (!taggedLogsError && taggedLogsData) {
-                    taggedLogs = taggedLogsData;
-                }
-            }
-
-            // Combine and sort
-            const allLogs = [...(ownLogs || []), ...taggedLogs];
-            // Deduplicate based on ID just in case
-            const uniqueLogs = Array.from(new Map(allLogs.map(log => [log.id, log])).values());
-
-            uniqueLogs.sort((a, b) => new Date(b.visit_date || b.created_at) - new Date(a.visit_date || a.created_at));
-
-            setUserLogs(uniqueLogs);
-        } catch (error) {
-            console.error('Error fetching user logs:', error);
-        }
-    };
-
-    const fetchFollowCounts = async () => {
-        try {
-            const { count: followers } = await supabase
-                .from('follows')
-                .select('*', { count: 'exact', head: true })
-                .eq('following_id', user.id);
-
-            const { count: following } = await supabase
-                .from('follows')
-                .select('*', { count: 'exact', head: true })
-                .eq('follower_id', user.id);
-
-            setFollowerCount(followers || 0);
-            setFollowingCount(following || 0);
-        } catch (error) {
-            console.error('Error fetching follow counts:', error);
-        }
-    };
-
-    const handleAvatarUpload = (e) => {
-        const file = e.target.files[0];
-        if (!file) return;
-
-        // Strict JPEG/JPG Check
-        const isJpeg = file.type === 'image/jpeg' || file.type === 'image/jpg' || /\.(jpg|jpeg)$/i.test(file.name);
-        if (!isJpeg) {
-            alert("Please upload the image in JPEG or JPG format");
-            return;
-        }
-
-        if (file.size > 5 * 1024 * 1024) {
-            alert('File size must be less than 5MB');
-            return;
-        }
-
-        const reader = new FileReader();
-        reader.addEventListener('load', () => {
-            setImageSrc(reader.result);
-            setShowCropper(true);
-            setZoom(1);
-            setCrop({ x: 0, y: 0 });
-        });
-        reader.readAsDataURL(file);
-        // Reset input
-        e.target.value = null;
-    };
-
-    const handleMouseDown = (e) => {
-        setIsDragging(true);
-        setDragStart({ x: e.clientX - crop.x, y: e.clientY - crop.y });
-    };
-
-    const handleMouseMove = (e) => {
-        if (isDragging) {
-            e.preventDefault();
-            setCrop({
-                x: e.clientX - dragStart.x,
-                y: e.clientY - dragStart.y
-            });
-        }
-    };
-
-    const handleMouseUp = () => {
-        setIsDragging(false);
-    };
-
-    const getCroppedImg = async () => {
-        try {
-            const image = new Image();
-            image.src = imageSrc;
-            await new Promise(resolve => { image.onload = resolve; });
-
-            const canvas = document.createElement('canvas');
-            const ctx = canvas.getContext('2d');
-
-            // Set fixed output size (e.g., 400x400 for avatars)
-            canvas.width = 400;
-            canvas.height = 400;
-
-            ctx.fillStyle = '#000000';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-            // Translate to center
-            ctx.translate(canvas.width / 2, canvas.height / 2);
-            ctx.scale(zoom, zoom);
-            ctx.translate(crop.x, crop.y);
-
-            // Draw image centered
-            ctx.drawImage(image, -image.width / 2, -image.height / 2);
-
-            return new Promise((resolve) => {
-                canvas.toBlob((blob) => {
-                    resolve(blob);
-                }, 'image/jpeg', 0.9);
-            });
-        } catch (e) {
-            console.error(e);
-            return null;
-        }
-    };
-
-    const handleCropSave = async () => {
-        if (!imageSrc) return;
-        setUploading(true);
-
-        try {
-            const blob = await getCroppedImg();
-            if (!blob) throw new Error("Failed to crop image");
-
-            const fileExt = 'jpg';
-            const fileName = `${user.id}/${Date.now()}.${fileExt}`;
-
-            const { error: uploadError } = await supabase.storage
-                .from('avatars')
-                .upload(fileName, blob, {
-                    contentType: 'image/jpeg',
-                    cacheControl: '3600',
-                    upsert: true
-                });
-
-            if (uploadError) throw uploadError;
-
-            const { data: { publicUrl } } = supabase.storage
-                .from('avatars')
-                .getPublicUrl(fileName);
-
-            const { error: updateError } = await supabase
-                .from('profiles')
-                .update({ avatar_url: publicUrl })
-                .eq('id', user.id);
-
-            if (updateError) throw updateError;
-
-            await fetchProfile();
-            window.dispatchEvent(new Event('profileUpdated'));
-            setShowCropper(false);
-            alert('Profile picture updated successfully!');
-        } catch (error) {
-            console.error('Error uploading avatar:', error);
-            alert('Failed to upload profile picture.');
-        } finally {
-            setUploading(false);
-        }
-    };
-
-    const handleUpdate = async (e) => {
-        e.preventDefault();
-        try {
-            const { error } = await supabase
-                .from('profiles')
-                .upsert({
-                    id: user.id,
-                    ...formData,
-                    updated_at: new Date().toISOString(),
-                });
-
-            if (error) throw error;
-
-            setProfile({ ...profile, ...formData });
-            setEditing(false);
-        } catch (error) {
-            console.error('Error updating profile:', error);
-        }
-    };
-
-    if (loading) {
-        return <div className="loading">Loading profile...</div>;
-    }
-
-    return (
-        <div className="profile-container-premium">
-            {/* Cropper Modal */}
-            {showCropper && (
-                <div className="cropper-modal">
-                    <div className="cropper-content">
-                        <h3>Edit Profile Picture</h3>
-                        <div
-                            className="cropper-area"
-                            onMouseDown={handleMouseDown}
-                            onMouseMove={handleMouseMove}
-                            onMouseUp={handleMouseUp}
-                            onMouseLeave={handleMouseUp}
-                        >
-                            <img
-                                src={imageSrc}
-                                alt="Crop"
-                                style={{
-                                    transform: `translate(${crop.x}px, ${crop.y}px) scale(${zoom})`,
-                                    cursor: isDragging ? 'grabbing' : 'grab'
-                                }}
-                                draggable={false}
-                            />
-                        </div>
-                        <div className="cropper-controls">
-                            <label>Zoom</label>
-                            <input
-                                type="range"
-                                min="1"
-                                max="3"
-                                step="0.1"
-                                value={zoom}
-                                onChange={(e) => setZoom(parseFloat(e.target.value))}
-                            />
-                        </div>
-                        <div className="cropper-actions">
-                            <button className="btn-secondary" onClick={() => setShowCropper(false)}>Cancel</button>
-                            <button className="premium-button" onClick={handleCropSave} disabled={uploading}>
-                                {uploading ? 'Saving...' : 'Save & Upload'}
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            )}
-
-            <div className="profile-header-premium profile-hero-gradient">
-                <div className="profile-header-content">
-                    <div className="profile-avatar-premium">
-                        {profile?.avatar_url ? (
-                            <img
-                                src={profile.avatar_url}
-                                alt="Profile"
-                                onError={(e) => {
-                                    e.target.onerror = null;
-                                    e.target.src = `https://api.dicebear.com/7.x/avataaars/svg?seed=${profile.id}`;
-                                }}
-                            />
-                        ) : (
-                            <div className="avatar-placeholder-premium">
-                                {(profile?.username || user.email)?.[0]?.toUpperCase()}
-                            </div>
-                        )}
-                    </div>
-
-                    {editing ? (
-                        <form onSubmit={handleUpdate} className="profile-form glass-panel">
-                            <div className="form-group">
-                                <label htmlFor="username">Username</label>
-                                <input
-                                    id="username"
-                                    type="text"
-                                    value={formData.username}
-                                    onChange={(e) => setFormData({ ...formData, username: e.target.value })}
-                                    className="premium-input"
-                                />
-                            </div>
+    onChange = {(e) => setFormData({ ...formData, username: e.target.value })}
+className = "premium-input"
+    />
+                            </div >
                             <div className="form-group">
                                 <label htmlFor="full_name">Full Name</label>
                                 <input
@@ -415,58 +89,58 @@ const Profile = ({ onNavigate, onViewFollowers, onViewFollowing }) => {
                                     Cancel
                                 </button>
                             </div>
-                        </form>
+                        </form >
                     ) : (
-                        <>
-                            <h2 className="profile-name-premium">{profile?.full_name || 'No name set'}</h2>
-                            <p className="profile-username-premium">@{profile?.username || 'No username'}</p>
+    <>
+        <h2 className="profile-name-premium">{profile?.full_name || 'No name set'}</h2>
+        <p className="profile-username-premium">@{profile?.username || 'No username'}</p>
 
-                            {profile?.bio && (
-                                <p className="profile-bio-premium">{profile.bio}</p>
-                            )}
+        {profile?.bio && (
+            <p className="profile-bio-premium">{profile.bio}</p>
+        )}
 
-                            <div className="profile-stats-premium">
-                                <div className="stat-item-premium">
-                                    <span className="stat-value-premium">{userLogs.length}</span>
-                                    <span className="stat-label-premium">Logs</span>
-                                </div>
-                                <div
-                                    className="stat-item-premium clickable"
-                                    onClick={() => onViewFollowers && onViewFollowers(user.id)}
-                                >
-                                    <span className="stat-value-premium">{followerCount}</span>
-                                    <span className="stat-label-premium">Followers</span>
-                                </div>
-                                <div
-                                    className="stat-item-premium clickable"
-                                    onClick={() => onViewFollowing && onViewFollowing(user.id)}
-                                >
-                                    <span className="stat-value-premium">{followingCount}</span>
-                                    <span className="stat-label-premium">Following</span>
-                                </div>
-                            </div>
-
-                            <button className="premium-button btn-edit-profile-premium" onClick={() => setEditing(true)}>
-                                Edit Profile
-                            </button>
-                        </>
-                    )}
-                </div>
+        <div className="profile-stats-premium">
+            <div className="stat-item-premium">
+                <span className="stat-value-premium">{userLogs.length}</span>
+                <span className="stat-label-premium">Logs</span>
             </div>
-
-            <div className="profile-logs">
-                <h3 className="profile-section-title">My Logs</h3>
-                {userLogs.length > 0 ? (
-                    <div className="logs-grid">
-                        {userLogs.map((log) => (
-                            <LogCard key={log.id} log={log} isDiaryView={true} profileOwner={user} />
-                        ))}
-                    </div>
-                ) : (
-                    <p className="no-logs">No logs yet. Start sharing your dining experiences!</p>
-                )}
+            <div
+                className="stat-item-premium clickable"
+                onClick={() => onViewFollowers && onViewFollowers(user.id)}
+            >
+                <span className="stat-value-premium">{followerCount}</span>
+                <span className="stat-label-premium">Followers</span>
+            </div>
+            <div
+                className="stat-item-premium clickable"
+                onClick={() => onViewFollowing && onViewFollowing(user.id)}
+            >
+                <span className="stat-value-premium">{followingCount}</span>
+                <span className="stat-label-premium">Following</span>
             </div>
         </div>
+
+        <button className="premium-button btn-edit-profile-premium" onClick={() => setEditing(true)}>
+            Edit Profile
+        </button>
+    </>
+)}
+                </div >
+            </div >
+
+    <div className="profile-logs">
+        <h3 className="profile-section-title">My Logs</h3>
+        {userLogs.length > 0 ? (
+            <div className="logs-grid">
+                {userLogs.map((log) => (
+                    <LogCard key={log.id} log={log} isDiaryView={true} profileOwner={user} />
+                ))}
+            </div>
+        ) : (
+            <p className="no-logs">No logs yet. Start sharing your dining experiences!</p>
+        )}
+    </div>
+        </div >
     );
 };
 
