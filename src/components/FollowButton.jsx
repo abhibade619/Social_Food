@@ -15,6 +15,8 @@ const FollowButton = ({ targetUserId, targetUsername }) => {
         }
     }, [user, targetUserId]);
 
+    if (!targetUserId) return null;
+
     const checkFollowStatus = async () => {
         try {
             const { data, error } = await supabase
