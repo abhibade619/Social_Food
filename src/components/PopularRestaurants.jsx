@@ -59,6 +59,33 @@ const PopularRestaurants = ({ city, onRestaurantClick }) => {
             wishlistData?.forEach(w => wMap[w.place_id] = true);
             setWishlistMap(wMap);
 
+            // Fetch internal ratings
+            const placeIds = restaurants.map(r => r.place_id);
+            const { data: logsData } = await supabase
+                .from('logs')
+                .select('place_id, rating')
+                .in('place_id', placeIds);
+
+            const ratingsMap = {};
+            if (logsData) {
+                logsData.forEach(log => {
+                    if (!ratingsMap[log.place_id]) {
+                        ratingsMap[log.place_id] = { sum: 0, count: 0 };
+                    }
+                    ratingsMap[log.place_id].sum += parseFloat(log.rating);
+                    ratingsMap[log.place_id].count += 1;
+                });
+            }
+
+            setRestaurants(prev => prev.map(r => {
+                const stats = ratingsMap[r.place_id];
+                return {
+                    ...r,
+                    internalRating: stats ? (stats.sum / stats.count).toFixed(1) : null,
+                    internalReviewCount: stats ? stats.count : 0
+                };
+            }));
+
         } catch (error) {
             console.error("Error fetching interactions:", error);
         }
@@ -200,7 +227,9 @@ const PopularRestaurants = ({ city, onRestaurantClick }) => {
                             style={{ backgroundImage: `url(${restaurant.photos && restaurant.photos[0] ? restaurant.photos[0] : '/placeholder-food.jpg'})` }}
                             onClick={() => onRestaurantClick && onRestaurantClick(restaurant)}
                         >
-                            <div className="popular-rating">⭐ {restaurant.rating} ({restaurant.user_ratings_total})</div>
+                            {restaurant.internalRating && (
+                                <div className="popular-rating">⭐ {restaurant.internalRating} ({restaurant.internalReviewCount})</div>
+                            )}
                         </div>
                         <div className="popular-content">
                             <h3 onClick={() => onRestaurantClick && onRestaurantClick(restaurant)}>{restaurant.name}</h3>

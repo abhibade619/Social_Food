@@ -1,4 +1,7 @@
-import PopularRestaurants from './PopularRestaurants';
+import { useState, useEffect } from 'react';
+import { supabase } from '../supabaseClient';
+import { useAuth } from '../context/AuthProvider';
+import LogCard from './LogCard';
 
 const Feed = ({ onViewProfile, onRestaurantClick }) => {
     const [logs, setLogs] = useState([]);
@@ -84,9 +87,6 @@ const Feed = ({ onViewProfile, onRestaurantClick }) => {
 
     return (
         <div className="feed-container container">
-
-            {/* Popular Restaurants Section */}
-            <PopularRestaurants city={currentCity} onRestaurantClick={onRestaurantClick} />
 
             <div className="feed-header">
                 <h2>Recent Activity</h2>
