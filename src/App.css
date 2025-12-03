@@ -4492,30 +4492,30 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover {
   /* Center actions */
 }
 
-/* Profile Container Alignment */
+/* Premium Profile Layout - tightened spacing */
 .profile-container-premium {
   max-width: 1200px;
-  /* Increased from 800px to allow more logs */
   margin: 0 auto;
-  padding: 0.5rem 1rem 2rem;
-  /* Reduced top padding significantly */
+  /* much smaller top padding so it sits close to the navbar */
+  padding: 0.75rem 1rem 2rem;
   display: flex;
   flex-direction: column;
   align-items: center;
-  /* Center content */
 }
 
+/* header card sits closer to My Logs */
 .profile-header-premium {
   background: #111;
-  /* Dark background like screenshot */
-  padding: 3rem 2rem;
+  padding: 2rem 2rem;
+  /* was 3rem 2rem */
   border-radius: 24px;
   width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
-  margin-bottom: 3rem;
+  margin-bottom: 1.5rem;
+  /* was 3rem */
   border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
@@ -4604,19 +4604,62 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover {
   text-align: left;
 }
 
-/* Logs Grid */
-.logs-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)) !important;
-  gap: 1.5rem;
+/* section that wraps "My Logs" and the grid */
+.profile-logs-section {
   width: 100%;
-  margin-top: 1rem;
+  margin-top: 0.75rem;
+  /* was var(--spacing-xl) */
 }
 
-.logs-grid .log-card {
+.profile-section-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 0 0 1rem 0;
+  /* remove extra top margin */
+  padding-left: 10px;
+  border-left: 4px solid var(--primary-color);
+}
+
+/* Logs grid - 4 cards per row on large screens */
+.logs-grid {
+  display: grid;
   width: 100%;
-  margin: 0;
+  margin-top: 1rem;
+  gap: 1.5rem;
+
+  /* 4 per row on large desktop */
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-auto-rows: auto;
+  /* let height follow content */
+}
+
+/* 3 per row on medium screens */
+@media (max-width: 1200px) {
+  .logs-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+/* 2 per row on tablets */
+@media (max-width: 900px) {
+  .logs-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* 1 per row on phones */
+@media (max-width: 600px) {
+  .logs-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* make each log card fill its grid cell */
+.logs-grid .log-card {
   height: 100%;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
 }
 
 /* User Search Styles */

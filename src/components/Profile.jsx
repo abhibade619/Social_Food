@@ -467,7 +467,7 @@ const Profile = ({ onNavigate, onViewFollowers, onViewFollowing }) => {
                 </div>
             </div>
 
-            <div className="profile-logs">
+            <div className="profile-logs-section">
                 <h3 className="profile-section-title">My Logs</h3>
                 {userLogs.length > 0 ? (
                     <div className="logs-grid">
