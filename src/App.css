@@ -3829,3 +3829,11 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover {
   text-overflow: ellipsis;
   max-width: 70%;
 }
+
+/* Autocomplete Wrapper */
+.search-component-wrapper {
+  position: relative;
+  width: 100%;
+  z-index: 1001;
+  /* Ensure it's above other inputs */
+}
