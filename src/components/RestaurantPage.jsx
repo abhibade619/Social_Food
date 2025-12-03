@@ -198,6 +198,46 @@ const RestaurantPage = ({ restaurant, onBack, onNewLog, onViewProfile }) => {
 
                 {/* Right Column: Logs/Reviews */}
                 <div className="restaurant-logs-column">
+                    {/* Media Section */}
+                    {logs.some(log => log.photos && (typeof log.photos === 'string' ? JSON.parse(log.photos).length > 0 : log.photos.length > 0)) && (
+                        <div className="restaurant-media-section glass-panel info-card-premium" style={{ marginBottom: '2rem' }}>
+                            <h3 className="section-title-premium" style={{ fontSize: '1.2rem', marginBottom: '1rem' }}>Photos</h3>
+                            <div className="restaurant-media-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(80px, 1fr))', gap: '8px' }}>
+                                {logs.flatMap(log => {
+                                    const photos = typeof log.photos === 'string' ? JSON.parse(log.photos) : log.photos;
+                                    return photos || [];
+                                }).slice(0, 12).map((photo, index) => (
+                                    <div
+                                        key={index}
+                                        className="restaurant-media-item"
+                                        style={{
+                                            position: 'relative',
+                                            paddingBottom: '100%',
+                                            height: 0,
+                                            borderRadius: '8px',
+                                            overflow: 'hidden',
+                                            cursor: 'pointer'
+                                        }}
+                                        onClick={() => window.open(photo, '_blank')}
+                                    >
+                                        <img
+                                            src={photo}
+                                            alt={`Restaurant Photo ${index + 1}`}
+                                            style={{
+                                                position: 'absolute',
+                                                top: 0,
+                                                left: 0,
+                                                width: '100%',
+                                                height: '100%',
+                                                objectFit: 'cover'
+                                            }}
+                                        />
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+
                     <h2 className="section-title-premium">Community Logs</h2>
                     {loading ? (
                         <div className="loading-container">
