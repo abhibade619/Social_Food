@@ -212,6 +212,7 @@ function App() {
         return <Home
           onRestaurantClick={handleNavigateToRestaurant}
           onViewProfile={handleNavigateToProfile}
+          onNewLog={handleNewLog}
         />;
       case 'feed':
         return <Feed
