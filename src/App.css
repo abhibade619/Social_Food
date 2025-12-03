@@ -3645,41 +3645,45 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover {
   border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-/* Force Grid Layout for Log Photos */
+/* Grid container for photos in a log card */
 .log-photos-grid {
-  display: grid !important;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)) !important;
-  gap: 0.5rem !important;
-  margin-top: 1rem !important;
-  width: 100% !important;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+  width: 100%;
+  border-radius: 12px;
 }
 
+/* Thumbnail box */
 .log-photo-wrapper {
   position: relative;
   width: 100%;
-  padding-top: 56.25%;
-  /* 16:9 Aspect Ratio container */
-  background: #111;
+  height: 160px;
+  /* Small fixed thumbnail height */
+  background: #000;
   /* Dark background for letterboxing */
   border-radius: 12px;
   overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
 }
 
+/* Actual img element */
 .log-photo {
-  position: absolute !important;
-  top: 0 !important;
-  left: 0 !important;
-  width: 100% !important;
-  height: 100% !important;
-  object-fit: contain !important;
-  /* Ensure full image is visible */
-  border-radius: 12px !important;
-  max-height: 180px !important;
-  /* Cap height as requested */
-  margin: auto !important;
-  /* Center if smaller */
-  bottom: 0 !important;
-  right: 0 !important;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  /* Full image visible inside thumbnail */
+  max-width: 100%;
+  max-height: 100%;
+  transition: transform 0.2s ease;
+}
+
+.log-photo:hover {
+  transform: scale(1.03);
 }
 
 .suggested-user-card {
@@ -3757,38 +3761,7 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover {
   }
 }
 
-/* Force Log Card Image Sizing */
-.log-photos-grid {
-  border-radius: var(--border-radius);
-  overflow: hidden;
-  margin-top: auto;
-  height: 220px;
-  /* Fixed height for the container */
-  width: 100%;
-  background: #000;
-  /* Black background for letterboxing */
-}
 
-.log-photo-wrapper {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  background: #000;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-}
-
-.log-photo {
-  width: 100%;
-  height: 100%;
-  object-fit: contain !important;
-  /* Ensure full image is visible */
-  max-height: 100%;
-  max-width: 100%;
-  transition: transform 0.3s ease;
-}
 
 /* Auth Card Enhancement */
 .auth-card {
@@ -3836,27 +3809,4 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover {
   font-size: 2.8rem !important;
   margin-bottom: 0.5rem !important;
   letter-spacing: -1px;
-}
-
-/* FORCE FULL-IMAGE THUMBNAIL BEHAVIOR */
-.log-photo {
-  object-fit: contain !important;
-  width: 100% !important;
-  height: 100% !important;
-  max-height: 180px !important;
-  background: #000 !important;
-  /* For clean letterboxing */
-  border-radius: 12px !important;
-}
-
-
-.log-photo-wrapper {
-  background: #000 !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  overflow: hidden !important;
-  border-radius: 12px;
-  height: 180px !important;
-  /* Thumbnail height */
 }
