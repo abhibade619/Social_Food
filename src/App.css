@@ -1435,7 +1435,6 @@ body {
     justify-content: space-around;
   }
 
-  .logs-grid,
   .search-results {
     grid-template-columns: 1fr;
   }
@@ -4608,8 +4607,7 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover {
 /* Logs Grid */
 .logs-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  /* Reduced min-width to fit 3-4 */
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)) !important;
   gap: 1.5rem;
   width: 100%;
   margin-top: 1rem;
