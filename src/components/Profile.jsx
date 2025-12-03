@@ -102,6 +102,145 @@ const Profile = ({ onNavigate, onViewFollowers, onViewFollowing }) => {
     const fetchFollowCounts = async () => {
         try {
             const { count: followers } = await supabase
+                .from('follows')
+                .select('*', { count: 'exact', head: true })
+                .eq('following_id', user.id);
+
+            const { count: following } = await supabase
+                .from('follows')
+                .select('*', { count: 'exact', head: true })
+                .eq('follower_id', user.id);
+
+            setFollowerCount(followers || 0);
+            setFollowingCount(following || 0);
+        } catch (error) {
+            console.error('Error fetching follow counts:', error);
+        }
+    };
+
+    const handleAvatarUpload = async (e) => {
+        console.log("handleAvatarUpload triggered");
+        let file = e.target.files[0];
+        if (!file) {
+            console.log("No file selected");
+            return;
+        }
+        console.log("Original file:", file.name, file.type, file.size);
+
+        // HEIC Conversion Logic
+        if (file.type === "image/heic" || file.name.toLowerCase().endsWith('.heic')) {
+            console.log("HEIC file detected, starting conversion...");
+            try {
+                setUploading(true); // Show loading state during conversion
+                const convertedBlob = await heic2any({
+                    blob: file,
+                    toType: "image/jpeg",
+                    quality: 0.8
+                });
+
+                // Handle case where heic2any returns an array (for multi-image HEIC)
+                const blob = Array.isArray(convertedBlob) ? convertedBlob[0] : convertedBlob;
+
+                // Create a new File object from the blob
+                file = new File([blob], file.name.replace(/\.heic$/i, ".jpg"), {
+                    type: "image/jpeg"
+                });
+                console.log("HEIC conversion successful. New file:", file.name, file.type, file.size);
+            } catch (error) {
+                console.error("HEIC conversion failed:", error);
+                alert("Failed to process HEIC image. Please try a JPEG or PNG.");
+                setUploading(false);
+                return;
+            }
+        }
+
+        // Validate file type (now checks converted file)
+        if (!file.type.startsWith('image/')) {
+            console.error("Invalid file type:", file.type);
+            alert('Please upload an image file');
+            setUploading(false);
+            return;
+        }
+
+        // Validate file size (max 5MB)
+        if (file.size > 5 * 1024 * 1024) {
+            console.error("File too large:", file.size);
+            alert('File size must be less than 5MB');
+            setUploading(false);
+            return;
+        }
+
+        setUploading(true);
+        try {
+            // Create unique file name
+            const fileExt = file.name.split('.').pop();
+            const fileName = `${user.id}/${Date.now()}.${fileExt}`;
+            console.log("Uploading to Supabase Storage:", fileName);
+
+            // Upload to Supabase Storage
+            const { data: uploadData, error: uploadError } = await supabase.storage
+                .from('avatars')
+                .upload(fileName, file, {
+                    cacheControl: '3600',
+                    upsert: true
+                });
+
+            if (uploadError) {
+                console.error("Supabase Storage Upload Error:", uploadError);
+                throw uploadError;
+            }
+            console.log("Upload successful:", uploadData);
+
+            // Get public URL
+            const { data: { publicUrl } } = supabase.storage
+                .from('avatars')
+                .getPublicUrl(fileName);
+
+            console.log("Public URL retrieved:", publicUrl);
+
+            // Update profile with new avatar URL
+            const { error: updateError } = await supabase
+                .from('profiles')
+                .update({ avatar_url: publicUrl })
+                .eq('id', user.id);
+
+            if (updateError) {
+                console.error("Profile Update Error:", updateError);
+                throw updateError;
+            }
+
+            console.log("Profile updated successfully");
+
+            // Refresh profile
+            await fetchProfile();
+
+            // Dispatch event to update Navbar
+            window.dispatchEvent(new Event('profileUpdated'));
+
+            alert('Profile picture updated successfully!');
+        } catch (error) {
+            console.error('Error uploading avatar (Catch Block):', error);
+            alert(`Failed to upload profile picture: ${error.message || error.error_description || 'Unknown error'}`);
+        } finally {
+            setUploading(false);
+        }
+    };
+
+    const handleUpdate = async (e) => {
+        e.preventDefault();
+        try {
+            const { error } = await supabase
+                .from('profiles')
+                .upsert({
+                    id: user.id,
+                    ...formData,
+                    updated_at: new Date().toISOString(),
+                });
+
+            if (error) throw error;
+
+            setProfile({ ...profile, ...formData });
+            setEditing(false);
         } catch (error) {
             console.error('Error updating profile:', error);
         }
