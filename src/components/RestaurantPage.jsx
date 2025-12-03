@@ -138,7 +138,7 @@ const RestaurantPage = ({ restaurant, onBack, onNewLog, onViewProfile }) => {
                         <span className="badge-cuisine">{restaurant.cuisine || 'Restaurant'}</span>
                     </div>
 
-                    <div className="restaurant-actions">
+                    <div className="restaurant-actions" style={{ display: 'flex', gap: '1rem', marginTop: '1rem' }}>
                         <button
                             className="btn-primary"
                             onClick={() => onNewLog(restaurant)}

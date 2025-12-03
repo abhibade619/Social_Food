@@ -163,7 +163,7 @@ const LocationSelector = ({ currentLocation, onLocationChange }) => {
                             <div className="suggestion-item no-results">No cities found</div>
                         ) : (
                             <div className="popular-cities">
-                                <div className="suggestion-header">Popular Cities</div>
+                                <div className="suggestion-header" style={{ padding: '12px 16px', color: 'var(--text-secondary)', fontSize: '0.85rem', fontWeight: '600' }}>Popular Cities</div>
                                 {['New York', 'Los Angeles', 'Chicago', 'Houston', 'Miami'].map(city => (
                                     <div
                                         key={city}

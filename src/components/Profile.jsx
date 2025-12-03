@@ -14,241 +14,23 @@ const Profile = ({ onNavigate, onViewFollowers, onViewFollowing }) => {
     const [followingCount, setFollowingCount] = useState(0);
     const [uploading, setUploading] = useState(false);
     const [formData, setFormData] = useState({
-        username: '',
-        full_name: '',
-        bio: '',
-        website: '',
-    });
-
-    useEffect(() => {
-        fetchProfile();
-        fetchUserLogs();
-        fetchFollowCounts();
-    }, [user]);
-
-    const fetchProfile = async () => {
-        try {
-            const { data, error } = await supabase
-                .from('profiles')
-                .select('*')
-                .eq('id', user.id)
-                .single();
-
-            if (error && error.code !== 'PGRST116') throw error;
-
-            if (data) {
-                setProfile(data);
-                setFormData({
-                    username: data.username || '',
-                    full_name: data.full_name || '',
-                    bio: data.bio || '',
-                    website: data.website || '',
-                });
-            }
-        } catch (error) {
-            console.error('Error fetching profile:', error);
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    const fetchUserLogs = async () => {
-        try {
-            // Fetch user's own logs
-            const { data: ownLogs, error: ownError } = await supabase
-                .from('logs')
-                .select('*')
-                .eq('user_id', user.id)
-                .order('created_at', { ascending: false });
-
-            if (ownError) throw ownError;
-
-            // Fetch logs where user is tagged AND accepted
-            const { data: taggedData, error: taggedError } = await supabase
-                .from('tagged_users')
-                .select('log_id')
-                .eq('user_id', user.id)
-                .eq('show_in_diary', true);
-
-            if (taggedError) throw taggedError;
-
-            let taggedLogs = [];
-            if (taggedData && taggedData.length > 0) {
-                const taggedLogIds = taggedData.map(t => t.log_id);
-                const { data: taggedLogsData, error: taggedLogsError } = await supabase
-                    .from('logs')
-                    .select('*')
-                    .in('id', taggedLogIds)
-                    .order('created_at', { ascending: false });
-
-                if (!taggedLogsError && taggedLogsData) {
-                    taggedLogs = taggedLogsData;
-                }
-            }
-
-            // Combine and sort
-            const allLogs = [...(ownLogs || []), ...taggedLogs];
-            // Deduplicate based on ID just in case
-            const uniqueLogs = Array.from(new Map(allLogs.map(log => [log.id, log])).values());
-
-            uniqueLogs.sort((a, b) => new Date(b.visit_date || b.created_at) - new Date(a.visit_date || a.created_at));
-
-            setUserLogs(uniqueLogs);
-        } catch (error) {
-            console.error('Error fetching user logs:', error);
-        }
-    };
-
-    const fetchFollowCounts = async () => {
-        try {
-            const { count: followers } = await supabase
-                .from('follows')
-                .select('*', { count: 'exact', head: true })
-                .eq('following_id', user.id);
-
-            const { count: following } = await supabase
-                .from('follows')
-                .select('*', { count: 'exact', head: true })
-                .eq('follower_id', user.id);
-
-            setFollowerCount(followers || 0);
-            setFollowingCount(following || 0);
-        } catch (error) {
-            console.error('Error fetching follow counts:', error);
-        }
-    };
-
-    const handleAvatarUpload = async (e) => {
-        console.log("handleAvatarUpload triggered");
-        let file = e.target.files[0];
-        if (!file) {
-            console.log("No file selected");
-            return;
-        }
-        console.log("Original file:", file.name, file.type, file.size);
-
-        // Strict JPEG/JPG Check
-        const isJpeg = file.type === 'image/jpeg' || file.type === 'image/jpg' || /\.(jpg|jpeg)$/i.test(file.name);
-
-        if (!isJpeg) {
-            alert("Please upload the image in JPEG or JPG format");
-            console.log("Upload rejected: Not a JPEG/JPG file");
-            return;
-        }
-
-        // Validate file size (max 5MB)
-        if (file.size > 5 * 1024 * 1024) {
-            console.error("File too large:", file.size);
-            alert('File size must be less than 5MB');
-            setUploading(false);
-            return;
-        }
-
-        setUploading(true);
-        try {
-            // Create unique file name
-            const fileExt = file.name.split('.').pop();
-            const fileName = `${user.id}/${Date.now()}.${fileExt}`;
-            console.log("Uploading to Supabase Storage:", fileName);
-
-            // Upload to Supabase Storage
-            const { data: uploadData, error: uploadError } = await supabase.storage
-                .from('avatars')
-                .upload(fileName, file, {
-                    cacheControl: '3600',
-                    upsert: true
-                });
-
-            if (uploadError) {
-                console.error("Supabase Storage Upload Error:", uploadError);
-                throw uploadError;
-            }
-            console.log("Upload successful:", uploadData);
-
-            // Get public URL
-            const { data: { publicUrl } } = supabase.storage
-                .from('avatars')
-                .getPublicUrl(fileName);
-
-            console.log("Public URL retrieved:", publicUrl);
-
-            // Update profile with new avatar URL
-            const { error: updateError } = await supabase
-                .from('profiles')
-                .update({ avatar_url: publicUrl })
-                .eq('id', user.id);
-
-            if (updateError) {
-                console.error("Profile Update Error:", updateError);
-                throw updateError;
-            }
-
-            console.log("Profile updated successfully");
-
-            // Refresh profile
-            await fetchProfile();
-
-            // Dispatch event to update Navbar
-            window.dispatchEvent(new Event('profileUpdated'));
-
-            alert('Profile picture updated successfully!');
-        } catch (error) {
-            console.error('Error uploading avatar (Catch Block):', error);
-            alert(`Failed to upload profile picture: ${error.message || error.error_description || 'Unknown error'}`);
-        } finally {
-            setUploading(false);
-        }
-    };
-
-    const handleUpdate = async (e) => {
-        e.preventDefault();
-        try {
-            const { error } = await supabase
-                .from('profiles')
-                .upsert({
-                    id: user.id,
-                    ...formData,
-                    updated_at: new Date().toISOString(),
-                });
-
-            if (error) throw error;
-
-            setProfile({ ...profile, ...formData });
-            setEditing(false);
-        } catch (error) {
-            console.error('Error updating profile:', error);
-        }
-    };
-
-    if (loading) {
-        return <div className="loading">Loading profile...</div>;
-    }
-
-    return (
-        <div className="profile-container-premium">
-            <div className="profile-header-premium profile-hero-gradient">
-                <div className="profile-header-content">
-                    <div className="profile-avatar-premium">
-                        {profile?.avatar_url ? (
-                            <img
-                                src={profile.avatar_url}
-                                alt="Profile"
-                                onError={(e) => {
-                                    e.target.onerror = null;
-                                    e.target.src = `https://api.dicebear.com/7.x/avataaars/svg?seed=${profile.id}`;
-                                }}
+        onError={(e) => {
+    e.target.onerror = null;
+    e.target.src = `https://api.dicebear.com/7.x/avataaars/svg?seed=${profile.id}`;
+}}
                             />
                         ) : (
-                            <div className="avatar-placeholder-premium">
-                                {(profile?.username || user.email)?.[0]?.toUpperCase()}
-                            </div>
-                        )}
-                    </div>
+    <div className="avatar-placeholder-premium">
+        {(profile?.username || user.email)?.[0]?.toUpperCase()}
+    </div>
+)}
+                    </div >
 
-                    {editing ? (
-                        <form onSubmit={handleUpdate} className="profile-form glass-panel">
-                            {/* Form content remains same but wrapped in glass-panel */}
-                            <div className="form-group">
+{
+    editing?(
+                        <form onSubmit = { handleUpdate } className = "profile-form glass-panel" >
+            {/* Form content remains same but wrapped in glass-panel */ }
+            < div className = "form-group" >
                                 <label htmlFor="username">Username</label>
                                 <input
                                     id="username"
@@ -321,58 +103,58 @@ const Profile = ({ onNavigate, onViewFollowers, onViewFollowing }) => {
                                     Cancel
                                 </button>
                             </div>
-                        </form>
+                        </form >
                     ) : (
-                        <>
-                            <h2 className="profile-name-premium">{profile?.full_name || 'No name set'}</h2>
-                            <p className="profile-username-premium">@{profile?.username || 'No username'}</p>
+    <>
+        <h2 className="profile-name-premium">{profile?.full_name || 'No name set'}</h2>
+        <p className="profile-username-premium">@{profile?.username || 'No username'}</p>
 
-                            {profile?.bio && (
-                                <p className="profile-bio-premium">{profile.bio}</p>
-                            )}
+        {profile?.bio && (
+            <p className="profile-bio-premium">{profile.bio}</p>
+        )}
 
-                            <div className="profile-stats-premium">
-                                <div className="stat-item-premium">
-                                    <span className="stat-value-premium">{userLogs.length}</span>
-                                    <span className="stat-label-premium">Logs</span>
-                                </div>
-                                <div
-                                    className="stat-item-premium clickable"
-                                    onClick={() => onViewFollowers && onViewFollowers(user.id)}
-                                >
-                                    <span className="stat-value-premium">{followerCount}</span>
-                                    <span className="stat-label-premium">Followers</span>
-                                </div>
-                                <div
-                                    className="stat-item-premium clickable"
-                                    onClick={() => onViewFollowing && onViewFollowing(user.id)}
-                                >
-                                    <span className="stat-value-premium">{followingCount}</span>
-                                    <span className="stat-label-premium">Following</span>
-                                </div>
-                            </div>
-
-                            <button className="premium-button btn-edit-profile-premium" onClick={() => setEditing(true)}>
-                                Edit Profile
-                            </button>
-                        </>
-                    )}
-                </div>
+        <div className="profile-stats-premium">
+            <div className="stat-item-premium">
+                <span className="stat-value-premium">{userLogs.length}</span>
+                <span className="stat-label-premium">Logs</span>
             </div>
-
-            <div className="profile-logs">
-                <h3 className="profile-section-title">My Logs</h3>
-                {userLogs.length > 0 ? (
-                    <div className="logs-grid">
-                        {userLogs.map((log) => (
-                            <LogCard key={log.id} log={log} isDiaryView={true} profileOwner={user} />
-                        ))}
-                    </div>
-                ) : (
-                    <p className="no-logs">No logs yet. Start sharing your dining experiences!</p>
-                )}
+            <div
+                className="stat-item-premium clickable"
+                onClick={() => onViewFollowers && onViewFollowers(user.id)}
+            >
+                <span className="stat-value-premium">{followerCount}</span>
+                <span className="stat-label-premium">Followers</span>
+            </div>
+            <div
+                className="stat-item-premium clickable"
+                onClick={() => onViewFollowing && onViewFollowing(user.id)}
+            >
+                <span className="stat-value-premium">{followingCount}</span>
+                <span className="stat-label-premium">Following</span>
             </div>
         </div>
+
+        <button className="premium-button btn-edit-profile-premium" onClick={() => setEditing(true)}>
+            Edit Profile
+        </button>
+    </>
+)}
+                </div >
+            </div >
+
+    <div className="profile-logs">
+        <h3 className="profile-section-title">My Logs</h3>
+        {userLogs.length > 0 ? (
+            <div className="logs-grid">
+                {userLogs.map((log) => (
+                    <LogCard key={log.id} log={log} isDiaryView={true} profileOwner={user} />
+                ))}
+            </div>
+        ) : (
+            <p className="no-logs">No logs yet. Start sharing your dining experiences!</p>
+        )}
+    </div>
+        </div >
     );
 };
 

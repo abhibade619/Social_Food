@@ -7,6 +7,7 @@ const UpdatePassword = ({ onComplete }) => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
+    const [showPassword, setShowPassword] = useState(false);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -54,33 +55,69 @@ const UpdatePassword = ({ onComplete }) => {
                 <form onSubmit={handleSubmit} className="auth-form">
                     <div className="form-group">
                         <label htmlFor="password">New Password</label>
-                        <div className="input-wrapper">
+                        <div className="input-wrapper" style={{ position: 'relative' }}>
                             <input
                                 id="password"
-                                type="password"
+                                type={showPassword ? "text" : "password"}
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
                                 placeholder="••••••••"
                                 required
                                 minLength={6}
                                 className="auth-input"
+                                style={{ paddingRight: '40px' }}
                             />
+                            <button
+                                type="button"
+                                onClick={() => setShowPassword(!showPassword)}
+                                style={{
+                                    position: 'absolute',
+                                    right: '10px',
+                                    top: '50%',
+                                    transform: 'translateY(-50%)',
+                                    background: 'none',
+                                    border: 'none',
+                                    color: 'var(--text-secondary)',
+                                    cursor: 'pointer',
+                                    zIndex: 10
+                                }}
+                            >
+                                {showPassword ? '👁️' : '🙈'}
+                            </button>
                         </div>
                     </div>
 
                     <div className="form-group">
                         <label htmlFor="confirmPassword">Confirm Password</label>
-                        <div className="input-wrapper">
+                        <div className="input-wrapper" style={{ position: 'relative' }}>
                             <input
                                 id="confirmPassword"
-                                type="password"
+                                type={showPassword ? "text" : "password"}
                                 value={confirmPassword}
                                 onChange={(e) => setConfirmPassword(e.target.value)}
                                 placeholder="••••••••"
                                 required
                                 minLength={6}
                                 className="auth-input"
+                                style={{ paddingRight: '40px' }}
                             />
+                            <button
+                                type="button"
+                                onClick={() => setShowPassword(!showPassword)}
+                                style={{
+                                    position: 'absolute',
+                                    right: '10px',
+                                    top: '50%',
+                                    transform: 'translateY(-50%)',
+                                    background: 'none',
+                                    border: 'none',
+                                    color: 'var(--text-secondary)',
+                                    cursor: 'pointer',
+                                    zIndex: 10
+                                }}
+                            >
+                                {showPassword ? '👁️' : '🙈'}
+                            </button>
                         </div>
                     </div>
 

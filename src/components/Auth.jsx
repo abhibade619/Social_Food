@@ -10,6 +10,7 @@ const Auth = () => {
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
     const [loading, setLoading] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
     const { signIn, signUp, resetPassword, isSupabaseConfigured } = useAuth();
 
     const handleSubmit = async (e) => {
@@ -101,17 +102,39 @@ const Auth = () => {
 
                     {!isResetPassword && (
                         <div className="form-group floating-label-group">
-                            <input
-                                id="password"
-                                type="password"
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                                placeholder=" "
-                                required
-                                minLength={6}
-                                className="premium-input"
-                            />
-                            <label htmlFor="password" className="floating-label">Password</label>
+                            <div className="password-input-wrapper" style={{ position: 'relative' }}>
+                                <input
+                                    id="password"
+                                    type={showPassword ? "text" : "password"}
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
+                                    placeholder=" "
+                                    required
+                                    minLength={6}
+                                    className="premium-input"
+                                    style={{ paddingRight: '40px' }}
+                                />
+                                <label htmlFor="password" className="floating-label">Password</label>
+                                <button
+                                    type="button"
+                                    className="password-toggle-btn"
+                                    onClick={() => setShowPassword(!showPassword)}
+                                    style={{
+                                        position: 'absolute',
+                                        right: '10px',
+                                        top: '50%',
+                                        transform: 'translateY(-50%)',
+                                        background: 'none',
+                                        border: 'none',
+                                        color: 'var(--text-secondary)',
+                                        cursor: 'pointer',
+                                        padding: '4px',
+                                        zIndex: 10
+                                    }}
+                                >
+                                    {showPassword ? '👁️' : '🙈'}
+                                </button>
+                            </div>
 
                             {!isSignUp && (
                                 <div className="forgot-password-link">
