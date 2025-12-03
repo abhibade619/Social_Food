@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../supabaseClient';
 import { useAuth } from '../context/AuthProvider';
+import { Link } from 'react-router-dom';
 
 const SuggestedFriends = ({ onViewProfile }) => {
     const { user } = useAuth();
@@ -16,9 +17,7 @@ const SuggestedFriends = ({ onViewProfile }) => {
 
     const fetchSuggestions = async () => {
         try {
-            setLoading(true);
-
-            // 1. Get IDs of users already followed
+            // 1. Get list of people current user is already following
             const { data: followingData, error: followingError } = await supabase
                 .from('follows')
                 .select('following_id')
@@ -29,20 +28,21 @@ const SuggestedFriends = ({ onViewProfile }) => {
             const following = new Set(followingData.map(f => f.following_id));
             setFollowingIds(following);
 
-            // 2. Fetch profiles (excluding current user)
-            // In a real app, we'd use a more sophisticated query (e.g., location-based, mutuals)
-            // For now, we'll fetch a batch and filter client-side or use a random limit
+            // 2. Fetch all profiles (limit to 20 for now to pick from)
+            // In a real app, you'd use a more sophisticated query or RPC
             const { data: profiles, error: profilesError } = await supabase
                 .from('profiles')
-                .select('*')
-                .neq('id', user.id)
-                .limit(20); // Fetch a pool of potential suggestions
+                .select('id, username, full_name, avatar_url')
+                .neq('id', user.id) // Exclude self
+                .limit(20);
 
             if (profilesError) throw profilesError;
 
-            // 3. Filter out already followed users and pick random 3-5
-            const available = profiles.filter(p => !following.has(p.id));
-            const shuffled = available.sort(() => 0.5 - Math.random());
+            // 3. Filter out already followed users
+            const notFollowed = profiles.filter(p => !following.has(p.id));
+
+            // 4. Randomly pick 5
+            const shuffled = notFollowed.sort(() => 0.5 - Math.random());
             setSuggestions(shuffled.slice(0, 5));
 
         } catch (error) {
@@ -52,63 +52,59 @@ const SuggestedFriends = ({ onViewProfile }) => {
         }
     };
 
-    const handleFollow = async (targetUserId) => {
+    const handleFollow = async (targetId) => {
         try {
             const { error } = await supabase
                 .from('follows')
-                .insert([{ follower_id: user.id, following_id: targetUserId }]);
+                .insert({
+                    follower_id: user.id,
+                    following_id: targetId
+                });
 
             if (error) throw error;
 
-            // Update local state
-            setFollowingIds(prev => new Set(prev).add(targetUserId));
-            setSuggestions(prev => prev.filter(p => p.id !== targetUserId));
+            // Update local state to remove the user from suggestions
+            setSuggestions(prev => prev.filter(p => p.id !== targetId));
+            setFollowingIds(prev => new Set(prev).add(targetId));
 
-            // Optional: Create notification for the followed user
-            await supabase
-                .from('notifications')
-                .insert([{
-                    user_id: targetUserId,
-                    type: 'follow',
-                    content: 'started following you',
-                    from_user_id: user.id,
-                    is_read: false
-                }]);
+            // Dispatch event to update other components if needed
+            window.dispatchEvent(new Event('newFollow'));
 
         } catch (error) {
             console.error('Error following user:', error);
+            alert('Failed to follow user');
         }
     };
 
-    if (loading || suggestions.length === 0) return null;
+    if (loading) return <div className="suggested-friends-loading">Loading suggestions...</div>;
+    if (suggestions.length === 0) return null;
 
     return (
         <div className="suggested-friends-container glass-panel">
             <h3 className="suggested-title">People You May Know</h3>
             <div className="suggested-list">
                 {suggestions.map(profile => (
-                    <div key={profile.id} className="suggested-item">
+                    <div key={profile.id} className="suggested-user-card">
                         <div
-                            className="suggested-avatar-link clickable"
+                            className="suggested-user-info clickable"
                             onClick={() => onViewProfile && onViewProfile(profile.id)}
                         >
                             <img
                                 src={profile.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${profile.id}`}
                                 alt={profile.username}
                                 className="suggested-avatar"
+                                onError={(e) => {
+                                    e.target.onerror = null;
+                                    e.target.src = `https://api.dicebear.com/7.x/avataaars/svg?seed=${profile.id}`;
+                                }}
                             />
-                        </div>
-                        <div className="suggested-info">
-                            <div
-                                className="suggested-name clickable"
-                                onClick={() => onViewProfile && onViewProfile(profile.id)}
-                            >
-                                {profile.full_name || profile.username}
+                            <div className="suggested-text">
+                                <span className="suggested-name">{profile.full_name || profile.username}</span>
+                                <span className="suggested-username">@{profile.username}</span>
                             </div>
-                            <span className="suggested-username">@{profile.username}</span>
                         </div>
                         <button
-                            className="follow-btn-small"
+                            className="btn-follow-small"
                             onClick={() => handleFollow(profile.id)}
                         >
                             Follow

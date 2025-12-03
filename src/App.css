@@ -3616,18 +3616,125 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover {
 }
 
 /* Unified Search Wrapper */
-.search-component-wrapper {
-  position: relative;
-  width: 100%;
-  margin-bottom: var(--spacing-md);
-  box-sizing: border-box;
-  /* Ensure padding doesn't affect width */
+/* Home Layout */
+.home-layout {
+  display: grid;
+  grid-template-columns: 1fr 300px;
+  gap: 2rem;
+  align-items: start;
+  padding-top: 1rem;
 }
 
-/* Log Card Photo Fix - Small but Full */
+.main-feed {
+  min-width: 0;
+  /* Prevent grid blowout */
+}
+
+.home-sidebar {
+  position: sticky;
+  top: 90px;
+  /* Adjust based on navbar height */
+}
+
+/* Suggested Friends Component */
+.suggested-friends-container {
+  padding: 1.5rem;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.suggested-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  color: var(--text-primary);
+}
+
+.suggested-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.suggested-user-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.8rem;
+}
+
+.suggested-user-info {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  flex: 1;
+  min-width: 0;
+}
+
+.suggested-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid rgba(255, 255, 255, 0.1);
+}
+
+.suggested-text {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.suggested-name {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.suggested-username {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.btn-follow-small {
+  background: var(--primary-gradient);
+  border: none;
+  color: white;
+  padding: 0.4rem 0.8rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.btn-follow-small:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(255, 107, 107, 0.3);
+}
+
+@media (max-width: 900px) {
+  .home-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .home-sidebar {
+    display: none;
+    /* Hide sidebar on mobile/tablet or move to bottom */
+  }
+}
+
+/* Force Log Card Image Sizing */
 .log-photos-grid {
-  display: grid;
-  gap: 4px;
   border-radius: var(--border-radius);
   overflow: hidden;
   margin-top: auto;

@@ -51,72 +51,73 @@ const Home = ({ onRestaurantClick, onViewProfile }) => {
     ];
 
     return (
-        <div className="feed-container container">
-            {/* Popular Section */}
-            <section className="feed-section">
-                <div className="section-header-premium">
-                    <h2>Popular in {location.name || 'Your City'}</h2>
-                    <div className="cuisine-filter-pill">
-                        <select
-                            value={selectedCuisine}
-                            onChange={(e) => setSelectedCuisine(e.target.value)}
-                            className="glass-select"
-                        >
-                            <option value="all">All Cuisines</option>
-                            <option value="Italian">Italian</option>
-                            <option value="Japanese">Japanese</option>
-                            <option value="French">French</option>
-                            <option value="Indian">Indian</option>
-                        </select>
+        <div className="home-layout container">
+            <div className="main-feed">
+                {/* Popular Section */}
+                <section className="feed-section">
+                    <div className="section-header-premium">
+                        <h2>Popular in {location.name || 'Your City'}</h2>
+                        <div className="cuisine-filter-pill">
+                            <select
+                                value={selectedCuisine}
+                                onChange={(e) => setSelectedCuisine(e.target.value)}
+                                className="glass-select"
+                            >
+                                <option value="all">All Cuisines</option>
+                                <option value="Italian">Italian</option>
+                                <option value="Japanese">Japanese</option>
+                                <option value="French">French</option>
+                                <option value="Indian">Indian</option>
+                            </select>
+                        </div>
                     </div>
-                </div>
-                <div className="horizontal-scroll-container">
-                    {popularRestaurants.map(rest => (
-                        <div
-                            key={rest.id}
-                            className="restaurant-card-premium clickable-restaurant"
-                            onClick={() => onRestaurantClick(rest)}
-                        >
-                            <div className="card-image" style={{ backgroundImage: `url(${rest.image})` }}>
-                                <span className="rating-badge-overlay">⭐ {rest.rating}</span>
+                    <div className="horizontal-scroll-container">
+                        {popularRestaurants.map(rest => (
+                            <div
+                                key={rest.id}
+                                className="restaurant-card-premium clickable-restaurant"
+                                onClick={() => onRestaurantClick(rest)}
+                            >
+                                <div className="card-image" style={{ backgroundImage: `url(${rest.image})` }}>
+                                    <span className="rating-badge-overlay">⭐ {rest.rating}</span>
+                                </div>
+                                <div className="card-info">
+                                    <h3>{rest.name}</h3>
+                                    <p>{rest.cuisine}</p>
+                                </div>
                             </div>
-                            <div className="card-info">
-                                <h3>{rest.name}</h3>
-                                <p>{rest.cuisine}</p>
-                            </div>
-                        </div>
-                    ))}
-                </div>
-            </section>
+                        ))}
+                    </div>
+                </section>
 
-            {/* Suggested Friends Section */}
-            <section className="feed-section">
+                {/* Top Rated Section */}
+                <section className="feed-section">
+                    <div className="section-header-premium">
+                        <h2>Top Rated Gems</h2>
+                    </div>
+                    <div className="horizontal-scroll-container">
+                        {topRatedRestaurants.map(rest => (
+                            <div
+                                key={rest.id}
+                                className="restaurant-card-premium clickable-restaurant"
+                                onClick={() => onRestaurantClick(rest)}
+                            >
+                                <div className="card-image" style={{ backgroundImage: `url(${rest.image})` }}>
+                                    <span className="rating-badge-overlay">⭐ {rest.rating}</span>
+                                </div>
+                                <div className="card-info">
+                                    <h3>{rest.name}</h3>
+                                    <p>{rest.cuisine}</p>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </section>
+            </div>
+
+            <aside className="home-sidebar">
                 <SuggestedFriends onViewProfile={onViewProfile} />
-            </section>
-
-            {/* Top Rated Section */}
-            <section className="feed-section">
-                <div className="section-header-premium">
-                    <h2>Top Rated Gems</h2>
-                </div>
-                <div className="horizontal-scroll-container">
-                    {topRatedRestaurants.map(rest => (
-                        <div
-                            key={rest.id}
-                            className="restaurant-card-premium clickable-restaurant"
-                            onClick={() => onRestaurantClick(rest)}
-                        >
-                            <div className="card-image" style={{ backgroundImage: `url(${rest.image})` }}>
-                                <span className="rating-badge-overlay">⭐ {rest.rating}</span>
-                            </div>
-                            <div className="card-info">
-                                <h3>{rest.name}</h3>
-                                <p>{rest.cuisine}</p>
-                            </div>
-                        </div>
-                    ))}
-                </div>
-            </section>
+            </aside>
         </div>
     );
 };
