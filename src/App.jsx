@@ -17,13 +17,7 @@ import Notifications from './components/Notifications';
 import AccountInfo from './components/AccountInfo';
 import ChangePassword from './components/ChangePassword';
 
-// ... imports
 
-// Inside App component
-      case 'change-password':
-return <ChangePassword onBack={() => navigateTo('account')} />;
-      case 'settings':
-// ...
 import Diary from './components/Diary';
 import LogModal from './components/LogModal';
 import Home from './components/Home';
