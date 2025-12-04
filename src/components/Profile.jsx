@@ -510,135 +510,166 @@ const Profile = ({ onNavigate, onViewFollowers, onViewFollowing }) => {
                 </div>
             </div>
 
-            <div className="profile-tabs" style={{ display: 'flex', justifyContent: 'center', gap: '2rem', marginBottom: '2rem', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
-                <button
-                    className={`tab-button ${activeTab === 'logs' ? 'active' : ''}`}
-                    onClick={() => setActiveTab('logs')}
-                    style={{
-                        background: 'none',
-                        border: 'none',
-                        color: activeTab === 'logs' ? 'var(--primary-color)' : 'var(--text-secondary)',
-                        padding: '1rem',
-                        fontSize: '1.1rem',
-                        fontWeight: '600',
-                        cursor: 'pointer',
-                        borderBottom: activeTab === 'logs' ? '2px solid var(--primary-color)' : 'none'
-                    }}
-                >
-                    Logs
-                </button>
-                <button
-                    className={`tab-button ${activeTab === 'visited' ? 'active' : ''}`}
-                    onClick={() => setActiveTab('visited')}
-                    style={{
-                        background: 'none',
-                        border: 'none',
-                        color: activeTab === 'visited' ? 'var(--primary-color)' : 'var(--text-secondary)',
-                        padding: '1rem',
-                        fontSize: '1.1rem',
-                        fontWeight: '600',
-                        cursor: 'pointer',
-                        borderBottom: activeTab === 'visited' ? '2px solid var(--primary-color)' : 'none'
-                    }}
-                >
-                    Visited
-                </button>
-                <button
-                    className={`tab-button ${activeTab === 'wishlist' ? 'active' : ''}`}
-                    onClick={() => setActiveTab('wishlist')}
-                    style={{
-                        background: 'none',
-                        border: 'none',
-                        color: activeTab === 'wishlist' ? 'var(--primary-color)' : 'var(--text-secondary)',
-                        padding: '1rem',
-                        fontSize: '1.1rem',
-                        fontWeight: '600',
-                        cursor: 'pointer',
-                        borderBottom: activeTab === 'wishlist' ? '2px solid var(--primary-color)' : 'none'
-                    }}
-                >
-                    Wishlist
-                </button>
-            </div>
+            {!editing && (
+                <>
+                    <div className="profile-tabs" style={{ display: 'flex', justifyContent: 'center', gap: '2rem', marginBottom: '2rem', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
+                        <button
+                            className={`tab-button ${activeTab === 'logs' ? 'active' : ''}`}
+                            onClick={() => setActiveTab('logs')}
+                            style={{
+                                background: 'none',
+                                border: 'none',
+                                color: activeTab === 'logs' ? 'var(--primary-color)' : 'var(--text-secondary)',
+                                padding: '1rem',
+                                fontSize: '1.1rem',
+                                fontWeight: '600',
+                                cursor: 'pointer',
+                                borderBottom: activeTab === 'logs' ? '2px solid var(--primary-color)' : 'none'
+                            }}
+                        >
+                            Logs
+                        </button>
+                        <button
+                            className={`tab-button ${activeTab === 'visited' ? 'active' : ''}`}
+                            onClick={() => setActiveTab('visited')}
+                            style={{
+                                background: 'none',
+                                border: 'none',
+                                color: activeTab === 'visited' ? 'var(--primary-color)' : 'var(--text-secondary)',
+                                padding: '1rem',
+                                fontSize: '1.1rem',
+                                fontWeight: '600',
+                                cursor: 'pointer',
+                                borderBottom: activeTab === 'visited' ? '2px solid var(--primary-color)' : 'none'
+                            }}
+                        >
+                            Visited
+                        </button>
+                        <button
+                            className={`tab-button ${activeTab === 'wishlist' ? 'active' : ''}`}
+                            onClick={() => setActiveTab('wishlist')}
+                            style={{
+                                background: 'none',
+                                border: 'none',
+                                color: activeTab === 'wishlist' ? 'var(--primary-color)' : 'var(--text-secondary)',
+                                padding: '1rem',
+                                fontSize: '1.1rem',
+                                fontWeight: '600',
+                                cursor: 'pointer',
+                                borderBottom: activeTab === 'wishlist' ? '2px solid var(--primary-color)' : 'none'
+                            }}
+                        >
+                            Wishlist
+                        </button>
+                    </div>
 
-            <div className="profile-content">
-                {activeTab === 'logs' && (
-                    <div className="profile-logs-section">
-                        {userLogs.length > 0 ? (
-                            <div className="logs-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '1.5rem' }}>
-                                {userLogs.map((log) => (
-                                    <LogCard key={log.id} log={log} isDiaryView={true} profileOwner={user} />
-                                ))}
+                    <div className="profile-content">
+                        {activeTab === 'logs' && (
+                            <div className="profile-logs-section">
+                                {userLogs.length > 0 ? (
+                                    <div className="logs-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))', gap: '1.5rem', justifyContent: 'start' }}>
+                                        {userLogs.map((log) => (
+                                            <LogCard key={log.id} log={log} isDiaryView={true} profileOwner={user} />
+                                        ))}
+                                    </div>
+                                ) : (
+                                    <p className="no-logs">No logs yet. Start sharing your dining experiences!</p>
+                                )}
                             </div>
-                        ) : (
-                            <p className="no-logs">No logs yet. Start sharing your dining experiences!</p>
                         )}
-                    </div>
-                )}
 
-                {activeTab === 'visited' && (
-                    <div className="visited-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '1.5rem' }}>
-                        {visitedRestaurants.length > 0 ? (
-                            visitedRestaurants.map((place) => (
-                                <div key={place.id} className="visited-card glass-panel" style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                                    <h3 style={{ fontSize: '1.2rem', margin: 0 }}>{place.restaurant_name}</h3>
-                                    <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>{place.location}</p>
-                                    <div style={{ marginTop: 'auto', paddingTop: '1rem' }}>
-                                        <button
-                                            className="btn-secondary btn-sm"
-                                            onClick={() => onNavigate && onNavigate('restaurant', {
-                                                selectedRestaurant: {
-                                                    place_id: place.place_id,
-                                                    name: place.restaurant_name,
-                                                    address: place.location
-                                                }
-                                            })}
-                                        >
-                                            View Details
-                                        </button>
-                                    </div>
-                                </div>
-                            ))
-                        ) : (
-                            <p className="no-logs" style={{ gridColumn: '1/-1', textAlign: 'center' }}>
-                                No visited restaurants marked yet.
-                            </p>
+                        {activeTab === 'visited' && (
+                            <div className="visited-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))', gap: '1.5rem' }}>
+                                {visitedRestaurants.length > 0 ? (
+                                    visitedRestaurants.map((place) => (
+                                        <div key={place.id} className="visited-card glass-panel" style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                                            <h3 style={{ fontSize: '1.2rem', margin: 0 }}>{place.restaurant_name}</h3>
+                                            <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>{place.location}</p>
+                                            <div style={{ marginTop: 'auto', paddingTop: '1rem' }}>
+                                                <button
+                                                    className="btn-secondary btn-sm"
+                                                    onClick={() => onNavigate && onNavigate('restaurant', {
+                                                        selectedRestaurant: {
+                                                            place_id: place.place_id,
+                                                            name: place.restaurant_name,
+                                                            address: place.location
+                                                        }
+                                                    })}
+                                                >
+                                                    View Details
+                                                </button>
+                                            </div>
+                                        </div>
+                                    ))
+                                ) : (
+                                    <p className="no-logs" style={{ gridColumn: '1/-1', textAlign: 'center' }}>
+                                        No visited restaurants marked yet.
+                                    </p>
+                                )}
+                            </div>
                         )}
-                    </div>
-                )}
 
-                {activeTab === 'wishlist' && (
-                    <div className="wishlist-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '1.5rem' }}>
-                        {wishlist.length > 0 ? (
-                            wishlist.map((place) => (
-                                <div key={place.id} className="wishlist-card glass-panel" style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                                    <h3 style={{ fontSize: '1.2rem', margin: 0 }}>{place.restaurant_name}</h3>
-                                    <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>{place.location}</p>
-                                    <p style={{ color: 'var(--primary-color)', fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '1px' }}>{place.cuisine}</p>
-                                    <div style={{ marginTop: 'auto', paddingTop: '1rem' }}>
-                                        <button
-                                            className="btn-secondary btn-sm"
-                                            onClick={() => onNavigate && onNavigate('restaurant', {
-                                                selectedRestaurant: {
-                                                    place_id: place.place_id,
-                                                    name: place.restaurant_name,
-                                                    address: place.location
+                        {activeTab === 'wishlist' && (
+                            <div className="wishlist-section">
+                                <div className="wishlist-header" style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '1rem' }}>
+                                    <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer', color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
+                                        <input
+                                            type="checkbox"
+                                            checked={profile?.is_wishlist_private || false}
+                                            onChange={async (e) => {
+                                                const newValue = e.target.checked;
+                                                setProfile(prev => ({ ...prev, is_wishlist_private: newValue }));
+                                                setFormData(prev => ({ ...prev, is_wishlist_private: newValue }));
+
+                                                try {
+                                                    const { error } = await supabase
+                                                        .from('profiles')
+                                                        .update({ is_wishlist_private: newValue })
+                                                        .eq('id', user.id);
+                                                    if (error) throw error;
+                                                } catch (err) {
+                                                    console.error("Error updating privacy:", err);
+                                                    setProfile(prev => ({ ...prev, is_wishlist_private: !newValue }));
                                                 }
-                                            })}
-                                        >
-                                            View Details
-                                        </button>
-                                    </div>
+                                            }}
+                                        />
+                                        🔒 Private Wishlist
+                                    </label>
                                 </div>
-                            ))
-                        ) : (
-                            <p className="no-logs" style={{ gridColumn: '1/-1', textAlign: 'center' }}>
-                                Your wishlist is empty.
-                            </p>
+                                <div className="wishlist-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))', gap: '1.5rem' }}>
+                                    {wishlist.length > 0 ? (
+                                        wishlist.map((place) => (
+                                            <div key={place.id} className="wishlist-card glass-panel" style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                                                <h3 style={{ fontSize: '1.2rem', margin: 0 }}>{place.restaurant_name}</h3>
+                                                <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>{place.location}</p>
+                                                <p style={{ color: 'var(--primary-color)', fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '1px' }}>{place.cuisine}</p>
+                                                <div style={{ marginTop: 'auto', paddingTop: '1rem' }}>
+                                                    <button
+                                                        className="btn-secondary btn-sm"
+                                                        onClick={() => onNavigate && onNavigate('restaurant', {
+                                                            selectedRestaurant: {
+                                                                place_id: place.place_id,
+                                                                name: place.restaurant_name,
+                                                                address: place.location
+                                                            }
+                                                        })}
+                                                    >
+                                                        View Details
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        ))
+                                    ) : (
+                                        <p className="no-logs" style={{ gridColumn: '1/-1', textAlign: 'center' }}>
+                                            Your wishlist is empty.
+                                        </p>
+                                    )}
+                                </div>
+                            </div>
                         )}
                     </div>
-                )}
-            </div>
+                </>
+            )}
         </div>
     );
 };
