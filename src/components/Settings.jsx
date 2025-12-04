@@ -91,20 +91,7 @@ const Settings = ({ onNavigate }) => {
             <div className="settings-card">
                 <h3>Account Management</h3>
                 <div className="account-actions">
-                    <button
-                        className="btn-secondary settings-button"
-                        onClick={() => onNavigate && onNavigate('change-password')}
-                    >
-                        Change Password
-                    </button>
                     <button className="btn-secondary settings-button">Download My Data</button>
-                </div>
-
-                <div className="danger-zone">
-                    <p className="danger-text">Danger Zone</p>
-                    <button className="btn-delete-account">
-                        Delete Account
-                    </button>
                 </div>
             </div>
         </div>
