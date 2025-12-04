@@ -4917,3 +4917,34 @@ input:checked+.toggle-slider:before {
   margin-bottom: 0.75rem;
   /* slightly smaller gap under avatar */
 }
+
+/* User provided SUPER TIGHT profile spacing fixes */
+/* Pull the whole profile section up */
+.main-content {
+  padding-top: 0.25rem !important;
+  /* super tight */
+}
+
+/* Bring the card MUCH closer to navbar */
+.profile-header-premium {
+  padding-top: 0.5rem !important;
+  padding-bottom: 1.25rem !important;
+}
+
+/* Shrink the gradient strip even more */
+.profile-header-premium::before {
+  height: 40px !important;
+  /* was 120 → 80 → now 40 */
+}
+
+/* Pull the avatar up tight */
+.profile-avatar-premium {
+  margin-top: -0.5rem !important;
+  /* pulls the photo upward */
+  margin-bottom: 0.5rem !important;
+}
+
+/* Slightly tighten the username spacing */
+.profile-header-premium h1 {
+  margin-top: 0.25rem !important;
+}
