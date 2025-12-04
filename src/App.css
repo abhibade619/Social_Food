@@ -4890,3 +4890,30 @@ input:checked+.toggle-slider:before {
   display: flex;
   flex-direction: column;
 }
+
+/* User provided profile spacing fixes */
+/* Tighten space between navbar and profile header */
+.main-content {
+  padding-top: 0.75rem;
+  /* was var(--spacing-lg) */
+}
+
+/* Tighten space inside the profile header card */
+.profile-header-premium {
+  padding-top: 1.25rem;
+  /* less empty space above avatar */
+  padding-bottom: 1.75rem;
+}
+
+/* Shorter light gradient at the top of the card */
+.profile-header-premium::before {
+  height: 80px;
+  /* was 120px */
+}
+
+/* Pull the avatar closer to the top of the card */
+.profile-avatar-premium {
+  margin-top: 0;
+  margin-bottom: 0.75rem;
+  /* slightly smaller gap under avatar */
+}
