@@ -610,7 +610,7 @@ const Profile = ({ onNavigate, onViewFollowers, onViewFollowing }) => {
                         )}
 
                         {activeTab === 'wishlist' && (
-                            <div className="wishlist-section">
+                            <div className="profile-logs-section">
                                 <div className="wishlist-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))', gap: '1.5rem' }}>
                                     {wishlist.length > 0 ? (
                                         wishlist.map((place) => (

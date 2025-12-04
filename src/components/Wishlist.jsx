@@ -138,14 +138,19 @@ const Wishlist = ({ onRestaurantClick }) => {
             <div className="wishlist-header-premium">
                 <h2>My Wishlist</h2>
                 <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
-                    <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer', color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
-                        <input
-                            type="checkbox"
-                            checked={isPrivate}
-                            onChange={handlePrivacyToggle}
-                        />
-                        🔒 Private Wishlist
-                    </label>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                        <label className="toggle-switch">
+                            <input
+                                type="checkbox"
+                                checked={isPrivate}
+                                onChange={handlePrivacyToggle}
+                            />
+                            <span className="toggle-slider"></span>
+                        </label>
+                        <span style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
+                            {isPrivate ? '🔒 Private' : '🔓 Public'}
+                        </span>
+                    </div>
                     <button
                         className="premium-button"
                         onClick={() => setShowAddForm(true)}
