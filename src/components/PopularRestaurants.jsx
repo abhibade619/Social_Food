@@ -147,10 +147,16 @@ const PopularRestaurants = ({ city, onRestaurantClick, onNewLog }) => {
 
             // 3. Save to Cache
             if (results.length > 0) {
+                console.log("Attempting to cache", results.length, "restaurants...");
                 const { error: upsertError } = await supabase
                     .from('cached_restaurants')
                     .upsert(results, { onConflict: 'place_id' });
-                if (upsertError) console.error("Error caching restaurants:", upsertError);
+
+                if (upsertError) {
+                    console.error("CACHE_DEBUG_ERROR:", upsertError);
+                } else {
+                    console.log("CACHE_DEBUG_SUCCESS: Successfully cached", results.length, "restaurants");
+                }
 
                 processAndSetRestaurants(results);
             }
