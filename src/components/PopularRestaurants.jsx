@@ -280,39 +280,11 @@ const PopularRestaurants = ({ city, onRestaurantClick, onNewLog }) => {
             </div>
         </div>
     );
-
     if (loading) return <div className="loading-spinner">Loading recommendations...</div>;
     if (popularRestaurants.length === 0 && topRatedRestaurants.length === 0) return null;
 
     return (
         <div className="recommendations-container">
-            {/* Debug Section */}
-            <div style={{ padding: '1rem', background: '#333', marginBottom: '1rem', borderRadius: '8px' }}>
-                <button onClick={() => {
-                    const runDiagnostics = async () => {
-                        const testId = 'manual_debug_' + Date.now();
-                        const { data, error } = await supabase
-                            .from('cached_restaurants')
-                            .insert([{
-                                place_id: testId,
-                                name: 'Manual Debug Restaurant',
-                                city: 'Debug City',
-                                last_updated: new Date().toISOString()
-                            }])
-                            .select();
-
-                        if (error) alert("INSERT ERROR: " + JSON.stringify(error));
-                        else {
-                            alert("INSERT SUCCESS! ID: " + data[0].id + "\n\nCheck your Supabase table now. You should see 'Manual Debug Restaurant'.");
-                            // Cleanup removed so user can verify
-                        }
-                    };
-                    runDiagnostics();
-                }}>
-                    🛠️ TEST CACHE INSERT
-                </button>
-            </div>
-
             {/* Popular Section */}
             <div className="popular-restaurants-section">
                 <h2 className="section-title-premium">Popular in {city}</h2>
