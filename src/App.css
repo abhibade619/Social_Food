@@ -4952,3 +4952,50 @@ input:checked+.toggle-slider:before {
   margin-top: 0.5rem !important;
   /* relaxed from 0.25rem */
 }
+
+/* Settings Page Improvements */
+.account-actions {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 2rem;
+}
+
+.settings-button {
+  flex: 1;
+  min-width: 200px;
+  justify-content: center;
+}
+
+.danger-zone {
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid rgba(255, 59, 48, 0.2);
+}
+
+.danger-text {
+  color: #ff3b30;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 1rem;
+  font-weight: 600;
+}
+
+.btn-delete-account {
+  background: rgba(255, 59, 48, 0.1);
+  color: #ff3b30;
+  border: 1px solid rgba(255, 59, 48, 0.3);
+  padding: 0.75rem 1.5rem;
+  border-radius: 12px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  width: 100%;
+  text-align: center;
+}
+
+.btn-delete-account:hover {
+  background: rgba(255, 59, 48, 0.2);
+  transform: translateY(-1px);
+}

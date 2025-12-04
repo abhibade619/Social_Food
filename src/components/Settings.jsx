@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-const Settings = () => {
+const Settings = ({ onNavigate }) => {
     const [settings, setSettings] = useState({
         emailNotifications: true,
         pushNotifications: false,
@@ -90,10 +90,21 @@ const Settings = () => {
 
             <div className="settings-card">
                 <h3>Account Management</h3>
-                <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
-                    <button className="btn-secondary settings-button">Change Password</button>
+                <div className="account-actions">
+                    <button
+                        className="btn-secondary settings-button"
+                        onClick={() => onNavigate && onNavigate('change-password')}
+                    >
+                        Change Password
+                    </button>
                     <button className="btn-secondary settings-button">Download My Data</button>
-                    <button className="btn-delete-account">Delete Account</button>
+                </div>
+
+                <div className="danger-zone">
+                    <p className="danger-text">Danger Zone</p>
+                    <button className="btn-delete-account">
+                        Delete Account
+                    </button>
                 </div>
             </div>
         </div>
