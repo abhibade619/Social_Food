@@ -107,7 +107,15 @@ const Notifications = ({ onNavigate }) => {
                             onClick={() => handleNotificationClick(notification)}
                         >
                             <div className="notification-icon-premium">
-                                {notification.type === 'tag' ? '🏷️' : notification.type === 'follow' ? '👤' : '🔔'}
+                                {notification.sender?.avatar_url ? (
+                                    <img
+                                        src={notification.sender.avatar_url}
+                                        alt="User"
+                                        style={{ width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover' }}
+                                    />
+                                ) : (
+                                    notification.type === 'tag' ? '🏷️' : notification.type === 'follow' ? '👤' : '🔔'
+                                )}
                             </div>
                             <div className="notification-content">
                                 <p className="notification-message">
