@@ -9,7 +9,8 @@ const UserProfile = ({ userId, onNavigate, onRestaurantClick, onViewFollowers, o
     const [profile, setProfile] = useState(null);
     const [logs, setLogs] = useState([]);
     const [visitedRestaurants, setVisitedRestaurants] = useState([]);
-    const [activeTab, setActiveTab] = useState('logs'); // 'logs' or 'visited'
+    const [wishlist, setWishlist] = useState([]);
+    const [activeTab, setActiveTab] = useState('logs'); // 'logs', 'visited', 'wishlist'
     const [stats, setStats] = useState({ followers: 0, following: 0, totalLogs: 0, totalVisited: 0 });
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -23,16 +24,18 @@ const UserProfile = ({ userId, onNavigate, onRestaurantClick, onViewFollowers, o
     const fetchAllData = async () => {
         setLoading(true);
         try {
-            const [profileData, logsData, visitedData, statsData] = await Promise.all([
-                fetchProfile(),
+            const profileData = await fetchProfile();
+            const [logsData, visitedData, wishlistData, statsData] = await Promise.all([
                 fetchLogs(),
                 fetchVisited(),
+                fetchWishlist(profileData),
                 fetchStats()
             ]);
 
             setProfile(profileData);
             setLogs(logsData);
             setVisitedRestaurants(visitedData);
+            setWishlist(wishlistData);
             setStats(statsData);
         } catch (error) {
             console.error('Error fetching user data:', error);
@@ -114,10 +117,25 @@ const UserProfile = ({ userId, onNavigate, onRestaurantClick, onViewFollowers, o
         return data;
     };
 
+    const fetchWishlist = async (profileData) => {
+        if (profileData?.is_wishlist_private && !isOwnProfile) return [];
+
+        const { data, error } = await supabase
+            .from('wishlist')
+            .select('*')
+            .eq('user_id', userId)
+            .order('created_at', { ascending: false });
+
+        if (error) {
+            console.error('fetchWishlist error:', error);
+            return [];
+        }
+        return data;
+    };
+
     const fetchStats = async () => {
-        const [followers, following, logs] = await Promise.all([
+        const [followers, following, logs, visited] = await Promise.all([
             supabase.from('follows').select('*', { count: 'exact', head: true }).eq('following_id', userId),
-            supabase.from('follows').select('*', { count: 'exact', head: true }).eq('follower_id', userId),
             supabase.from('follows').select('*', { count: 'exact', head: true }).eq('follower_id', userId),
             supabase.from('logs').select('*', { count: 'exact', head: true }).eq('user_id', userId),
             supabase.from('visited_restaurants').select('*', { count: 'exact', head: true }).eq('user_id', userId)
@@ -246,13 +264,29 @@ const UserProfile = ({ userId, onNavigate, onRestaurantClick, onViewFollowers, o
                 >
                     Visited
                 </button>
+                <button
+                    className={`tab-button ${activeTab === 'wishlist' ? 'active' : ''}`}
+                    onClick={() => setActiveTab('wishlist')}
+                    style={{
+                        background: 'none',
+                        border: 'none',
+                        color: activeTab === 'wishlist' ? 'var(--primary-color)' : 'var(--text-secondary)',
+                        padding: '1rem',
+                        fontSize: '1.1rem',
+                        fontWeight: '600',
+                        cursor: 'pointer',
+                        borderBottom: activeTab === 'wishlist' ? '2px solid var(--primary-color)' : 'none'
+                    }}
+                >
+                    Wishlist
+                </button>
             </div>
 
             <div className="profile-content">
-                {activeTab === 'logs' ? (
+                {activeTab === 'logs' && (
                     <div className="profile-logs-section">
                         {logs.length > 0 ? (
-                            <div className="logs-grid">
+                            <div className="logs-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '1.5rem' }}>
                                 {logs.map((log) => (
                                     <LogCard
                                         key={log.id}
@@ -272,7 +306,9 @@ const UserProfile = ({ userId, onNavigate, onRestaurantClick, onViewFollowers, o
                             </p>
                         )}
                     </div>
-                ) : (
+                )}
+
+                {activeTab === 'visited' && (
                     <div className="visited-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '1.5rem' }}>
                         {visitedRestaurants.length > 0 ? (
                             visitedRestaurants.map((place) => (
@@ -296,6 +332,40 @@ const UserProfile = ({ userId, onNavigate, onRestaurantClick, onViewFollowers, o
                         ) : (
                             <p className="no-logs" style={{ gridColumn: '1/-1', textAlign: 'center' }}>
                                 No visited restaurants marked yet.
+                            </p>
+                        )}
+                    </div>
+                )}
+
+                {activeTab === 'wishlist' && (
+                    <div className="wishlist-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '1.5rem' }}>
+                        {profile?.is_wishlist_private && !isOwnProfile ? (
+                            <p className="no-logs" style={{ gridColumn: '1/-1', textAlign: 'center' }}>
+                                🔒 This user's wishlist is private.
+                            </p>
+                        ) : wishlist.length > 0 ? (
+                            wishlist.map((place) => (
+                                <div key={place.id} className="wishlist-card glass-panel" style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                                    <h3 style={{ fontSize: '1.2rem', margin: 0 }}>{place.restaurant_name}</h3>
+                                    <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>{place.location}</p>
+                                    <p style={{ color: 'var(--primary-color)', fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '1px' }}>{place.cuisine}</p>
+                                    <div style={{ marginTop: 'auto', paddingTop: '1rem' }}>
+                                        <button
+                                            className="btn-secondary btn-sm"
+                                            onClick={() => onRestaurantClick && onRestaurantClick({
+                                                place_id: place.place_id,
+                                                name: place.restaurant_name,
+                                                address: place.location
+                                            })}
+                                        >
+                                            View Details
+                                        </button>
+                                    </div>
+                                </div>
+                            ))
+                        ) : (
+                            <p className="no-logs" style={{ gridColumn: '1/-1', textAlign: 'center' }}>
+                                Wishlist is empty.
                             </p>
                         )}
                     </div>

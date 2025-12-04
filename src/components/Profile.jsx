@@ -21,6 +21,7 @@ const Profile = ({ onNavigate, onViewFollowers, onViewFollowing }) => {
         full_name: '',
         bio: '',
         website: '',
+        is_wishlist_private: false,
     });
 
     // Cropper State
@@ -59,6 +60,7 @@ const Profile = ({ onNavigate, onViewFollowers, onViewFollowing }) => {
                     full_name: data.full_name || '',
                     bio: data.bio || '',
                     website: data.website || '',
+                    is_wishlist_private: data.is_wishlist_private || false,
                 });
             }
         } catch (error) {

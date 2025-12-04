@@ -1,0 +1,2 @@
+ALTER TABLE profiles 
+ADD COLUMN IF NOT EXISTS is_wishlist_private BOOLEAN DEFAULT FALSE;
