@@ -13,7 +13,8 @@ const Profile = ({ onNavigate, onViewFollowers, onViewFollowing }) => {
     const [followerCount, setFollowerCount] = useState(0);
     const [followingCount, setFollowingCount] = useState(0);
     const [visitedRestaurants, setVisitedRestaurants] = useState([]);
-    const [activeTab, setActiveTab] = useState('logs'); // 'logs' or 'visited'
+    const [wishlist, setWishlist] = useState([]);
+    const [activeTab, setActiveTab] = useState('logs'); // 'logs', 'visited', 'wishlist'
     const [uploading, setUploading] = useState(false);
     const [formData, setFormData] = useState({
         username: '',
@@ -36,6 +37,7 @@ const Profile = ({ onNavigate, onViewFollowers, onViewFollowing }) => {
             fetchProfile();
             fetchUserLogs();
             fetchVisited();
+            fetchWishlist();
             fetchFollowCounts();
         }
     }, [user]);
@@ -125,6 +127,21 @@ const Profile = ({ onNavigate, onViewFollowers, onViewFollowing }) => {
             setVisitedRestaurants(data || []);
         } catch (error) {
             console.error('Error fetching visited restaurants:', error);
+        }
+    };
+
+    const fetchWishlist = async () => {
+        try {
+            const { data, error } = await supabase
+                .from('wishlist')
+                .select('*')
+                .eq('user_id', user.id)
+                .order('created_at', { ascending: false });
+
+            if (error) throw error;
+            setWishlist(data || []);
+        } catch (error) {
+            console.error('Error fetching wishlist:', error);
         }
     };
 
@@ -524,13 +541,29 @@ const Profile = ({ onNavigate, onViewFollowers, onViewFollowing }) => {
                 >
                     Visited
                 </button>
+                <button
+                    className={`tab-button ${activeTab === 'wishlist' ? 'active' : ''}`}
+                    onClick={() => setActiveTab('wishlist')}
+                    style={{
+                        background: 'none',
+                        border: 'none',
+                        color: activeTab === 'wishlist' ? 'var(--primary-color)' : 'var(--text-secondary)',
+                        padding: '1rem',
+                        fontSize: '1.1rem',
+                        fontWeight: '600',
+                        cursor: 'pointer',
+                        borderBottom: activeTab === 'wishlist' ? '2px solid var(--primary-color)' : 'none'
+                    }}
+                >
+                    Wishlist
+                </button>
             </div>
 
             <div className="profile-content">
-                {activeTab === 'logs' ? (
+                {activeTab === 'logs' && (
                     <div className="profile-logs-section">
                         {userLogs.length > 0 ? (
-                            <div className="logs-grid">
+                            <div className="logs-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '1.5rem' }}>
                                 {userLogs.map((log) => (
                                     <LogCard key={log.id} log={log} isDiaryView={true} profileOwner={user} />
                                 ))}
@@ -539,7 +572,9 @@ const Profile = ({ onNavigate, onViewFollowers, onViewFollowing }) => {
                             <p className="no-logs">No logs yet. Start sharing your dining experiences!</p>
                         )}
                     </div>
-                ) : (
+                )}
+
+                {activeTab === 'visited' && (
                     <div className="visited-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '1.5rem' }}>
                         {visitedRestaurants.length > 0 ? (
                             visitedRestaurants.map((place) => (
@@ -565,6 +600,38 @@ const Profile = ({ onNavigate, onViewFollowers, onViewFollowing }) => {
                         ) : (
                             <p className="no-logs" style={{ gridColumn: '1/-1', textAlign: 'center' }}>
                                 No visited restaurants marked yet.
+                            </p>
+                        )}
+                    </div>
+                )}
+
+                {activeTab === 'wishlist' && (
+                    <div className="wishlist-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '1.5rem' }}>
+                        {wishlist.length > 0 ? (
+                            wishlist.map((place) => (
+                                <div key={place.id} className="wishlist-card glass-panel" style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                                    <h3 style={{ fontSize: '1.2rem', margin: 0 }}>{place.restaurant_name}</h3>
+                                    <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>{place.location}</p>
+                                    <p style={{ color: 'var(--primary-color)', fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '1px' }}>{place.cuisine}</p>
+                                    <div style={{ marginTop: 'auto', paddingTop: '1rem' }}>
+                                        <button
+                                            className="btn-secondary btn-sm"
+                                            onClick={() => onNavigate && onNavigate('restaurant', {
+                                                selectedRestaurant: {
+                                                    place_id: place.place_id,
+                                                    name: place.restaurant_name,
+                                                    address: place.location
+                                                }
+                                            })}
+                                        >
+                                            View Details
+                                        </button>
+                                    </div>
+                                </div>
+                            ))
+                        ) : (
+                            <p className="no-logs" style={{ gridColumn: '1/-1', textAlign: 'center' }}>
+                                Your wishlist is empty.
                             </p>
                         )}
                     </div>

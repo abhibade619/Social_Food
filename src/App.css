@@ -516,10 +516,16 @@ body {
 
 .logs-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   gap: var(--spacing-lg);
   align-items: start;
   /* Prevents stretching to match tallest item in row */
+}
+
+.wishlist-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: var(--spacing-lg);
 }
 
 /* Log Card */
@@ -4701,6 +4707,7 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover {
   color: var(--text-secondary);
   padding: 2rem;
 }
+
 /* Popular Restaurants Section */
 .popular-restaurants-section {
   margin-bottom: 3rem;
@@ -4806,4 +4813,3 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover {
   transform: translateY(-2px);
   border-color: var(--primary-color);
 }
-
