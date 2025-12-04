@@ -263,7 +263,6 @@ const RestaurantPage = ({ restaurant, onBack, onNewLog, onViewProfile }) => {
     return (
         <div className="restaurant-page container">
             <div className="restaurant-header-premium">
-                <button onClick={onBack} className="back-button-premium">← Back</button>
                 <div className="restaurant-hero">
                     <h1 className="restaurant-title-large">{restaurant.name || 'Restaurant Details'}</h1>
                     <div className="restaurant-badges">
