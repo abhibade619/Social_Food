@@ -16,6 +16,7 @@ import RestaurantPage from './components/RestaurantPage';
 import Notifications from './components/Notifications';
 import AccountInfo from './components/AccountInfo';
 import ChangePassword from './components/ChangePassword';
+import Settings from './components/Settings';
 
 
 import Diary from './components/Diary';
