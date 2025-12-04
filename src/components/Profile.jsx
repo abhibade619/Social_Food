@@ -611,31 +611,6 @@ const Profile = ({ onNavigate, onViewFollowers, onViewFollowing }) => {
 
                         {activeTab === 'wishlist' && (
                             <div className="wishlist-section">
-                                <div className="wishlist-header" style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '1rem' }}>
-                                    <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer', color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
-                                        <input
-                                            type="checkbox"
-                                            checked={profile?.is_wishlist_private || false}
-                                            onChange={async (e) => {
-                                                const newValue = e.target.checked;
-                                                setProfile(prev => ({ ...prev, is_wishlist_private: newValue }));
-                                                setFormData(prev => ({ ...prev, is_wishlist_private: newValue }));
-
-                                                try {
-                                                    const { error } = await supabase
-                                                        .from('profiles')
-                                                        .update({ is_wishlist_private: newValue })
-                                                        .eq('id', user.id);
-                                                    if (error) throw error;
-                                                } catch (err) {
-                                                    console.error("Error updating privacy:", err);
-                                                    setProfile(prev => ({ ...prev, is_wishlist_private: !newValue }));
-                                                }
-                                            }}
-                                        />
-                                        🔒 Private Wishlist
-                                    </label>
-                                </div>
                                 <div className="wishlist-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))', gap: '1.5rem' }}>
                                     {wishlist.length > 0 ? (
                                         wishlist.map((place) => (

@@ -520,7 +520,7 @@ body {
   gap: var(--spacing-lg);
   align-items: start;
   justify-content: start;
-  /* Prevents stretching to match tallest item in row */
+  width: 100%;
 }
 
 .wishlist-grid {

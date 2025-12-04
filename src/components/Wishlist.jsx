@@ -14,9 +14,45 @@ const Wishlist = ({ onRestaurantClick }) => {
         notes: ''
     });
 
+    const [isPrivate, setIsPrivate] = useState(false);
+
     useEffect(() => {
         fetchWishlist();
+        fetchPrivacySettings();
     }, [user]);
+
+    const fetchPrivacySettings = async () => {
+        try {
+            const { data, error } = await supabase
+                .from('profiles')
+                .select('is_wishlist_private')
+                .eq('id', user.id)
+                .single();
+
+            if (error) throw error;
+            setIsPrivate(data?.is_wishlist_private || false);
+        } catch (error) {
+            console.error('Error fetching privacy settings:', error);
+        }
+    };
+
+    const handlePrivacyToggle = async (e) => {
+        const newValue = e.target.checked;
+        setIsPrivate(newValue);
+
+        try {
+            const { error } = await supabase
+                .from('profiles')
+                .update({ is_wishlist_private: newValue })
+                .eq('id', user.id);
+
+            if (error) throw error;
+        } catch (error) {
+            console.error('Error updating privacy:', error);
+            setIsPrivate(!newValue); // Revert on error
+            alert('Failed to update privacy settings');
+        }
+    };
 
     const fetchWishlist = async () => {
         try {
@@ -101,12 +137,22 @@ const Wishlist = ({ onRestaurantClick }) => {
         <div className="wishlist-container container">
             <div className="wishlist-header-premium">
                 <h2>My Wishlist</h2>
-                <button
-                    className="premium-button"
-                    onClick={() => setShowAddForm(true)}
-                >
-                    + Add Restaurant
-                </button>
+                <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+                    <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer', color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
+                        <input
+                            type="checkbox"
+                            checked={isPrivate}
+                            onChange={handlePrivacyToggle}
+                        />
+                        🔒 Private Wishlist
+                    </label>
+                    <button
+                        className="premium-button"
+                        onClick={() => setShowAddForm(true)}
+                    >
+                        + Add Restaurant
+                    </button>
+                </div>
             </div>
 
             {showAddForm && (
