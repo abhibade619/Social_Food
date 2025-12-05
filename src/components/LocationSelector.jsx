@@ -157,14 +157,16 @@ const LocationSelector = ({ currentLocation, onLocationChange }) => {
                                                 const response = await geocoder.geocode({ location: { lat: latitude, lng: longitude } });
 
                                                 if (response.results[0]) {
-                                                    // Find city component
-                                                    const cityComponent = response.results[0].address_components.find(
-                                                        c => c.types.includes('locality')
-                                                    );
-                                                    const cityName = cityComponent ? cityComponent.long_name : response.results[0].formatted_address;
+                                                    // Find city, state, country components
+                                                    const addressComponents = response.results[0].address_components;
+                                                    const city = addressComponents.find(c => c.types.includes('locality'))?.long_name;
+                                                    const state = addressComponents.find(c => c.types.includes('administrative_area_level_1'))?.short_name;
+                                                    const country = addressComponents.find(c => c.types.includes('country'))?.long_name;
+
+                                                    const formattedLocation = [city, state, country].filter(Boolean).join(', ');
 
                                                     onLocationChange({
-                                                        name: cityName,
+                                                        name: formattedLocation || response.results[0].formatted_address,
                                                         lat: latitude,
                                                         lng: longitude
                                                     });

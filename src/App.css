@@ -271,22 +271,41 @@ body {
 .location-button {
   display: flex;
   align-items: center;
-  gap: var(--spacing-xs);
-  padding: 0.6rem 1.2rem;
-  background: rgba(0, 0, 0, 0.2);
+  gap: var(--spacing-sm);
+  padding: 0.7rem 1.5rem;
+  background: var(--bg-tertiary);
   border: 1px solid var(--border-color);
   border-radius: 50px;
-  /* Pill shape */
   color: var(--text-primary);
   cursor: pointer;
   transition: all var(--transition-base);
-  min-width: 200px;
-  /* Make it look like a bar */
+  min-width: 300px;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
+  position: relative;
+  overflow: hidden;
+}
+
+.location-button::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: 50px;
+  box-shadow: 0 0 0 0 rgba(255, 107, 107, 0);
+  transition: box-shadow var(--transition-base);
 }
 
 .location-button:hover {
   background: var(--bg-hover);
   border-color: var(--text-tertiary);
+  transform: translateY(-1px);
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2), 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.location-button:active {
+  transform: translateY(0);
 }
 
 .location-icon {

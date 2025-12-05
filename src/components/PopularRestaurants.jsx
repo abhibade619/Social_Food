@@ -353,42 +353,49 @@ const PopularRestaurants = ({ city, onRestaurantClick, onNewLog }) => {
             }
         }
 
+        // Format cuisine (one word)
+        const cuisine = restaurant.types?.[0]?.split('_')[0] || 'Restaurant';
+        const formattedCuisine = cuisine.charAt(0).toUpperCase() + cuisine.slice(1);
+
+        // Format address (shorten if needed)
+        const address = restaurant.address || restaurant.formattedAddress || '';
+        const shortAddress = address.split(',')[0]; // Just the street part or first segment
+
         return (
             <div key={restaurant.place_id} className="popular-card" onClick={() => onRestaurantClick(restaurant)}>
                 <div className="popular-image" style={{ backgroundImage: photoUrl ? `url(${photoUrl})` : 'none', backgroundColor: '#2a2a2a' }}>
                     {!photoUrl && <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', color: '#555' }}>No Image</div>}
-                    <div className="popular-rating">
-                        ⭐ {restaurant.rating || 'N/A'} ({restaurant.user_ratings_total || 0})
-                    </div>
+
+                    {/* Only show internal app rating if exists */}
                     {restaurant.internalRating && (
-                        <div className="internal-rating-badge" style={{ position: 'absolute', top: 10, left: 10, background: 'rgba(255, 107, 107, 0.9)', padding: '4px 8px', borderRadius: '12px', fontSize: '0.8rem', fontWeight: 'bold', color: 'white' }}>
-                            FoodSocial: {restaurant.internalRating}
+                        <div className="popular-rating">
+                            ⭐ {restaurant.internalRating} ({restaurant.internalReviewCount})
                         </div>
                     )}
                 </div>
                 <div className="popular-content">
                     <h3>{restaurant.name}</h3>
-                    <div className="restaurant-meta" style={{ marginBottom: '1rem', color: '#888', fontSize: '0.9rem' }}>
-                        <span>{restaurant.types?.[0]?.replace('_', ' ') || 'Restaurant'}</span>
-                        {restaurant.price_level && <span> • {'💵'.repeat(restaurant.price_level)}</span>}
+                    <div className="restaurant-meta" style={{ marginBottom: '1rem', color: '#888', fontSize: '0.9rem', display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                        <span style={{ color: '#b0b0b0', fontWeight: '500' }}>{formattedCuisine}</span>
+                        <span style={{ fontSize: '0.85rem', color: '#666' }}>{shortAddress}</span>
                     </div>
 
                     <div className="card-actions" style={{ display: 'flex', gap: '8px', marginTop: 'auto' }}>
                         <button
                             className={`btn-action ${isVisited ? 'active' : ''}`}
                             onClick={(e) => toggleVisited(e, restaurant)}
-                            style={{ flex: 1, padding: '8px', borderRadius: '8px', border: '1px solid #444', background: isVisited ? 'rgba(76, 175, 80, 0.2)' : 'transparent', color: isVisited ? '#81c784' : '#ccc', cursor: 'pointer' }}
+                            style={{ flex: 1, padding: '8px', borderRadius: '8px', border: '1px solid #444', background: isVisited ? 'rgba(76, 175, 80, 0.2)' : 'transparent', color: isVisited ? '#81c784' : '#ccc', cursor: 'pointer', fontSize: '0.8rem' }}
                             title={isVisited ? "Marked as Visited" : "Mark as Visited"}
                         >
-                            {isVisited ? '✅ Visited' : '📍 Visited'}
+                            {isVisited ? 'Visited' : 'Mark as Visited'}
                         </button>
                         <button
                             className={`btn-action ${isWishlisted ? 'active' : ''}`}
                             onClick={(e) => toggleWishlist(e, restaurant)}
-                            style={{ flex: 1, padding: '8px', borderRadius: '8px', border: '1px solid #444', background: isWishlisted ? 'rgba(255, 193, 7, 0.2)' : 'transparent', color: isWishlisted ? '#ffd54f' : '#ccc', cursor: 'pointer' }}
-                            title={isWishlisted ? "Saved to Wishlist" : "Save to Wishlist"}
+                            style={{ flex: 1, padding: '8px', borderRadius: '8px', border: '1px solid #444', background: isWishlisted ? 'rgba(255, 193, 7, 0.2)' : 'transparent', color: isWishlisted ? '#ffd54f' : '#ccc', cursor: 'pointer', fontSize: '0.8rem' }}
+                            title={isWishlisted ? "Added to Wishlist" : "Add to Wishlist"}
                         >
-                            {isWishlisted ? '⭐ Saved' : '☆ Save'}
+                            {isWishlisted ? 'Wishlisted' : 'Add to Wishlist'}
                         </button>
                     </div>
                     <button

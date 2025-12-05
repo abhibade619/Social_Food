@@ -229,7 +229,6 @@ const LogModal = ({ onClose, onLogCreated, initialData = null }) => {
                                 <div className="input-with-action selected-restaurant-display">
                                     <div className="selected-value">
                                         <strong>{formData.restaurant_name}</strong>
-                                        <span className="selected-icon">✅</span>
                                     </div>
                                     <button
                                         type="button"
