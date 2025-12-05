@@ -263,6 +263,10 @@ const PopularRestaurants = ({ city, onRestaurantClick, onNewLog }) => {
         setTopRatedRestaurants(topRated);
     };
 
+    const handleLoadMore = () => {
+        setVisibleCount(prev => prev + 8);
+    };
+
     const toggleVisited = async (e, restaurant) => {
         e.stopPropagation();
         if (!user) return;
