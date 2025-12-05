@@ -263,13 +263,141 @@ const PopularRestaurants = ({ city, onRestaurantClick, onNewLog }) => {
         setTopRatedRestaurants(topRated);
     };
 
-    // ... (existing toggle functions)
+    const toggleVisited = async (e, restaurant) => {
+        e.stopPropagation();
+        if (!user) return;
 
-    const handleLoadMore = () => {
-        setVisibleCount(prev => prev + 8);
+        const placeId = restaurant.place_id;
+        const isVisited = visitedMap[placeId];
+
+        // Optimistic update
+        setVisitedMap(prev => ({ ...prev, [placeId]: !isVisited }));
+
+        try {
+            if (isVisited) {
+                const { error } = await supabase
+                    .from('visited_restaurants')
+                    .delete()
+                    .eq('user_id', user.id)
+                    .eq('place_id', placeId);
+                if (error) throw error;
+            } else {
+                const { error } = await supabase
+                    .from('visited_restaurants')
+                    .insert({
+                        user_id: user.id,
+                        place_id: placeId,
+                        restaurant_name: restaurant.name,
+                        restaurant_data: restaurant
+                    });
+                if (error) throw error;
+            }
+        } catch (error) {
+            console.error("Error toggling visited:", error);
+            // Revert on error
+            setVisitedMap(prev => ({ ...prev, [placeId]: isVisited }));
+        }
     };
 
-    // ... (existing renderRestaurantCard)
+    const toggleWishlist = async (e, restaurant) => {
+        e.stopPropagation();
+        if (!user) return;
+
+        const placeId = restaurant.place_id;
+        const isWishlisted = wishlistMap[placeId];
+
+        // Optimistic update
+        setWishlistMap(prev => ({ ...prev, [placeId]: !isWishlisted }));
+
+        try {
+            if (isWishlisted) {
+                const { error } = await supabase
+                    .from('wishlist')
+                    .delete()
+                    .eq('user_id', user.id)
+                    .eq('place_id', placeId);
+                if (error) throw error;
+            } else {
+                const { error } = await supabase
+                    .from('wishlist')
+                    .insert({
+                        user_id: user.id,
+                        place_id: placeId,
+                        restaurant_name: restaurant.name,
+                        restaurant_data: restaurant
+                    });
+                if (error) throw error;
+            }
+        } catch (error) {
+            console.error("Error toggling wishlist:", error);
+            // Revert on error
+            setWishlistMap(prev => ({ ...prev, [placeId]: isWishlisted }));
+        }
+    };
+
+    const renderRestaurantCard = (restaurant) => {
+        const isVisited = visitedMap[restaurant.place_id];
+        const isWishlisted = wishlistMap[restaurant.place_id];
+        // Handle photos: could be array of strings (from cache) or Google Maps objects
+        let photoUrl = null;
+        if (restaurant.photos && restaurant.photos.length > 0) {
+            const firstPhoto = restaurant.photos[0];
+            if (typeof firstPhoto === 'string') {
+                photoUrl = firstPhoto;
+            } else if (firstPhoto.getUrl) {
+                photoUrl = firstPhoto.getUrl({ maxWidth: 400 });
+            }
+        }
+
+        return (
+            <div key={restaurant.place_id} className="popular-card" onClick={() => onRestaurantClick(restaurant)}>
+                <div className="popular-image" style={{ backgroundImage: photoUrl ? `url(${photoUrl})` : 'none', backgroundColor: '#2a2a2a' }}>
+                    {!photoUrl && <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', color: '#555' }}>No Image</div>}
+                    <div className="popular-rating">
+                        ⭐ {restaurant.rating || 'N/A'} ({restaurant.user_ratings_total || 0})
+                    </div>
+                    {restaurant.internalRating && (
+                        <div className="internal-rating-badge" style={{ position: 'absolute', top: 10, left: 10, background: 'rgba(255, 107, 107, 0.9)', padding: '4px 8px', borderRadius: '12px', fontSize: '0.8rem', fontWeight: 'bold', color: 'white' }}>
+                            FoodSocial: {restaurant.internalRating}
+                        </div>
+                    )}
+                </div>
+                <div className="popular-content">
+                    <h3>{restaurant.name}</h3>
+                    <div className="restaurant-meta" style={{ marginBottom: '1rem', color: '#888', fontSize: '0.9rem' }}>
+                        <span>{restaurant.types?.[0]?.replace('_', ' ') || 'Restaurant'}</span>
+                        {restaurant.price_level && <span> • {'💵'.repeat(restaurant.price_level)}</span>}
+                    </div>
+
+                    <div className="card-actions" style={{ display: 'flex', gap: '8px', marginTop: 'auto' }}>
+                        <button
+                            className={`btn-action ${isVisited ? 'active' : ''}`}
+                            onClick={(e) => toggleVisited(e, restaurant)}
+                            style={{ flex: 1, padding: '8px', borderRadius: '8px', border: '1px solid #444', background: isVisited ? 'rgba(76, 175, 80, 0.2)' : 'transparent', color: isVisited ? '#81c784' : '#ccc', cursor: 'pointer' }}
+                            title={isVisited ? "Marked as Visited" : "Mark as Visited"}
+                        >
+                            {isVisited ? '✅ Visited' : '📍 Visited'}
+                        </button>
+                        <button
+                            className={`btn-action ${isWishlisted ? 'active' : ''}`}
+                            onClick={(e) => toggleWishlist(e, restaurant)}
+                            style={{ flex: 1, padding: '8px', borderRadius: '8px', border: '1px solid #444', background: isWishlisted ? 'rgba(255, 193, 7, 0.2)' : 'transparent', color: isWishlisted ? '#ffd54f' : '#ccc', cursor: 'pointer' }}
+                            title={isWishlisted ? "Saved to Wishlist" : "Save to Wishlist"}
+                        >
+                            {isWishlisted ? '⭐ Saved' : '☆ Save'}
+                        </button>
+                    </div>
+                    <button
+                        className="btn-primary"
+                        onClick={(e) => { e.stopPropagation(); onNewLog(restaurant); }}
+                        style={{ width: '100%', marginTop: '8px', padding: '8px', borderRadius: '8px', border: 'none', background: 'linear-gradient(135deg, #ff6b6b, #ff8e53)', color: 'white', fontWeight: 'bold', cursor: 'pointer' }}
+                    >
+                        📝 Log It
+                    </button>
+                </div>
+            </div>
+        );
+    };
 
     if (loading) return <div className="loading-spinner">Loading recommendations...</div>;
     if (popularRestaurants.length === 0 && topRatedRestaurants.length === 0) return null;
