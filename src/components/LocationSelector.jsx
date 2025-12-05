@@ -171,11 +171,9 @@ const LocationSelector = ({ currentLocation, onLocationChange }) => {
                                                         lng: longitude
                                                     });
                                                 }
-                                            } catch (error) {
-                                                console.error("Geocoding error:", error);
-                                                // Fallback to coords only if geocoding fails
+                                                // Fallback to coords only if geocoding fails, but try to be descriptive
                                                 onLocationChange({
-                                                    name: "Current Location",
+                                                    name: "Unknown Location",
                                                     lat: latitude,
                                                     lng: longitude
                                                 });
@@ -218,23 +216,7 @@ const LocationSelector = ({ currentLocation, onLocationChange }) => {
                             })
                         ) : searchTerm ? (
                             <div className="suggestion-item no-results">No cities found</div>
-                        ) : (
-                            <div className="popular-cities">
-                                <div className="suggestion-header" style={{ padding: '12px 16px', color: 'var(--text-secondary)', fontSize: '0.85rem', fontWeight: '600' }}>Popular Cities</div>
-                                {['New York', 'Los Angeles', 'Chicago', 'Houston', 'Miami'].map(city => (
-                                    <div
-                                        key={city}
-                                        className="suggestion-item"
-                                        onClick={() => {
-                                            onLocationChange({ name: city, lat: null, lng: null });
-                                            setIsOpen(false);
-                                        }}
-                                    >
-                                        {city}
-                                    </div>
-                                ))}
-                            </div>
-                        )}
+                        ) : null}
                     </div>
                 </div>
             )}

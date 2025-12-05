@@ -9,6 +9,9 @@ const PopularRestaurants = ({ city, onRestaurantClick, onNewLog }) => {
     const [topRatedRestaurants, setTopRatedRestaurants] = useState([]);
     const [loading, setLoading] = useState(true);
     const [placesApi, setPlacesApi] = useState(null);
+    const [selectedCuisine, setSelectedCuisine] = useState('All');
+    const [selectedType, setSelectedType] = useState('All');
+
     const [visitedMap, setVisitedMap] = useState({});
     const [wishlistMap, setWishlistMap] = useState({});
 
@@ -114,17 +117,7 @@ const PopularRestaurants = ({ city, onRestaurantClick, onNewLog }) => {
                 .eq('city', city)
                 .gt('last_updated', freshnessThreshold.toISOString());
 
-            console.log('CACHE_DEBUG_STEP: cache query result', {
-                cacheError,
-                rows: cachedData?.length ?? 0
-            });
-
-            if (cacheError) {
-                console.error('CACHE_DEBUG_CACHE_ERROR', cacheError);
-            }
-
             if (cachedData && cachedData.length >= 20) {
-                console.log('CACHE_DEBUG: using cached restaurants for', city);
                 processAndSetRestaurants(cachedData);
                 setLoading(false);
                 return;
@@ -132,12 +125,9 @@ const PopularRestaurants = ({ city, onRestaurantClick, onNewLog }) => {
 
             // 2. Fetch from Google Places
             if (!placesApi.Place || !placesApi.Place.searchByText) {
-                console.error('CACHE_DEBUG_ERROR: placesApi.Place.searchByText missing');
                 setLoading(false);
                 return;
             }
-
-            console.log('CACHE_DEBUG: fetching from Google Places for', city);
 
             const { places } = await placesApi.Place.searchByText({
                 textQuery: `best restaurants in ${city}`,
@@ -155,10 +145,7 @@ const PopularRestaurants = ({ city, onRestaurantClick, onNewLog }) => {
                 maxResultCount: 20
             });
 
-            console.log('CACHE_DEBUG: raw places from API', places);
-
             if (!places || places.length === 0) {
-                console.warn('CACHE_DEBUG_WARNING: no places returned from API');
                 setLoading(false);
                 return;
             }
@@ -177,7 +164,6 @@ const PopularRestaurants = ({ city, onRestaurantClick, onNewLog }) => {
                                 try {
                                     return p.getURI({ maxWidth: 400 });
                                 } catch (e) {
-                                    console.warn('CACHE_DEBUG_PHOTO_GET_URI_ERROR', e);
                                     return null;
                                 }
                             })
@@ -217,37 +203,19 @@ const PopularRestaurants = ({ city, onRestaurantClick, onNewLog }) => {
                 return payloadRow;
             });
 
-            console.log('CACHE_DEBUG: normalized results to insert', results);
-
             // 4. Upsert into cache
-            const { data: upserted, error: upsertError } = await supabase
+            await supabase
                 .from('cached_restaurants')
-                .upsert(results, { onConflict: 'place_id' })
-                .select();
-
-            console.log('CACHE_DEBUG_UPSERT_RESULT', { upsertError, upserted });
-
-            if (upsertError) {
-                console.error('CACHE_DEBUG_ERROR: upsert failed', upsertError);
-            } else {
-                console.log(
-                    'CACHE_DEBUG_SUCCESS: cached restaurants inserted/updated:',
-                    upserted?.length ?? 0
-                );
-            }
+                .upsert(results, { onConflict: 'place_id' });
 
             // 5. Use the normalized results for UI
             processAndSetRestaurants(results);
         } catch (error) {
-            console.error('CACHE_DEBUG_FATAL_ERROR: fetchRestaurants failed', error);
+            console.error('fetchRestaurants failed', error);
         } finally {
             setLoading(false);
         }
     };
-
-    const [visibleCount, setVisibleCount] = useState(8);
-
-    // ... (existing useEffects)
 
     const processAndSetRestaurants = (data) => {
         // 1. Popular: Sort by review count (desc)
@@ -261,10 +229,6 @@ const PopularRestaurants = ({ city, onRestaurantClick, onNewLog }) => {
 
         setPopularRestaurants(popular);
         setTopRatedRestaurants(topRated);
-    };
-
-    const handleLoadMore = () => {
-        setVisibleCount(prev => prev + 8);
     };
 
     const toggleVisited = async (e, restaurant) => {
@@ -339,10 +303,59 @@ const PopularRestaurants = ({ city, onRestaurantClick, onNewLog }) => {
         }
     };
 
+    // Extract unique cuisines and types
+    const allRestaurants = [...popularRestaurants, ...topRatedRestaurants];
+    const cuisines = ['All', ...new Set(allRestaurants.map(r => {
+        const c = r.types?.[0]?.split('_')[0] || 'Restaurant';
+        return c.charAt(0).toUpperCase() + c.slice(1);
+    }))].sort();
+
+    // Extract unique types (excluding generic ones like 'point_of_interest', 'establishment')
+    const ignoredTypes = ['point_of_interest', 'establishment', 'food', 'restaurant'];
+    const uniqueTypes = new Set();
+    allRestaurants.forEach(r => {
+        if (r.types) {
+            r.types.forEach(t => {
+                if (!ignoredTypes.includes(t)) {
+                    uniqueTypes.add(t.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' '));
+                }
+            });
+        }
+    });
+    const types = ['All', ...Array.from(uniqueTypes).sort()];
+
+    const [visibleCount, setVisibleCount] = useState(8);
+
+    const handleLoadMore = () => {
+        setVisibleCount(prev => prev + 8);
+    };
+
+    const filterRestaurants = (list) => {
+        return list.filter(r => {
+            const cuisine = r.types?.[0]?.split('_')[0] || 'Restaurant';
+            const formattedCuisine = cuisine.charAt(0).toUpperCase() + cuisine.slice(1);
+            const matchesCuisine = selectedCuisine === 'All' || formattedCuisine === selectedCuisine;
+
+            // Type matching
+            const matchesType = selectedType === 'All' || (r.types && r.types.some(t => {
+                const formattedT = t.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+                return formattedT === selectedType;
+            }));
+
+            return matchesCuisine && matchesType;
+        });
+    };
+
+    const filteredPopular = filterRestaurants(popularRestaurants);
+    const filteredTopRated = filterRestaurants(topRatedRestaurants);
+
+    const visiblePopular = filteredPopular.slice(0, visibleCount);
+    const visibleTopRated = filteredTopRated.slice(0, visibleCount);
+
     const renderRestaurantCard = (restaurant) => {
+        // ... (existing logic for photoUrl, isVisited, isWishlisted)
         const isVisited = visitedMap[restaurant.place_id];
         const isWishlisted = wishlistMap[restaurant.place_id];
-        // Handle photos: could be array of strings (from cache) or Google Maps objects
         let photoUrl = null;
         if (restaurant.photos && restaurant.photos.length > 0) {
             const firstPhoto = restaurant.photos[0];
@@ -353,20 +366,15 @@ const PopularRestaurants = ({ city, onRestaurantClick, onNewLog }) => {
             }
         }
 
-        // Format cuisine (one word)
         const cuisine = restaurant.types?.[0]?.split('_')[0] || 'Restaurant';
         const formattedCuisine = cuisine.charAt(0).toUpperCase() + cuisine.slice(1);
-
-        // Format address (shorten if needed)
         const address = restaurant.address || restaurant.formattedAddress || '';
-        const shortAddress = address.split(',')[0]; // Just the street part or first segment
+        const shortAddress = address.split(',')[0];
 
         return (
             <div key={restaurant.place_id} className="popular-card" onClick={() => onRestaurantClick(restaurant)}>
                 <div className="popular-image" style={{ backgroundImage: photoUrl ? `url(${photoUrl})` : 'none', backgroundColor: '#2a2a2a' }}>
                     {!photoUrl && <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', color: '#555' }}>No Image</div>}
-
-                    {/* Only show internal app rating if exists */}
                     {restaurant.internalRating && (
                         <div className="popular-rating">
                             ⭐ {restaurant.internalRating} ({restaurant.internalReviewCount})
@@ -374,17 +382,17 @@ const PopularRestaurants = ({ city, onRestaurantClick, onNewLog }) => {
                     )}
                 </div>
                 <div className="popular-content">
-                    <h3>{restaurant.name}</h3>
-                    <div className="restaurant-meta" style={{ marginBottom: '1rem', color: '#888', fontSize: '0.9rem', display: 'flex', flexDirection: 'column', gap: '4px', textAlign: 'left' }}>
-                        <span style={{ color: '#b0b0b0', fontWeight: '500' }}>{formattedCuisine}</span>
-                        <span style={{ fontSize: '0.85rem', color: '#666' }}>{shortAddress}</span>
+                    <h3 style={{ marginBottom: '0.5rem' }}>{restaurant.name}</h3>
+                    <div className="restaurant-meta">
+                        <span style={{ color: 'var(--text-secondary)', fontWeight: '700', fontSize: '0.95rem' }}>{formattedCuisine}</span>
+                        <span style={{ color: 'var(--text-tertiary)', fontSize: '0.9rem', fontWeight: '600' }}>{shortAddress}</span>
                     </div>
 
                     <div className="card-actions" style={{ display: 'flex', gap: '8px', marginTop: 'auto' }}>
                         <button
                             className={`btn-action ${isVisited ? 'active' : ''}`}
                             onClick={(e) => toggleVisited(e, restaurant)}
-                            style={{ flex: 1, padding: '8px', borderRadius: '8px', border: '1px solid #444', background: isVisited ? 'rgba(76, 175, 80, 0.2)' : 'transparent', color: isVisited ? '#81c784' : '#ccc', cursor: 'pointer', fontSize: '0.8rem' }}
+                            style={{ flex: 1, padding: '8px', borderRadius: '8px', border: '1px solid var(--border-color)', background: isVisited ? 'rgba(76, 175, 80, 0.2)' : 'transparent', color: isVisited ? '#81c784' : 'var(--text-secondary)', cursor: 'pointer', fontSize: '0.8rem', fontWeight: '600' }}
                             title={isVisited ? "Marked as Visited" : "Mark as Visited"}
                         >
                             {isVisited ? 'Visited' : 'Mark as Visited'}
@@ -392,7 +400,7 @@ const PopularRestaurants = ({ city, onRestaurantClick, onNewLog }) => {
                         <button
                             className={`btn-action ${isWishlisted ? 'active' : ''}`}
                             onClick={(e) => toggleWishlist(e, restaurant)}
-                            style={{ flex: 1, padding: '8px', borderRadius: '8px', border: '1px solid #444', background: isWishlisted ? 'rgba(255, 193, 7, 0.2)' : 'transparent', color: isWishlisted ? '#ffd54f' : '#ccc', cursor: 'pointer', fontSize: '0.8rem' }}
+                            style={{ flex: 1, padding: '8px', borderRadius: '8px', border: '1px solid var(--border-color)', background: isWishlisted ? 'rgba(255, 193, 7, 0.2)' : 'transparent', color: isWishlisted ? '#ffd54f' : 'var(--text-secondary)', cursor: 'pointer', fontSize: '0.8rem', fontWeight: '600' }}
                             title={isWishlisted ? "Added to Wishlist" : "Add to Wishlist"}
                         >
                             {isWishlisted ? 'Wishlisted' : 'Add to Wishlist'}
@@ -401,7 +409,7 @@ const PopularRestaurants = ({ city, onRestaurantClick, onNewLog }) => {
                     <button
                         className="btn-primary"
                         onClick={(e) => { e.stopPropagation(); onNewLog(restaurant); }}
-                        style={{ width: '100%', marginTop: '8px', padding: '8px', borderRadius: '8px', border: 'none', background: 'linear-gradient(135deg, #ff6b6b, #ff8e53)', color: 'white', fontWeight: 'bold', cursor: 'pointer' }}
+                        style={{ width: '100%', marginTop: '8px', padding: '10px', borderRadius: '8px', border: 'none', background: 'var(--primary-gradient)', color: 'white', fontWeight: 'bold', cursor: 'pointer' }}
                     >
                         📝 Log It
                     </button>
@@ -413,18 +421,40 @@ const PopularRestaurants = ({ city, onRestaurantClick, onNewLog }) => {
     if (loading) return <div className="loading-spinner">Loading recommendations...</div>;
     if (popularRestaurants.length === 0 && topRatedRestaurants.length === 0) return null;
 
-    const visiblePopular = popularRestaurants.slice(0, visibleCount);
-    const visibleTopRated = topRatedRestaurants.slice(0, visibleCount);
-
     return (
         <div className="recommendations-container">
             {/* Popular Section */}
             <div className="popular-restaurants-section">
-                <h2 className="section-title-premium">Popular in {city}</h2>
-                <div className="popular-grid">
-                    {visiblePopular.map(renderRestaurantCard)}
+                <div className="section-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '1rem' }}>
+                    <h2 className="section-title-premium" style={{ marginBottom: 0 }}>Popular in {city}</h2>
+                    <div className="filters-section" style={{ display: 'flex', gap: '1rem' }}>
+                        <select
+                            value={selectedCuisine}
+                            onChange={(e) => setSelectedCuisine(e.target.value)}
+                            className="premium-input"
+                            style={{ width: 'auto', minWidth: '150px' }}
+                        >
+                            {cuisines.map(c => <option key={c} value={c}>{c}</option>)}
+                        </select>
+                        <select
+                            value={selectedType}
+                            onChange={(e) => setSelectedType(e.target.value)}
+                            className="premium-input"
+                            style={{ width: 'auto', minWidth: '150px' }}
+                        >
+                            {types.map(t => <option key={t} value={t}>{t}</option>)}
+                        </select>
+                    </div>
                 </div>
-                {visibleCount < popularRestaurants.length && (
+                {visiblePopular.length > 0 ? (
+                    <div className="popular-grid">
+                        {visiblePopular.map(renderRestaurantCard)}
+                    </div>
+                ) : (
+                    <div className="no-results">No restaurants match your filters.</div>
+                )}
+
+                {visibleCount < filteredPopular.length && (
                     <div className="load-more-container" style={{ textAlign: 'center', marginTop: '2rem' }}>
                         <button className="btn-secondary" onClick={handleLoadMore}>
                             Load More
@@ -440,7 +470,7 @@ const PopularRestaurants = ({ city, onRestaurantClick, onNewLog }) => {
                     <div className="popular-grid">
                         {visibleTopRated.map(renderRestaurantCard)}
                     </div>
-                    {visibleCount < topRatedRestaurants.length && (
+                    {visibleCount < filteredTopRated.length && (
                         <div className="load-more-container" style={{ textAlign: 'center', marginTop: '2rem' }}>
                             <button className="btn-secondary" onClick={handleLoadMore}>
                                 Load More

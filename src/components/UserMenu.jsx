@@ -1,7 +1,13 @@
 import { useState, useEffect } from 'react';
+import { useTheme } from '../context/ThemeContext';
 
 const UserMenu = ({ user, avatarUrl, onNavigate, onSignOut }) => {
     const [isOpen, setIsOpen] = useState(false);
+    const { theme, toggleTheme } = useTheme();
+    // ... (rest of the component)
+
+    // ... inside return ...
+
 
     // Close menu when clicking outside
     useEffect(() => {
@@ -62,6 +68,11 @@ const UserMenu = ({ user, avatarUrl, onNavigate, onSignOut }) => {
                     <button className="menu-item" onClick={() => handleNavigate('settings')}>
                         <span className="menu-icon">⚙️</span>
                         Settings
+                    </button>
+                    <div className="menu-divider"></div>
+                    <button className="menu-item" onClick={() => handleMenuClick(toggleTheme)}>
+                        <span className="menu-icon">{theme === 'dark' ? '☀️' : '🌙'}</span>
+                        Switch to {theme === 'dark' ? 'Light' : 'Dark'} Mode
                     </button>
                     <div className="menu-divider"></div>
                     <button

@@ -3,9 +3,11 @@ import { useAuth } from '../context/AuthProvider';
 import { supabase } from '../supabaseClient';
 import LocationSelector from './LocationSelector';
 import UserMenu from './UserMenu';
+import { useTheme } from '../context/ThemeContext';
 
 const Navbar = ({ currentView, setCurrentView, onNewLog }) => {
     const { user, signOut } = useAuth();
+    const { theme, toggleTheme } = useTheme();
     const [location, setLocation] = useState('');
     const [avatarUrl, setAvatarUrl] = useState(null);
     const [unreadCount, setUnreadCount] = useState(0);
@@ -183,6 +185,8 @@ const Navbar = ({ currentView, setCurrentView, onNewLog }) => {
                         🔔
                         {unreadCount > 0 && <span className="notification-badge">{unreadCount}</span>}
                     </button>
+
+
 
                     <UserMenu
                         user={user}
