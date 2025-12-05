@@ -279,7 +279,7 @@ body {
   color: var(--text-primary);
   cursor: pointer;
   transition: all var(--transition-base);
-  min-width: 300px;
+  min-width: 200px;
   box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
   position: relative;
   overflow: hidden;

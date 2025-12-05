@@ -123,7 +123,7 @@ const LocationSelector = ({ currentLocation, onLocationChange }) => {
                 className="location-button"
                 onClick={() => setIsOpen(!isOpen)}
             >
-                <span className="location-icon">📍</span>
+                {/* Icon removed as per user request */}
                 <span className="location-text">
                     {(currentLocation && typeof currentLocation === 'object' ? currentLocation.name : currentLocation) || 'Select Location'}
                 </span>

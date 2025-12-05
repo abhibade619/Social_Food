@@ -375,7 +375,7 @@ const PopularRestaurants = ({ city, onRestaurantClick, onNewLog }) => {
                 </div>
                 <div className="popular-content">
                     <h3>{restaurant.name}</h3>
-                    <div className="restaurant-meta" style={{ marginBottom: '1rem', color: '#888', fontSize: '0.9rem', display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                    <div className="restaurant-meta" style={{ marginBottom: '1rem', color: '#888', fontSize: '0.9rem', display: 'flex', flexDirection: 'column', gap: '4px', textAlign: 'left' }}>
                         <span style={{ color: '#b0b0b0', fontWeight: '500' }}>{formattedCuisine}</span>
                         <span style={{ fontSize: '0.85rem', color: '#666' }}>{shortAddress}</span>
                     </div>
