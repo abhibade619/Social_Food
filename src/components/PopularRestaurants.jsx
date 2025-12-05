@@ -133,14 +133,14 @@ const PopularRestaurants = ({ city, onRestaurantClick, onNewLog }) => {
 
                 results = places.map(place => ({
                     place_id: place.id,
-                    name: place.displayName,
-                    address: place.formattedAddress,
+                    name: typeof place.displayName === 'string' ? place.displayName : (place.displayName?.text || ''),
+                    address: place.formattedAddress || '',
                     city: city,
-                    rating: place.rating,
-                    user_ratings_total: place.userRatingCount,
-                    price_level: place.priceLevel,
+                    rating: place.rating || null,
+                    user_ratings_total: place.userRatingCount || null,
+                    price_level: place.priceLevel || null,
                     photos: place.photos ? place.photos.map(p => p.getURI({ maxWidth: 400 })) : [],
-                    types: place.types,
+                    types: place.types || [],
                     last_updated: new Date().toISOString()
                 }));
             }
@@ -153,7 +153,7 @@ const PopularRestaurants = ({ city, onRestaurantClick, onNewLog }) => {
                     .upsert(results, { onConflict: 'place_id' });
 
                 if (upsertError) {
-                    console.error("CACHE_DEBUG_ERROR:", upsertError);
+                    console.error("CACHE_DEBUG_ERROR:", upsertError.message, upsertError);
                 } else {
                     console.log("CACHE_DEBUG_SUCCESS: Successfully cached", results.length, "restaurants");
                 }
