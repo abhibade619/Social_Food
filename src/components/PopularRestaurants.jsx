@@ -99,70 +99,147 @@ const PopularRestaurants = ({ city, onRestaurantClick, onNewLog }) => {
     };
 
     const fetchRestaurants = async () => {
+        if (!city || !placesApi) return;
+
         setLoading(true);
+
         try {
-            // 1. Check Cache
-            const { data: cachedData } = await supabase
+            // 1. Check cache first
+            const freshnessThreshold = new Date();
+            freshnessThreshold.setDate(freshnessThreshold.getDate() - 30);
+
+            const { data: cachedData, error: cacheError } = await supabase
                 .from('cached_restaurants')
                 .select('*')
                 .eq('city', city)
-                .gt('last_updated', new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString())
-                .limit(60); // Fetch more to split
+                .gt('last_updated', freshnessThreshold.toISOString());
+
+            console.log('CACHE_DEBUG_STEP: cache query result', {
+                cacheError,
+                rows: cachedData?.length ?? 0
+            });
+
+            if (cacheError) {
+                console.error('CACHE_DEBUG_CACHE_ERROR', cacheError);
+            }
 
             if (cachedData && cachedData.length >= 20) {
-                console.log("Using cached restaurants for", city);
+                console.log('CACHE_DEBUG: using cached restaurants for', city);
                 processAndSetRestaurants(cachedData);
                 setLoading(false);
                 return;
             }
 
-            // 2. Fetch from Google Places if cache miss or insufficient data
-            console.log("Fetching from Google Places for", city);
+            // 2. Fetch from Google Places
+            if (!placesApi.Place || !placesApi.Place.searchByText) {
+                console.error('CACHE_DEBUG_ERROR: placesApi.Place.searchByText missing');
+                setLoading(false);
+                return;
+            }
 
-            let results = [];
-            if (placesApi.Place && placesApi.Place.searchByText) {
-                // Fetch "popular"
-                const { places } = await placesApi.Place.searchByText({
-                    textQuery: `best restaurants in ${city}`, // "best" usually gives high rated + popular
-                    fields: ['id', 'displayName', 'formattedAddress', 'rating', 'userRatingCount', 'priceLevel', 'types', 'photos', 'location'],
-                    maxResultCount: 20 // Max per call is usually 20
-                });
+            console.log('CACHE_DEBUG: fetching from Google Places for', city);
 
-                // We might need more, but let's start with 20 high quality ones. 
-                // Google's "best" query usually ranks by a mix of rating and popularity.
+            const { places } = await placesApi.Place.searchByText({
+                textQuery: `best restaurants in ${city}`,
+                fields: [
+                    'id',
+                    'displayName',
+                    'formattedAddress',
+                    'rating',
+                    'userRatingCount',
+                    'priceLevel',
+                    'types',
+                    'photos',
+                    'location'
+                ],
+                maxResultCount: 20
+            });
 
-                results = places.map(place => ({
+            console.log('CACHE_DEBUG: raw places from API', places);
+
+            if (!places || places.length === 0) {
+                console.warn('CACHE_DEBUG_WARNING: no places returned from API');
+                setLoading(false);
+                return;
+            }
+
+            // 3. Normalize data so it matches cached_restaurants columns
+            const results = places.map((place) => {
+                const name =
+                    typeof place.displayName === 'string'
+                        ? place.displayName
+                        : place.displayName?.text ?? 'Unknown';
+
+                const photos =
+                    Array.isArray(place.photos)
+                        ? place.photos
+                            .map((p) => {
+                                try {
+                                    return p.getURI({ maxWidth: 400 });
+                                } catch (e) {
+                                    console.warn('CACHE_DEBUG_PHOTO_GET_URI_ERROR', e);
+                                    return null;
+                                }
+                            })
+                            .filter(Boolean)
+                        : [];
+
+                const types = Array.isArray(place.types) ? place.types : [];
+
+                const payloadRow = {
                     place_id: place.id,
-                    name: typeof place.displayName === 'string' ? place.displayName : (place.displayName?.text || ''),
-                    address: place.formattedAddress || '',
-                    city: city,
-                    rating: place.rating || null,
-                    user_ratings_total: place.userRatingCount || null,
-                    price_level: place.priceLevel || null,
-                    photos: place.photos ? place.photos.map(p => p.getURI({ maxWidth: 400 })) : [],
-                    types: place.types || [],
+                    name,
+                    address: place.formattedAddress ?? null,
+                    city,
+                    rating:
+                        typeof place.rating === 'number'
+                            ? place.rating
+                            : place.rating
+                                ? Number(place.rating)
+                                : null,
+                    user_ratings_total:
+                        typeof place.userRatingCount === 'number'
+                            ? place.userRatingCount
+                            : place.userRatingCount
+                                ? Number(place.userRatingCount)
+                                : null,
+                    price_level:
+                        typeof place.priceLevel === 'number'
+                            ? place.priceLevel
+                            : place.priceLevel
+                                ? Number(place.priceLevel)
+                                : null,
+                    photos, // JSONB
+                    types,  // JSONB
                     last_updated: new Date().toISOString()
-                }));
+                };
+
+                return payloadRow;
+            });
+
+            console.log('CACHE_DEBUG: normalized results to insert', results);
+
+            // 4. Upsert into cache
+            const { data: upserted, error: upsertError } = await supabase
+                .from('cached_restaurants')
+                .upsert(results, { onConflict: 'place_id' })
+                .select();
+
+            console.log('CACHE_DEBUG_UPSERT_RESULT', { upsertError, upserted });
+
+            if (upsertError) {
+                console.error('CACHE_DEBUG_ERROR: upsert failed', upsertError);
+            } else {
+                console.log(
+                    'CACHE_DEBUG_SUCCESS: cached restaurants inserted/updated:',
+                    upserted?.length ?? 0
+                );
             }
 
-            // 3. Save to Cache
-            if (results.length > 0) {
-                console.log("Attempting to cache", results.length, "restaurants...");
-                const { error: upsertError } = await supabase
-                    .from('cached_restaurants')
-                    .upsert(results, { onConflict: 'place_id' });
-
-                if (upsertError) {
-                    console.error("CACHE_DEBUG_ERROR:", upsertError.message, upsertError);
-                } else {
-                    console.log("CACHE_DEBUG_SUCCESS: Successfully cached", results.length, "restaurants");
-                }
-
-                processAndSetRestaurants(results);
-            }
-
+            // 5. Use the normalized results for UI
+            processAndSetRestaurants(results);
         } catch (error) {
-            console.error("Error fetching restaurants:", error);
+            console.error('CACHE_DEBUG_FATAL_ERROR: fetchRestaurants failed', error);
         } finally {
             setLoading(false);
         }
