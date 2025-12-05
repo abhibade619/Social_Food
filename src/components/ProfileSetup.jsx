@@ -5,7 +5,7 @@ import { useAuth } from '../context/AuthProvider';
 const ProfileSetup = ({ onComplete }) => {
     const { user } = useAuth();
     const [formData, setFormData] = useState({
-        username: '',
+        username: user?.user_metadata?.username || '',
         full_name: '',
         bio: '',
     });

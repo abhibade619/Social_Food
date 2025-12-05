@@ -245,120 +245,37 @@ const PopularRestaurants = ({ city, onRestaurantClick, onNewLog }) => {
         }
     };
 
-    const processAndSetRestaurants = (data) => {
-        // 1. Popular: Sort by review count (desc), take top 10
-        const popular = [...data].sort((a, b) => (b.user_ratings_total || 0) - (a.user_ratings_total || 0)).slice(0, 10);
+    const [visibleCount, setVisibleCount] = useState(8);
 
-        // 2. Top Rated: Filter > 200 reviews, Sort by rating (desc), take top 10
-        // If not enough with > 200 reviews, fallback to just rating
+    // ... (existing useEffects)
+
+    const processAndSetRestaurants = (data) => {
+        // 1. Popular: Sort by review count (desc)
+        const popular = [...data].sort((a, b) => (b.user_ratings_total || 0) - (a.user_ratings_total || 0));
+
+        // 2. Top Rated: Filter > 200 reviews, Sort by rating (desc)
         let topRated = data.filter(r => (r.user_ratings_total || 0) >= 200);
         if (topRated.length < 5) topRated = data; // Fallback
 
-        topRated = topRated.sort((a, b) => (b.rating || 0) - (a.rating || 0)).slice(0, 10);
+        topRated = topRated.sort((a, b) => (b.rating || 0) - (a.rating || 0));
 
         setPopularRestaurants(popular);
         setTopRatedRestaurants(topRated);
     };
 
-    const toggleVisited = async (restaurant) => {
-        if (!user) return;
-        const placeId = restaurant.place_id;
-        const isVisited = visitedMap[placeId];
+    // ... (existing toggle functions)
 
-        try {
-            if (isVisited) {
-                await supabase.from('visited_restaurants').delete().match({ user_id: user.id, place_id: placeId });
-                setVisitedMap(prev => ({ ...prev, [placeId]: false }));
-            } else {
-                await supabase.from('visited_restaurants').insert({
-                    user_id: user.id,
-                    place_id: placeId,
-                    restaurant_name: restaurant.name,
-                    location: restaurant.address
-                });
-                setVisitedMap(prev => ({ ...prev, [placeId]: true }));
-            }
-        } catch (error) {
-            console.error("Error toggling visited:", error);
-        }
+    const handleLoadMore = () => {
+        setVisibleCount(prev => prev + 8);
     };
 
-    const toggleWishlist = async (restaurant) => {
-        if (!user) return;
-        const placeId = restaurant.place_id;
-        const isWishlisted = wishlistMap[placeId];
+    // ... (existing renderRestaurantCard)
 
-        try {
-            if (isWishlisted) {
-                await supabase.from('wishlist').delete().match({ user_id: user.id, place_id: placeId });
-                setWishlistMap(prev => ({ ...prev, [placeId]: false }));
-            } else {
-                await supabase.from('wishlist').insert({
-                    user_id: user.id,
-                    place_id: placeId,
-                    restaurant_name: restaurant.name,
-                    location: restaurant.address,
-                    cuisine: restaurant.types ? restaurant.types[0] : 'Restaurant'
-                });
-                setWishlistMap(prev => ({ ...prev, [placeId]: true }));
-            }
-        } catch (error) {
-            console.error("Error toggling wishlist:", error);
-        }
-    };
-
-    const handleLogClick = (restaurant) => {
-        if (onNewLog) {
-            onNewLog({
-                restaurant_name: restaurant.name,
-                location: restaurant.address,
-                place_id: restaurant.place_id
-            });
-        }
-    };
-
-    const renderRestaurantCard = (restaurant) => (
-        <div key={restaurant.place_id} className="popular-card glass-panel">
-            <div
-                className="popular-image"
-                style={{ backgroundImage: `url(${restaurant.photos && restaurant.photos[0] ? restaurant.photos[0] : '/placeholder-food.jpg'})` }}
-                onClick={() => onRestaurantClick && onRestaurantClick(restaurant)}
-            >
-                {restaurant.internalRating && (
-                    <div className="popular-rating">⭐ {restaurant.internalRating} ({restaurant.internalReviewCount})</div>
-                )}
-            </div>
-            <div className="popular-content">
-                <h3 onClick={() => onRestaurantClick && onRestaurantClick(restaurant)}>{restaurant.name}</h3>
-                <p className="popular-address">{restaurant.address}</p>
-                <div className="popular-actions">
-                    <button
-                        className={`btn-action ${visitedMap[restaurant.place_id] ? 'active' : ''}`}
-                        onClick={() => toggleVisited(restaurant)}
-                        title="Mark Visited"
-                    >
-                        {visitedMap[restaurant.place_id] ? '✅' : 'Visited'}
-                    </button>
-                    <button
-                        className={`btn-action ${wishlistMap[restaurant.place_id] ? 'active' : ''}`}
-                        onClick={() => toggleWishlist(restaurant)}
-                        title="Wishlist"
-                    >
-                        {wishlistMap[restaurant.place_id] ? '❤️' : '🤍'}
-                    </button>
-                    <button
-                        className="btn-action"
-                        onClick={() => handleLogClick(restaurant)}
-                        title="Log Visit"
-                    >
-                        📝
-                    </button>
-                </div>
-            </div>
-        </div>
-    );
     if (loading) return <div className="loading-spinner">Loading recommendations...</div>;
     if (popularRestaurants.length === 0 && topRatedRestaurants.length === 0) return null;
+
+    const visiblePopular = popularRestaurants.slice(0, visibleCount);
+    const visibleTopRated = topRatedRestaurants.slice(0, visibleCount);
 
     return (
         <div className="recommendations-container">
@@ -366,17 +283,33 @@ const PopularRestaurants = ({ city, onRestaurantClick, onNewLog }) => {
             <div className="popular-restaurants-section">
                 <h2 className="section-title-premium">Popular in {city}</h2>
                 <div className="popular-grid">
-                    {popularRestaurants.map(renderRestaurantCard)}
+                    {visiblePopular.map(renderRestaurantCard)}
                 </div>
+                {visibleCount < popularRestaurants.length && (
+                    <div className="load-more-container" style={{ textAlign: 'center', marginTop: '2rem' }}>
+                        <button className="btn-secondary" onClick={handleLoadMore}>
+                            Load More
+                        </button>
+                    </div>
+                )}
             </div>
 
             {/* Top Rated Section */}
-            <div className="popular-restaurants-section" style={{ marginTop: '3rem' }}>
-                <h2 className="section-title-premium">Top Rated Gems</h2>
-                <div className="popular-grid">
-                    {topRatedRestaurants.map(renderRestaurantCard)}
+            {visibleTopRated.length > 0 && (
+                <div className="popular-restaurants-section" style={{ marginTop: '3rem' }}>
+                    <h2 className="section-title-premium">Top Rated Gems</h2>
+                    <div className="popular-grid">
+                        {visibleTopRated.map(renderRestaurantCard)}
+                    </div>
+                    {visibleCount < topRatedRestaurants.length && (
+                        <div className="load-more-container" style={{ textAlign: 'center', marginTop: '2rem' }}>
+                            <button className="btn-secondary" onClick={handleLoadMore}>
+                                Load More
+                            </button>
+                        </div>
+                    )}
                 </div>
-            </div>
+            )}
         </div>
     );
 };

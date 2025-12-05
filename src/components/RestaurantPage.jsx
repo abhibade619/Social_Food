@@ -291,6 +291,7 @@ const RestaurantPage = ({ restaurant, onBack, onNewLog, onViewProfile }) => {
                             className={`btn-secondary ${isVisited ? 'active' : ''}`}
                             onClick={toggleVisited}
                             disabled={visitedLoading}
+                            title={isVisited ? "Unmark Visited" : "Mark as Visited"}
                         >
                             {isVisited ? '✅ Visited' : 'Mark Visited'}
                         </button>

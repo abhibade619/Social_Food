@@ -142,6 +142,61 @@ const LocationSelector = ({ currentLocation, onLocationChange }) => {
                         />
                     </div>
 
+                    <div className="location-options">
+                        <div
+                            className="suggestion-item current-location"
+                            onClick={() => {
+                                if (navigator.geolocation) {
+                                    setLoading(true);
+                                    navigator.geolocation.getCurrentPosition(
+                                        async (position) => {
+                                            const { latitude, longitude } = position.coords;
+                                            try {
+                                                // Reverse geocode to get city name
+                                                const geocoder = new window.google.maps.Geocoder();
+                                                const response = await geocoder.geocode({ location: { lat: latitude, lng: longitude } });
+
+                                                if (response.results[0]) {
+                                                    // Find city component
+                                                    const cityComponent = response.results[0].address_components.find(
+                                                        c => c.types.includes('locality')
+                                                    );
+                                                    const cityName = cityComponent ? cityComponent.long_name : response.results[0].formatted_address;
+
+                                                    onLocationChange({
+                                                        name: cityName,
+                                                        lat: latitude,
+                                                        lng: longitude
+                                                    });
+                                                }
+                                            } catch (error) {
+                                                console.error("Geocoding error:", error);
+                                                // Fallback to coords only if geocoding fails
+                                                onLocationChange({
+                                                    name: "Current Location",
+                                                    lat: latitude,
+                                                    lng: longitude
+                                                });
+                                            } finally {
+                                                setLoading(false);
+                                                setIsOpen(false);
+                                            }
+                                        },
+                                        (error) => {
+                                            console.error("Geolocation error:", error);
+                                            alert("Could not get your location. Please enable location services.");
+                                            setLoading(false);
+                                        }
+                                    );
+                                } else {
+                                    alert("Geolocation is not supported by this browser.");
+                                }
+                            }}
+                        >
+                            <span className="icon">📍</span> Use Current Location
+                        </div>
+                    </div>
+
                     <div className="location-suggestions">
                         {loading ? (
                             <div className="suggestion-item loading">Loading...</div>

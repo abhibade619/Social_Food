@@ -225,7 +225,21 @@ const LogModal = ({ onClose, onLogCreated, initialData = null }) => {
                     <div className="form-row">
                         <div className="form-group" style={{ flex: 1.5 }}>
                             <label htmlFor="restaurant_name">Restaurant *</label>
-                            {useAutocomplete ? (
+                            {formData.place_id ? (
+                                <div className="input-with-action selected-restaurant-display">
+                                    <div className="selected-value">
+                                        <strong>{formData.restaurant_name}</strong>
+                                        <span className="selected-icon">✅</span>
+                                    </div>
+                                    <button
+                                        type="button"
+                                        className="text-action-btn"
+                                        onClick={() => setFormData(prev => ({ ...prev, place_id: '', restaurant_name: '', location: '', full_address: '', latitude: null, longitude: null }))}
+                                    >
+                                        Change
+                                    </button>
+                                </div>
+                            ) : useAutocomplete ? (
                                 <div className="input-with-action">
                                     <RestaurantAutocomplete
                                         onPlaceSelected={handlePlaceSelected}
@@ -259,6 +273,8 @@ const LogModal = ({ onClose, onLogCreated, initialData = null }) => {
                                 value={formData.location}
                                 onChange={handleChange}
                                 placeholder="City"
+                                disabled={!!formData.place_id}
+                                className={formData.place_id ? 'input-disabled' : ''}
                             />
                         </div>
                     </div>
