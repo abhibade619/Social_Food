@@ -5233,3 +5233,92 @@ input:checked+.toggle-slider:before {
   outline: none !important;
 }
 
+
+/* Premium Icon Buttons */
+.btn-icon-premium {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--text-secondary);
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 600;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  backdrop-filter: blur(4px);
+}
+
+.btn-icon-premium:hover {
+  background: rgba(255, 255, 255, 0.08);
+  transform: translateY(-2px);
+  border-color: var(--text-secondary);
+  color: var(--text-primary);
+}
+
+.btn-icon-premium.large {
+  flex: 0 1 auto;
+  padding: 12px 24px;
+  font-size: 1rem;
+}
+
+/* Visited State */
+.btn-icon-premium.visited {
+  background: rgba(76, 175, 80, 0.15);
+  border-color: #4CAF50;
+  color: #4CAF50;
+  box-shadow: 0 0 15px rgba(76, 175, 80, 0.2);
+}
+
+.btn-icon-premium.visited:hover {
+  background: rgba(76, 175, 80, 0.25);
+  transform: translateY(-2px);
+}
+
+/* Wishlist State */
+.btn-icon-premium.wishlisted {
+  background: rgba(255, 107, 107, 0.15);
+  border-color: #FF6B6B;
+  color: #FF6B6B;
+  box-shadow: 0 0 15px rgba(255, 107, 107, 0.2);
+}
+
+.btn-icon-premium.wishlisted:hover {
+  background: rgba(255, 107, 107, 0.25);
+  transform: translateY(-2px);
+}
+
+/* Icons */
+.icon-sm {
+  width: 18px;
+  height: 18px;
+}
+
+.icon-md {
+  width: 22px;
+  height: 22px;
+}
+
+/* Animation for icons */
+.btn-icon-premium svg {
+  transition: transform 0.3s ease;
+}
+
+.btn-icon-premium:hover svg {
+  transform: scale(1.1);
+}
+
+.btn-icon-premium.wishlisted svg {
+  animation: heartBeat 0.4s ease-in-out;
+}
+
+@keyframes heartBeat {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.3); }
+  100% { transform: scale(1); }
+}
+

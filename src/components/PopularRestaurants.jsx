@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { supabase } from '../supabaseClient';
 import { useAuth } from '../context/AuthProvider';
 import { loadPlacesLibrary } from '../utils/googleMaps';
+import { HeartIcon, CheckCircleIcon, CheckIcon } from './Icons';
 
 const PopularRestaurants = ({ city, onRestaurantClick, onNewLog }) => {
     const { user } = useAuth();
@@ -388,22 +389,31 @@ const PopularRestaurants = ({ city, onRestaurantClick, onNewLog }) => {
                         <span style={{ color: 'var(--text-tertiary)', fontSize: '0.9rem', fontWeight: '600' }}>{shortAddress}</span>
                     </div>
 
-                    <div className="card-actions" style={{ display: 'flex', gap: '8px', marginTop: 'auto' }}>
+                    <div className="card-actions" style={{ display: 'flex', gap: '12px', marginTop: 'auto' }}>
                         <button
-                            className={`btn-action ${isVisited ? 'active' : ''}`}
+                            className={`btn-icon-premium ${isVisited ? 'visited' : ''}`}
                             onClick={(e) => toggleVisited(e, restaurant)}
-                            style={{ flex: 1, padding: '8px', borderRadius: '8px', border: '1px solid var(--border-color)', background: isVisited ? 'rgba(76, 175, 80, 0.2)' : 'transparent', color: isVisited ? '#81c784' : 'var(--text-secondary)', cursor: 'pointer', fontSize: '0.8rem', fontWeight: '600' }}
                             title={isVisited ? "Marked as Visited" : "Mark as Visited"}
                         >
-                            {isVisited ? 'Visited' : 'Mark as Visited'}
+                            {isVisited ? (
+                                <>
+                                    <CheckIcon className="icon-sm" />
+                                    <span>Visited</span>
+                                </>
+                            ) : (
+                                <>
+                                    <CheckCircleIcon className="icon-sm" />
+                                    <span>Visited?</span>
+                                </>
+                            )}
                         </button>
                         <button
-                            className={`btn-action ${isWishlisted ? 'active' : ''}`}
+                            className={`btn-icon-premium ${isWishlisted ? 'wishlisted' : ''}`}
                             onClick={(e) => toggleWishlist(e, restaurant)}
-                            style={{ flex: 1, padding: '8px', borderRadius: '8px', border: '1px solid var(--border-color)', background: isWishlisted ? 'rgba(255, 193, 7, 0.2)' : 'transparent', color: isWishlisted ? '#ffd54f' : 'var(--text-secondary)', cursor: 'pointer', fontSize: '0.8rem', fontWeight: '600' }}
                             title={isWishlisted ? "Added to Wishlist" : "Add to Wishlist"}
                         >
-                            {isWishlisted ? 'Wishlisted' : 'Add to Wishlist'}
+                            <HeartIcon filled={isWishlisted} className="icon-sm" />
+                            <span>{isWishlisted ? 'Added' : 'Wishlist'}</span>
                         </button>
                     </div>
                     <button

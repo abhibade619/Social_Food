@@ -3,6 +3,7 @@ import { supabase } from '../supabaseClient';
 import { useAuth } from '../context/AuthProvider';
 import MapComponent from './MapComponent';
 import LogCard from './LogCard';
+import { HeartIcon, CheckCircleIcon, CheckIcon } from './Icons';
 
 const RestaurantPage = ({ restaurant, onBack, onNewLog, onViewProfile }) => {
     const { user } = useAuth();
@@ -288,19 +289,30 @@ const RestaurantPage = ({ restaurant, onBack, onNewLog, onViewProfile }) => {
                             📝 Log your visit
                         </button>
                         <button
-                            className={`btn-secondary ${isVisited ? 'active' : ''}`}
+                            className={`btn-icon-premium large ${isVisited ? 'visited' : ''}`}
                             onClick={toggleVisited}
                             disabled={visitedLoading}
                             title={isVisited ? "Unmark Visited" : "Mark as Visited"}
                         >
-                            {isVisited ? '✅ Visited' : 'Mark Visited'}
+                            {isVisited ? (
+                                <>
+                                    <CheckIcon className="icon-md" />
+                                    <span>Visited</span>
+                                </>
+                            ) : (
+                                <>
+                                    <CheckCircleIcon className="icon-md" />
+                                    <span>Mark Visited</span>
+                                </>
+                            )}
                         </button>
                         <button
-                            className={`btn-secondary ${isInWishlist ? 'active' : ''}`}
+                            className={`btn-icon-premium large ${isInWishlist ? 'wishlisted' : ''}`}
                             onClick={toggleWishlist}
                             disabled={wishlistLoading}
                         >
-                            {isInWishlist ? '❤️ In Wishlist' : '🤍 Add to Wishlist'}
+                            <HeartIcon filled={isInWishlist} className="icon-md" />
+                            <span>{isInWishlist ? 'Added to Wishlist' : 'Add to Wishlist'}</span>
                         </button>
                     </div>
                 </div>
