@@ -5218,3 +5218,18 @@ input:checked+.toggle-slider:before {
   background: transparent;
   box-shadow: none;
 }
+/* Emergency Overrides for Search UI */
+.premium-user-item {
+  border: none !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.no-results {
+  border: none !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+
