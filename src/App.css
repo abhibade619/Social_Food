@@ -141,42 +141,6 @@ body {
   color: var(--text-gold);
   font-size: 0.9rem;
   margin-bottom: var(--spacing-sm);
-  letter-spacing: 1px;
-  text-transform: uppercase;
-}
-
-/* App-specific styles */
-
-/* Auth Page */
-.auth-container {
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: var(--spacing-md);
-  background: linear-gradient(135deg, #0f0f0f 0%, #1a1520 50%, #1a0f1f 100%);
-}
-
-.auth-card {
-  background: rgba(30, 30, 30, 0.85);
-  /* More opaque background */
-  backdrop-filter: blur(20px);
-  /* Stronger blur */
-  padding: var(--spacing-xl);
-  border-radius: var(--border-radius-lg);
-  /* Larger radius */
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
-  /* Deeper shadow */
-  width: 100%;
-  max-width: 420px;
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  /* Brighter border */
-  animation: fadeIn var(--transition-slow);
-}
-
-.auth-card h1 {
-  text-align: center;
-  font-size: 2.5rem;
   margin-bottom: var(--spacing-xs);
   background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
   -webkit-background-clip: text;
@@ -4313,51 +4277,6 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover {
   margin: 0 auto;
   /* much smaller top padding so it sits close to the navbar */
   padding: 0.25rem 1rem 2rem;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-/* header card sits closer to My Logs */
-.profile-header-premium {
-  background: #111;
-  padding: 2rem 2rem;
-  /* was 3rem 2rem */
-  border-radius: 24px;
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  margin-bottom: 1.5rem;
-  /* was 3rem */
-  border: 1px solid rgba(255, 255, 255, 0.05);
-}
-
-.profile-header-content {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-}
-
-.profile-avatar-premium {
-  width: 120px;
-  height: 120px;
-  border-radius: 50%;
-  overflow: hidden;
-  border: 3px solid var(--primary-color);
-  margin-bottom: 1.5rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: #222;
-}
-
-.profile-name-premium {
-  font-size: 2rem;
-  font-weight: 700;
   margin-bottom: 0.5rem;
   font-family: 'Playfair Display', serif;
 }
@@ -4369,36 +4288,6 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover {
 }
 
 .profile-bio-premium {
-  color: var(--text-secondary);
-  max-width: 400px;
-  margin: 0 auto 2rem;
-  line-height: 1.6;
-}
-
-.profile-stats-premium {
-  display: flex;
-  justify-content: center;
-  gap: 3rem;
-  margin-bottom: 2rem;
-  background: rgba(255, 255, 255, 0.03);
-  padding: 1rem 2rem;
-  border-radius: 16px;
-}
-
-.stat-item-premium {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.stat-value-premium {
-  font-size: 1.2rem;
-  font-weight: 700;
-  color: white;
-}
-
-.stat-label-premium {
-  font-size: 0.8rem;
   color: var(--text-secondary);
   text-transform: uppercase;
   letter-spacing: 1px;
@@ -4480,32 +4369,6 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover {
 /* User Search Styles */
 .user-list {
   display: flex;
-  flex-direction: column;
-  gap: 12px;
-  margin-top: 1rem;
-}
-
-.premium-user-item {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 12px 16px;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  border-radius: 12px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.premium-user-item:hover {
-  background: rgba(255, 255, 255, 0.08);
-  transform: translateX(4px);
-  border-color: rgba(255, 255, 255, 0.1);
-}
-
-.premium-avatar-small {
-  width: 48px;
-  height: 48px;
   border-radius: 50%;
   object-fit: cover;
   border: 2px solid var(--primary-color);
@@ -4597,37 +4460,6 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover {
   flex: 1;
 }
 
-.popular-actions {
-  display: flex;
-  gap: 0.5rem;
-}
-
-.btn-action {
-  flex: 1;
-  padding: 0.5rem;
-  border: 1px solid var(--border-color);
-  background: rgba(255, 255, 255, 0.05);
-  border-radius: 8px;
-  color: var(--text-secondary);
-  font-size: 0.85rem;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.btn-action:hover {
-  background: rgba(255, 255, 255, 0.1);
-  color: white;
-}
-
-.btn-action.active {
-  background: rgba(var(--primary-rgb), 0.2);
-  border-color: var(--primary-color);
-  color: var(--primary-color);
-}
-
-/* Visited Card Styles */
-.visited-card {
-  transition: transform 0.2s ease;
 }
 
 .visited-card:hover {
