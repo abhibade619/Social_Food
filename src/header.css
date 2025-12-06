@@ -1,0 +1,66 @@
+:root {
+    /* Premium Dark Theme (Deep Wine & Olive) */
+    --primary-color: #722F37;
+    --secondary-color: #556B2F;
+    --primary-gradient: linear-gradient(135deg, #722F37, #963e4a);
+
+    /* Dark Backgrounds */
+    --bg-dark: #121212;
+    --bg-card: #1E1E1E;
+    --bg-hover: #2C2C2C;
+    --bg-tertiary: #252525;
+
+    /* Warm Cream Text */
+    --text-primary: #FAF3E0;
+    --text-secondary: #B0B0B0;
+    --text-tertiary: #808080;
+    --text-gold: #FFD700;
+
+    --border-color: #333333;
+    --border-radius: 12px;
+    --border-radius-sm: 8px;
+    --border-radius-lg: 20px;
+    --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.2);
+    --shadow-md: 0 4px 8px rgba(0, 0, 0, 0.3);
+    --shadow-lg: 0 8px 16px rgba(0, 0, 0, 0.4);
+    --shadow-glow: 0 0 20px rgba(114, 47, 55, 0.3);
+
+    --font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    --spacing-xs: 0.5rem;
+    --spacing-sm: 0.75rem;
+    --spacing-md: 1rem;
+    --spacing-lg: 1.5rem;
+    --spacing-xl: 2rem;
+    --transition-fast: 0.2s ease;
+    --transition-base: 0.3s ease;
+    --transition-slow: 0.5s ease;
+
+    /* Glassmorphism */
+    --glass-bg: rgba(30, 30, 30, 0.6);
+    --glass-border: 1px solid rgba(255, 255, 255, 0.1);
+    --glass-blur: blur(12px);
+}
+
+body {
+    background-color: var(--bg-dark);
+    color: var(--text-primary);
+    font-family: var(--font-family);
+    margin: 0;
+    min-height: 100vh;
+    line-height: 1.6;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Premium Utilities */
+.glass-panel {
+    background: var(--glass-bg);
+    backdrop-filter: var(--glass-blur);
+    border: var(--glass-border);
+    box-shadow: var(--shadow-lg);
+}
+
+.premium-gradient-text {
+    background: var(--primary-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
