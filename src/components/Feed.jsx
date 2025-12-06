@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { supabase } from '../supabaseClient';
 import { useAuth } from '../context/AuthProvider';
 import LogCard from './LogCard';
+import SuggestedFriends from './SuggestedFriends';
 
 const Feed = ({ onViewProfile, onRestaurantClick }) => {
     const [logs, setLogs] = useState([]);
@@ -86,30 +87,37 @@ const Feed = ({ onViewProfile, onRestaurantClick }) => {
     const currentCity = getCityFromLocation();
 
     return (
-        <div className="feed-container container">
+        <div className="home-layout container">
+            <div className="main-feed">
+                <div className="feed-container">
 
-            <div className="feed-header">
-                <h2>Recent Activity</h2>
-            </div>
+                    <div className="feed-header">
+                        <h2>Recent Activity</h2>
+                    </div>
 
-            {loading && <div className="loading-spinner"></div>}
+                    {loading && <div className="loading-spinner"></div>}
 
-            <div className="logs-grid">
-                {logs.map((log) => (
-                    <LogCard
-                        key={log.id}
-                        log={log}
-                        onViewProfile={onViewProfile}
-                        onRestaurantClick={onRestaurantClick}
-                    />
-                ))}
-            </div>
+                    <div className="logs-grid">
+                        {logs.map((log) => (
+                            <LogCard
+                                key={log.id}
+                                log={log}
+                                onViewProfile={onViewProfile}
+                                onRestaurantClick={onRestaurantClick}
+                            />
+                        ))}
+                    </div>
 
-            {logs.length === 0 && !loading && (
-                <div className="empty-state glass-panel">
-                    <p>No recent activity. Be the first to post!</p>
+                    {logs.length === 0 && !loading && (
+                        <div className="empty-state glass-panel">
+                            <p>No recent activity. Be the first to post!</p>
+                        </div>
+                    )}
                 </div>
-            )}
+            </div>
+            <aside className="home-sidebar">
+                <SuggestedFriends onViewProfile={onViewProfile} />
+            </aside>
         </div>
     );
 };

@@ -428,22 +428,26 @@ const PopularRestaurants = ({ city, onRestaurantClick, onNewLog }) => {
                 <div className="section-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '1rem' }}>
                     <h2 className="section-title-premium" style={{ marginBottom: 0 }}>Popular in {city}</h2>
                     <div className="filters-section" style={{ display: 'flex', gap: '1rem' }}>
-                        <select
-                            value={selectedCuisine}
-                            onChange={(e) => setSelectedCuisine(e.target.value)}
-                            className="premium-input"
-                            style={{ width: 'auto', minWidth: '150px' }}
-                        >
-                            {cuisines.map(c => <option key={c} value={c}>{c}</option>)}
-                        </select>
-                        <select
-                            value={selectedType}
-                            onChange={(e) => setSelectedType(e.target.value)}
-                            className="premium-input"
-                            style={{ width: 'auto', minWidth: '150px' }}
-                        >
-                            {types.map(t => <option key={t} value={t}>{t}</option>)}
-                        </select>
+                        <div className="select-wrapper">
+                            <select
+                                value={selectedCuisine}
+                                onChange={(e) => setSelectedCuisine(e.target.value)}
+                                className="premium-input custom-select"
+                                style={{ width: 'auto', minWidth: '150px' }}
+                            >
+                                {cuisines.map(c => <option key={c} value={c}>{c}</option>)}
+                            </select>
+                        </div>
+                        <div className="select-wrapper">
+                            <select
+                                value={selectedType}
+                                onChange={(e) => setSelectedType(e.target.value)}
+                                className="premium-input custom-select"
+                                style={{ width: 'auto', minWidth: '150px' }}
+                            >
+                                {types.map(t => <option key={t} value={t}>{t}</option>)}
+                            </select>
+                        </div>
                     </div>
                 </div>
                 {visiblePopular.length > 0 ? (

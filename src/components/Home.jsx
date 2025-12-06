@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthProvider';
-import SuggestedFriends from './SuggestedFriends';
 import PopularRestaurants from './PopularRestaurants';
 
 const Home = ({ onRestaurantClick, onViewProfile, onNewLog }) => {
@@ -41,7 +40,7 @@ const Home = ({ onRestaurantClick, onViewProfile, onNewLog }) => {
 
     return (
         <div className="home-layout container">
-            <div className="main-feed">
+            <div className="main-feed" style={{ width: '100%' }}>
                 {/* Popular Section */}
                 {/* Popular Section */}
                 {/* Popular & Top Rated Sections managed by PopularRestaurants */}
@@ -51,10 +50,6 @@ const Home = ({ onRestaurantClick, onViewProfile, onNewLog }) => {
                     onNewLog={onNewLog}
                 />
             </div>
-
-            <aside className="home-sidebar">
-                <SuggestedFriends onViewProfile={onViewProfile} />
-            </aside>
         </div>
     );
 };
