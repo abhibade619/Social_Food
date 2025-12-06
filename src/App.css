@@ -4460,7 +4460,7 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover {
   flex: 1;
 }
 
-}
+
 
 .visited-card:hover {
   transform: translateY(-2px);
