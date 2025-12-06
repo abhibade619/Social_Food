@@ -20,6 +20,12 @@ const ProfileSetup = ({ onComplete }) => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError('');
+
+        if (!formData.full_name.trim()) {
+            setError('Full Name is required.');
+            return;
+        }
+
         setLoading(true);
 
         try {

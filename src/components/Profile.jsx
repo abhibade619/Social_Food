@@ -294,6 +294,12 @@ const Profile = ({ onNavigate, onViewFollowers, onViewFollowing }) => {
 
     const handleUpdate = async (e) => {
         e.preventDefault();
+
+        if (!formData.full_name.trim()) {
+            alert('Full Name is required.');
+            return;
+        }
+
         try {
             const { error } = await supabase
                 .from('profiles')
@@ -412,6 +418,7 @@ const Profile = ({ onNavigate, onViewFollowers, onViewFollowing }) => {
                                     value={formData.full_name}
                                     onChange={(e) => setFormData({ ...formData, full_name: e.target.value })}
                                     className="premium-input"
+                                    required
                                 />
                             </div>
                             <div className="form-group">
