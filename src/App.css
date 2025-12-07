@@ -5218,6 +5218,7 @@ input:checked+.toggle-slider:before {
   background: transparent;
   box-shadow: none;
 }
+
 /* Emergency Overrides for Search UI */
 .premium-user-item {
   border: none !important;
@@ -5317,9 +5318,17 @@ input:checked+.toggle-slider:before {
 }
 
 @keyframes heartBeat {
-  0% { transform: scale(1); }
-  50% { transform: scale(1.3); }
-  100% { transform: scale(1); }
+  0% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.3);
+  }
+
+  100% {
+    transform: scale(1);
+  }
 }
 
 
@@ -5363,7 +5372,8 @@ input:checked+.toggle-slider:before {
 }
 
 .btn-wishlist-icon.active {
-  color: #FF6B6B; /* Red/Coral for active state */
+  color: #FF6B6B;
+  /* Red/Coral for active state */
 }
 
 .btn-wishlist-icon.active svg {
@@ -5564,9 +5574,25 @@ input:checked+.toggle-slider:before {
 
 .restaurant-actions .btn-primary,
 .restaurant-actions .btn-icon-premium {
-  height: 48px !important; /* Force same height */
+  height: 48px !important;
+  /* Force same height */
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
 }
 
+
+/* Visited Button State */
+.btn-icon-premium.visited {
+  background: rgba(76, 175, 80, 0.15) !important;
+  color: #4CAF50 !important;
+  border-color: rgba(76, 175, 80, 0.3) !important;
+}
+
+.btn-icon-premium.visited svg {
+  fill: currentColor;
+}
+
+.btn-icon-premium.visited:hover {
+  background: rgba(76, 175, 80, 0.25) !important;
+}

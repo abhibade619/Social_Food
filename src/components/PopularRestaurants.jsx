@@ -421,7 +421,13 @@ const PopularRestaurants = ({ city, onRestaurantClick, onNewLog }) => {
                         </button>
                         <button
                             className="btn-primary"
-                            onClick={(e) => { e.stopPropagation(); onNewLog(restaurant); }}
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                onNewLog({
+                                    ...restaurant,
+                                    location: restaurant.city || city // Ensure city is passed as location
+                                });
+                            }}
                             style={{
                                 flex: 1,
                                 padding: '0 10px',
