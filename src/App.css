@@ -5322,3 +5322,251 @@ input:checked+.toggle-slider:before {
   100% { transform: scale(1); }
 }
 
+
+/* Location Selector Fix */
+.location-button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: transparent;
+  border: 1px solid var(--border-color);
+  border-radius: 20px;
+  color: var(--text-primary);
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.location-button:hover {
+  border-color: var(--primary-color);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+/* Wishlist Icon Button (Top Right of Card) */
+.btn-wishlist-icon {
+  background: transparent;
+  border: none;
+  padding: 8px;
+  cursor: pointer;
+  color: var(--text-secondary);
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+}
+
+.btn-wishlist-icon:hover {
+  background: rgba(255, 255, 255, 0.1);
+  transform: scale(1.1);
+}
+
+.btn-wishlist-icon.active {
+  color: #FF6B6B; /* Red/Coral for active state */
+}
+
+.btn-wishlist-icon.active svg {
+  fill: currentColor;
+  filter: drop-shadow(0 0 8px rgba(255, 107, 107, 0.4));
+}
+
+
+/* Location Container Fix */
+.location-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 16px;
+  border: 1px solid var(--border-color);
+  border-radius: 20px;
+  transition: all 0.2s ease;
+}
+
+.location-container:hover {
+  border-color: var(--primary-color);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+/* Reset Location Button Styles */
+.location-button {
+  border: none !important;
+  background: transparent !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  color: var(--text-primary);
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.location-button:hover {
+  background: transparent !important;
+}
+
+.location-icon-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-gold);
+}
+
+
+/* Location Selector & Dropdown Fixes */
+.location-selector {
+  position: relative;
+  width: 100%;
+}
+
+.location-dropdown {
+  position: absolute;
+  top: calc(100% + 12px);
+  left: 0;
+  width: 100%;
+  min-width: 280px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  box-shadow: var(--shadow-lg);
+  z-index: 1000;
+  overflow: hidden;
+  animation: fadeIn 0.2s ease;
+}
+
+.location-search {
+  padding: 12px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.location-search input {
+  width: 100%;
+  padding: 10px 16px;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  color: var(--text-primary);
+  outline: none;
+}
+
+.location-search input:focus {
+  border-color: var(--primary-color);
+}
+
+.location-options {
+  padding: 8px;
+}
+
+.suggestion-item {
+  padding: 10px 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--text-secondary);
+  transition: all 0.2s ease;
+  border-radius: 8px;
+}
+
+.suggestion-item:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+}
+
+.suggestion-item.current-location {
+  color: var(--text-gold);
+  font-weight: 500;
+}
+
+.suggestion-item.current-location .icon {
+  font-size: 1.1rem;
+}
+
+.location-suggestions {
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+
+/* EMERGENCY OVERRIDES FOR LOCATION & BUTTONS */
+.location-container {
+  border: 1px solid var(--border-color) !important;
+  border-radius: 20px !important;
+  padding: 6px 16px !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+}
+
+.location-container:hover {
+  border-color: var(--primary-color) !important;
+  background: rgba(255, 255, 255, 0.05) !important;
+}
+
+.location-button {
+  border: none !important;
+  background: transparent !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  color: var(--text-primary) !important;
+}
+
+.location-dropdown {
+  border: 1px solid var(--border-color) !important;
+  background: var(--bg-card) !important;
+  box-shadow: var(--shadow-lg) !important;
+  top: calc(100% + 12px) !important;
+}
+
+.btn-icon-premium {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 8px !important;
+  padding: 10px 16px !important;
+  border-radius: 12px !important;
+  border: 1px solid var(--border-color) !important;
+  background: rgba(255, 255, 255, 0.03) !important;
+}
+
+.btn-icon-premium.visited {
+  background: rgba(76, 175, 80, 0.15) !important;
+  border-color: #4CAF50 !important;
+  color: #4CAF50 !important;
+}
+
+.btn-icon-premium.wishlisted {
+  background: rgba(255, 107, 107, 0.15) !important;
+  border-color: #FF6B6B !important;
+  color: #FF6B6B !important;
+}
+
+
+/* Location Selector Alignment Fix */
+.location-search {
+  padding: 8px !important;
+}
+
+.location-options {
+  padding: 8px !important;
+}
+
+.location-search input {
+  width: 100% !important;
+  box-sizing: border-box !important;
+  margin: 0 !important;
+}
+
+/* Ensure Visited and Log buttons are aligned */
+.restaurant-actions {
+  display: flex !important;
+  gap: 1rem !important;
+  align-items: stretch !important;
+}
+
+.restaurant-actions .btn-primary,
+.restaurant-actions .btn-icon-premium {
+  height: 48px !important; /* Force same height */
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+

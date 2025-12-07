@@ -118,17 +118,51 @@ const LocationSelector = ({ currentLocation, onLocationChange }) => {
     };
 
     return (
-        <div className="location-selector" ref={dropdownRef}>
-            <button
-                className="location-button"
+        <div className="location-selector" ref={dropdownRef} style={{ position: 'relative', width: '100%' }}>
+            <div
+                className="location-container"
                 onClick={() => setIsOpen(!isOpen)}
+                style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                    padding: '6px 16px',
+                    border: '1px solid var(--border-color)',
+                    borderRadius: '20px',
+                    cursor: 'pointer',
+                    background: 'rgba(255, 255, 255, 0.05)',
+                    width: 'fit-content',
+                    minWidth: '200px'
+                }}
             >
-                {/* Icon removed as per user request */}
-                <span className="location-text">
+                <div className="location-icon-wrapper" style={{ display: 'flex', alignItems: 'center', color: '#D4AF37' }}>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                        <circle cx="12" cy="10" r="3"></circle>
+                    </svg>
+                </div>
+                <button
+                    className="location-button"
+                    style={{
+                        border: 'none !important',
+                        outline: 'none !important',
+                        background: 'transparent !important',
+                        padding: 0,
+                        margin: 0,
+                        color: 'var(--text-primary)',
+                        fontSize: '0.9rem',
+                        cursor: 'pointer',
+                        flex: 1,
+                        textAlign: 'left',
+                        boxShadow: 'none !important',
+                        appearance: 'none',
+                        WebkitAppearance: 'none'
+                    }}
+                >
                     {(currentLocation && typeof currentLocation === 'object' ? currentLocation.name : currentLocation) || 'Select Location'}
-                </span>
-                <span className="dropdown-arrow">▼</span>
-            </button>
+                </button>
+                <span className="dropdown-arrow" style={{ fontSize: '0.8rem', opacity: 0.7 }}>▼</span>
+            </div>
 
             {isOpen && (
                 <div className="location-dropdown">

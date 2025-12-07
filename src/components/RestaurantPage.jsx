@@ -265,8 +265,19 @@ const RestaurantPage = ({ restaurant, onBack, onNewLog, onViewProfile }) => {
         <div className="restaurant-page container">
             <div className="restaurant-header-premium">
                 <div className="restaurant-hero">
-                    <h1 className="restaurant-title-large">{restaurant.name || 'Restaurant Details'}</h1>
-                    <div className="restaurant-badges">
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                        <h1 className="restaurant-title-large" style={{ margin: 0, flex: 1 }}>{restaurant.name || 'Restaurant Details'}</h1>
+                        <button
+                            className={`btn-wishlist-icon ${isInWishlist ? 'active' : ''}`}
+                            onClick={toggleWishlist}
+                            disabled={wishlistLoading}
+                            title={isInWishlist ? "Remove from Wishlist" : "Add to Wishlist"}
+                            style={{ marginLeft: '1rem' }}
+                        >
+                            <HeartIcon filled={isInWishlist} className="icon-md" />
+                        </button>
+                    </div>
+                    <div className="restaurant-badges" style={{ marginTop: '0.5rem' }}>
                         {averageRating ? (
                             <span className="badge-rating">⭐ {averageRating} ({logs.length} {logs.length === 1 ? 'log' : 'logs'})</span>
                         ) : (
@@ -281,10 +292,17 @@ const RestaurantPage = ({ restaurant, onBack, onNewLog, onViewProfile }) => {
                         <span>❤️ {stats.wishlistCount} wishlisted</span>
                     </div>
 
-                    <div className="restaurant-actions" style={{ display: 'flex', gap: '1rem', marginTop: '1rem' }}>
+                    <div className="restaurant-actions" style={{ display: 'flex', gap: '1rem', marginTop: '1.5rem', alignItems: 'stretch' }}>
                         <button
                             className="btn-primary"
                             onClick={() => onNewLog(restaurant)}
+                            style={{
+                                flex: 1,
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                height: '48px'
+                            }}
                         >
                             📝 Log your visit
                         </button>
@@ -293,6 +311,19 @@ const RestaurantPage = ({ restaurant, onBack, onNewLog, onViewProfile }) => {
                             onClick={toggleVisited}
                             disabled={visitedLoading}
                             title={isVisited ? "Unmark Visited" : "Mark as Visited"}
+                            style={{
+                                flex: 1,
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                gap: '8px',
+                                height: '48px',
+                                borderRadius: '12px',
+                                border: '1px solid var(--border-color)',
+                                background: isVisited ? 'rgba(76, 175, 80, 0.15)' : 'rgba(255, 255, 255, 0.03)',
+                                color: isVisited ? '#4CAF50' : 'var(--text-secondary)',
+                                cursor: 'pointer'
+                            }}
                         >
                             {isVisited ? (
                                 <>
@@ -310,9 +341,23 @@ const RestaurantPage = ({ restaurant, onBack, onNewLog, onViewProfile }) => {
                             className={`btn-icon-premium large ${isInWishlist ? 'wishlisted' : ''}`}
                             onClick={toggleWishlist}
                             disabled={wishlistLoading}
+                            title={isInWishlist ? "Remove from Wishlist" : "Add to Wishlist"}
+                            style={{
+                                flex: 1,
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                gap: '8px',
+                                height: '48px',
+                                borderRadius: '12px',
+                                border: '1px solid var(--border-color)',
+                                background: isInWishlist ? 'rgba(255, 107, 107, 0.15)' : 'rgba(255, 255, 255, 0.03)',
+                                color: isInWishlist ? '#FF6B6B' : 'var(--text-secondary)',
+                                cursor: 'pointer'
+                            }}
                         >
                             <HeartIcon filled={isInWishlist} className="icon-md" />
-                            <span>{isInWishlist ? 'Added to Wishlist' : 'Add to Wishlist'}</span>
+                            <span>{isInWishlist ? 'Added' : 'Wishlist'}</span>
                         </button>
                     </div>
                 </div>

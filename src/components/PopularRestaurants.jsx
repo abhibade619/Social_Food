@@ -383,17 +383,29 @@ const PopularRestaurants = ({ city, onRestaurantClick, onNewLog }) => {
                     )}
                 </div>
                 <div className="popular-content">
-                    <h3 style={{ marginBottom: '0.5rem' }}>{restaurant.name}</h3>
+
+                    <div className="card-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem', width: '100%' }}>
+                        <h3 style={{ margin: 0, flex: 1, paddingRight: '10px', lineHeight: '1.2' }}>{restaurant.name}</h3>
+                        <button
+                            className={`btn-wishlist-icon ${isWishlisted ? 'active' : ''}`}
+                            onClick={(e) => toggleWishlist(e, restaurant)}
+                            title={isWishlisted ? "Remove from Wishlist" : "Add to Wishlist"}
+                            style={{ flexShrink: 0 }}
+                        >
+                            <HeartIcon filled={isWishlisted} className="icon-md" />
+                        </button>
+                    </div>
                     <div className="restaurant-meta">
                         <span style={{ color: 'var(--text-secondary)', fontWeight: '700', fontSize: '0.95rem' }}>{formattedCuisine}</span>
                         <span style={{ color: 'var(--text-tertiary)', fontSize: '0.9rem', fontWeight: '600' }}>{shortAddress}</span>
                     </div>
 
-                    <div className="card-actions" style={{ display: 'flex', gap: '12px', marginTop: 'auto' }}>
+                    <div className="card-actions" style={{ display: 'flex', gap: '8px', marginTop: 'auto', width: '100%' }}>
                         <button
                             className={`btn-icon-premium ${isVisited ? 'visited' : ''}`}
                             onClick={(e) => toggleVisited(e, restaurant)}
                             title={isVisited ? "Marked as Visited" : "Mark as Visited"}
+                            style={{ flex: 1, justifyContent: 'center' }}
                         >
                             {isVisited ? (
                                 <>
@@ -408,21 +420,27 @@ const PopularRestaurants = ({ city, onRestaurantClick, onNewLog }) => {
                             )}
                         </button>
                         <button
-                            className={`btn-icon-premium ${isWishlisted ? 'wishlisted' : ''}`}
-                            onClick={(e) => toggleWishlist(e, restaurant)}
-                            title={isWishlisted ? "Added to Wishlist" : "Add to Wishlist"}
+                            className="btn-primary"
+                            onClick={(e) => { e.stopPropagation(); onNewLog(restaurant); }}
+                            style={{
+                                flex: 1,
+                                padding: '0 10px',
+                                borderRadius: '8px',
+                                border: 'none',
+                                background: 'var(--primary-gradient)',
+                                color: 'white',
+                                fontWeight: 'bold',
+                                cursor: 'pointer',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                height: '36px',
+                                fontSize: '0.9rem'
+                            }}
                         >
-                            <HeartIcon filled={isWishlisted} className="icon-sm" />
-                            <span>{isWishlisted ? 'Added' : 'Wishlist'}</span>
+                            📝 Log It
                         </button>
                     </div>
-                    <button
-                        className="btn-primary"
-                        onClick={(e) => { e.stopPropagation(); onNewLog(restaurant); }}
-                        style={{ width: '100%', marginTop: '8px', padding: '10px', borderRadius: '8px', border: 'none', background: 'var(--primary-gradient)', color: 'white', fontWeight: 'bold', cursor: 'pointer' }}
-                    >
-                        📝 Log It
-                    </button>
                 </div>
             </div>
         );
