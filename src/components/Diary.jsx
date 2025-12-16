@@ -5,7 +5,7 @@ import LogCard from './LogCard';
 import LogModal from './LogModal';
 import EditLogModal from './EditLogModal';
 
-const Diary = ({ onRestaurantClick }) => {
+const Diary = ({ onRestaurantClick, onViewProfile }) => {
     const { user } = useAuth();
     const [logs, setLogs] = useState([]);
     const [filteredLogs, setFilteredLogs] = useState([]);
@@ -231,6 +231,7 @@ const Diary = ({ onRestaurantClick }) => {
                                 onDelete={handleDelete}
                                 onClick={() => handleEdit(log)}
                                 onRestaurantClick={onRestaurantClick}
+                                onViewProfile={onViewProfile}
                                 visitNumber={getVisitNumber(log)}
                                 totalVisits={visitCounts[log.restaurant_name?.toLowerCase().trim()] || 0}
                             />

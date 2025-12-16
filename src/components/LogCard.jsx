@@ -124,15 +124,31 @@ const LogCard = ({ log, onClick, showActions = false, isDiaryView = false, profi
     const targetProfile = profileOwner || (isDiaryView ? user : null);
     const isTaggedEntry = isDiaryView && targetProfile && targetProfile.id !== log.user_id;
 
+    // Helper to normalize user data from either Auth Object (user_metadata) or Profile Object (top-level fields)
+    const normalizeUser = (u) => {
+        if (!u) return null;
+        // If it has user_metadata (Auth user object), use that
+        if (u.user_metadata) {
+            return {
+                id: u.id,
+                full_name: u.user_metadata.full_name || u.email?.split('@')[0] || 'User',
+                username: u.user_metadata.username || u.email?.split('@')[0] || 'user',
+                avatar_url: u.user_metadata.avatar_url || u.avatar_url
+            };
+        }
+        // Otherwise assume it's a profile object
+        return {
+            id: u.id,
+            full_name: u.full_name || 'User',
+            username: u.username || 'user',
+            avatar_url: u.avatar_url
+        };
+    };
+
     // If it's a tagged entry, we show the PROFILE OWNER'S info at the top (because it's on THEIR timeline)
     // Otherwise, we show the LOG AUTHOR'S info
-    // FIX: If we have profileOwner and it matches log.user_id, use it directly to avoid re-fetching/defaults
-    const displayUser = isTaggedEntry ? {
-        id: targetProfile.id,
-        avatar_url: targetProfile.user_metadata?.avatar_url || targetProfile.avatar_url,
-        full_name: targetProfile.user_metadata?.full_name || targetProfile.full_name,
-        username: targetProfile.user_metadata?.username || targetProfile.username || targetProfile.email?.split('@')[0]
-    } : (profileOwner && profileOwner.id === log.user_id ? profileOwner : userProfile);
+    const rawDisplayUser = isTaggedEntry ? targetProfile : (profileOwner && profileOwner.id === log.user_id ? profileOwner : userProfile);
+    const displayUser = normalizeUser(rawDisplayUser);
 
     return (
         <>

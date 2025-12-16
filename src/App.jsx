@@ -335,7 +335,10 @@ function App() {
       case 'wishlist':
         return <Wishlist onRestaurantClick={handleNavigateToRestaurant} />;
       case 'diary':
-        return <Diary onRestaurantClick={handleNavigateToRestaurant} />;
+        return <Diary
+          onRestaurantClick={handleNavigateToRestaurant}
+          onViewProfile={handleNavigateToProfile}
+        />;
       case 'account':
         return <AccountInfo onNavigate={navigateTo} />;
       case 'change-password':
