@@ -280,6 +280,15 @@ const Profile = ({ onNavigate, onViewFollowers, onViewFollowing }) => {
 
             if (updateError) throw updateError;
 
+            // Sync with Auth Metadata
+            const { error: authError } = await supabase.auth.updateUser({
+                data: {
+                    avatar_url: publicUrl
+                }
+            });
+
+            if (authError) console.error('Error updating auth avatar:', authError);
+
             await fetchProfile();
             window.dispatchEvent(new Event('profileUpdated'));
             setShowCropper(false);
@@ -311,8 +320,23 @@ const Profile = ({ onNavigate, onViewFollowers, onViewFollowing }) => {
 
             if (error) throw error;
 
+            // Sync with Auth Metadata
+            const { error: authError } = await supabase.auth.updateUser({
+                data: {
+                    full_name: formData.full_name,
+                    username: formData.username,
+                    // We don't update avatar here as it's handled in handleAvatarUpload, 
+                    // but we should probably update it there too.
+                }
+            });
+
+            if (authError) console.error('Error updating auth metadata:', authError);
+
             setProfile({ ...profile, ...formData });
             setEditing(false);
+
+            // Trigger profile update event
+            window.dispatchEvent(new Event('profileUpdated'));
         } catch (error) {
             console.error('Error updating profile:', error);
         }
@@ -576,7 +600,7 @@ const Profile = ({ onNavigate, onViewFollowers, onViewFollowing }) => {
                                 {userLogs.length > 0 ? (
                                     <div className="logs-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))', gap: '1.5rem', justifyContent: 'start' }}>
                                         {userLogs.map((log) => (
-                                            <LogCard key={log.id} log={log} isDiaryView={true} profileOwner={user} />
+                                            <LogCard key={log.id} log={log} isDiaryView={true} profileOwner={profile || user} />
                                         ))}
                                     </div>
                                 ) : (
