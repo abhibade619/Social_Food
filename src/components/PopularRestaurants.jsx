@@ -4,7 +4,7 @@ import { useAuth } from '../context/AuthProvider';
 import { loadPlacesLibrary } from '../utils/googleMaps';
 import { HeartIcon, CheckCircleIcon, CheckIcon } from './Icons';
 
-const PopularRestaurants = ({ city, onRestaurantClick, onNewLog }) => {
+const PopularRestaurants = ({ city, onRestaurantClick, onNewLog, onAuthRequired }) => {
     const { user } = useAuth();
     const [popularRestaurants, setPopularRestaurants] = useState([]);
     const [topRatedRestaurants, setTopRatedRestaurants] = useState([]);
@@ -234,7 +234,10 @@ const PopularRestaurants = ({ city, onRestaurantClick, onNewLog }) => {
 
     const toggleVisited = async (e, restaurant) => {
         e.stopPropagation();
-        if (!user) return;
+        if (!user) {
+            if (onAuthRequired) onAuthRequired();
+            return;
+        }
 
         const placeId = restaurant.place_id;
         const isVisited = visitedMap[placeId];
@@ -270,7 +273,10 @@ const PopularRestaurants = ({ city, onRestaurantClick, onNewLog }) => {
 
     const toggleWishlist = async (e, restaurant) => {
         e.stopPropagation();
-        if (!user) return;
+        if (!user) {
+            if (onAuthRequired) onAuthRequired();
+            return;
+        }
 
         const placeId = restaurant.place_id;
         const isWishlisted = wishlistMap[placeId];

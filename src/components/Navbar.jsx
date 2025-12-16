@@ -5,7 +5,7 @@ import LocationSelector from './LocationSelector';
 import UserMenu from './UserMenu';
 import { useTheme } from '../context/ThemeContext';
 
-const Navbar = ({ currentView, setCurrentView, onNewLog }) => {
+const Navbar = ({ currentView, setCurrentView, onNewLog, onAuthRequired }) => {
     const { user, signOut } = useAuth();
     const { theme, toggleTheme } = useTheme();
     const [location, setLocation] = useState('');
@@ -166,55 +166,67 @@ const Navbar = ({ currentView, setCurrentView, onNewLog }) => {
                 </div>
 
                 <div className="navbar-right">
-                    <button
-                        className={`nav-icon-btn ${currentView === 'feed' ? 'active' : ''}`}
-                        onClick={() => setCurrentView('feed')}
-                        title="Feed"
-                    >
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
-                            <polyline points="9 22 9 12 15 12 15 22"></polyline>
-                        </svg>
-                    </button>
-                    <button
-                        className={`nav-icon-btn ${currentView === 'diary' ? 'active' : ''}`}
-                        onClick={() => setCurrentView('diary')}
-                        title="Diary"
-                    >
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                            <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
-                            <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
-                        </svg>
-                    </button>
-                    <button
-                        className={`nav-icon-btn ${currentView === 'search' ? 'active' : ''}`}
-                        onClick={() => setCurrentView('search')}
-                        title="Search"
-                    >
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                            <circle cx="11" cy="11" r="8"></circle>
-                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-                        </svg>
-                    </button>
+                    {user ? (
+                        <>
+                            <button
+                                className={`nav-icon-btn ${currentView === 'feed' ? 'active' : ''}`}
+                                onClick={() => setCurrentView('feed')}
+                                title="Feed"
+                            >
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                                    <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                                </svg>
+                            </button>
+                            <button
+                                className={`nav-icon-btn ${currentView === 'diary' ? 'active' : ''}`}
+                                onClick={() => setCurrentView('diary')}
+                                title="Diary"
+                            >
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                    <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
+                                    <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
+                                </svg>
+                            </button>
+                            <button
+                                className={`nav-icon-btn ${currentView === 'search' ? 'active' : ''}`}
+                                onClick={() => setCurrentView('search')}
+                                title="Search"
+                            >
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                    <circle cx="11" cy="11" r="8"></circle>
+                                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                                </svg>
+                            </button>
 
-                    <button
-                        className={`nav-icon-btn ${currentView === 'notifications' ? 'active' : ''}`}
-                        onClick={() => setCurrentView('notifications')}
-                        title="Notifications"
-                    >
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
-                            <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
-                        </svg>
-                        {unreadCount > 0 && <span className="notification-badge">{unreadCount}</span>}
-                    </button>
+                            <button
+                                className={`nav-icon-btn ${currentView === 'notifications' ? 'active' : ''}`}
+                                onClick={() => setCurrentView('notifications')}
+                                title="Notifications"
+                            >
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                    <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                                    <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                                </svg>
+                                {unreadCount > 0 && <span className="notification-badge">{unreadCount}</span>}
+                            </button>
 
-                    <UserMenu
-                        user={user}
-                        avatarUrl={avatarUrl}
-                        onNavigate={setCurrentView}
-                        onSignOut={handleSignOut}
-                    />
+                            <UserMenu
+                                user={user}
+                                avatarUrl={avatarUrl}
+                                onNavigate={setCurrentView}
+                                onSignOut={handleSignOut}
+                            />
+                        </>
+                    ) : (
+                        <button
+                            className="premium-button"
+                            onClick={onAuthRequired}
+                            style={{ padding: '8px 20px', fontSize: '0.9rem' }}
+                        >
+                            Sign In
+                        </button>
+                    )}
                 </div>
             </div>
         </nav>

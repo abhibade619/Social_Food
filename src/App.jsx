@@ -22,6 +22,7 @@ import Settings from './components/Settings';
 import Diary from './components/Diary';
 import LogModal from './components/LogModal';
 import Home from './components/Home';
+import LandingPage from './components/LandingPage';
 import './App.css';
 
 function App() {
@@ -29,45 +30,40 @@ function App() {
   const [currentView, setCurrentView] = useState('home');
   const [selectedRestaurant, setSelectedRestaurant] = useState(null);
   const [selectedUser, setSelectedUser] = useState(null);
-  const [listTargetUser, setListTargetUser] = useState(null); // New state for followers/following lists
+  const [listTargetUser, setListTargetUser] = useState(null);
   const [profileComplete, setProfileComplete] = useState(true);
   const [checkingProfile, setCheckingProfile] = useState(true);
   const [showLogModal, setShowLogModal] = useState(false);
   const [initialLogData, setInitialLogData] = useState(null);
   const [feedVersion, setFeedVersion] = useState(0);
+  const [showAuthModal, setShowAuthModal] = useState(false); // New state for auth modal
 
-  // Handle browser back button
   // Handle browser back button and initial load
   useEffect(() => {
-    // Check for existing state on mount (fix for refresh)
     if (window.history.state && window.history.state.view) {
       setCurrentView(window.history.state.view);
       if (window.history.state.selectedRestaurant) setSelectedRestaurant(window.history.state.selectedRestaurant);
       if (window.history.state.selectedUser) setSelectedUser(window.history.state.selectedUser);
       if (window.history.state.listTargetUser) setListTargetUser(window.history.state.listTargetUser);
     } else {
-      // Only set default if no state exists
       window.history.replaceState({ view: 'home' }, '');
     }
 
     const handlePopState = (event) => {
       if (event.state && event.state.view) {
         setCurrentView(event.state.view);
-        // Restore other state if needed
         if (event.state.selectedRestaurant) setSelectedRestaurant(event.state.selectedRestaurant);
         if (event.state.selectedUser) setSelectedUser(event.state.selectedUser);
         if (event.state.listTargetUser) setListTargetUser(event.state.listTargetUser);
       } else {
-        setCurrentView('feed');
+        setCurrentView('home');
       }
     };
 
     window.addEventListener('popstate', handlePopState);
-
     return () => window.removeEventListener('popstate', handlePopState);
   }, []);
 
-  // Helper to change view and push to history
   const navigateTo = (view, state = {}) => {
     setCurrentView(view);
     if (state.selectedUser) setSelectedUser(state.selectedUser);
@@ -79,8 +75,8 @@ function App() {
   useEffect(() => {
     if (user) {
       checkProfileCompletion();
+      setShowAuthModal(false); // Close auth modal on successful login
     } else {
-      // If no user, we're not checking profile
       setCheckingProfile(false);
     }
   }, [user]);
@@ -114,12 +110,20 @@ function App() {
     setFeedVersion(v => v + 1);
     setShowLogModal(false);
     setInitialLogData(null);
-    navigateTo('feed'); // Optional: switch to feed to see new log
+    navigateTo('feed');
   };
 
   const handleNewLog = (data = null) => {
+    if (!user) {
+      setShowAuthModal(true);
+      return;
+    }
     setInitialLogData(data);
     setShowLogModal(true);
+  };
+
+  const handleAuthRequired = () => {
+    setShowAuthModal(true);
   };
 
   if (loading || checkingProfile) {
@@ -135,11 +139,107 @@ function App() {
     return <UpdatePassword onComplete={() => window.location.href = '/'} />;
   }
 
-  if (!user) {
-    return <Auth />;
+  // If not logged in and not showing auth modal, show Landing Page (or Auth if explicitly requested)
+  if (!user && !showAuthModal) {
+    // We can render LandingPage here.
+    // But we also need to handle if the user was trying to access a specific view (unlikely for initial load if public)
+    // For now, let's just render LandingPage which contains the public view.
+    // However, to support the "Home" view structure, we might want to wrap it.
+    // Actually, the requirement is: "Home page appears... popular restaurants... mark as visited -> login"
+
+    // Let's use a simplified render for non-auth users
+    return (
+      <div className="app">
+        <Navbar
+          currentView={currentView}
+          setCurrentView={navigateTo}
+          onNewLog={() => handleNewLog(null)}
+          onAuthRequired={handleAuthRequired} // Pass to Navbar for "Sign In" button
+        />
+        <main className="main-content">
+          <LandingPage
+            onAuthRequired={handleAuthRequired}
+            onRestaurantClick={(r) => {
+              // Allow viewing restaurant details? Or block?
+              // User said "popular restaurants appear... mark as visited -> login"
+              // Let's allow viewing details for now, or just trigger auth if they click?
+              // "It's not redirecting to anything" -> implies they want to see details or action.
+              // Let's allow viewing details but actions inside will trigger auth.
+              setSelectedRestaurant(r);
+              navigateTo('restaurant', { selectedRestaurant: r });
+            }}
+            onNewLog={handleNewLog}
+          />
+        </main>
+      </div>
+    );
   }
 
-  if (!profileComplete) {
+  if (!user && showAuthModal) {
+    // Show Auth screen. 
+    // Ideally this should be a modal over the landing page, but for simplicity/existing structure, 
+    // we can render the Auth component. 
+    // Or we can render the LandingPage AND the Auth modal.
+    // Let's try to render Auth as a full page for now to match existing style, 
+    // or better, render it over the app.
+
+    // User said: "when they want to mark as visited or log in, then it should appear sign up or login"
+    // This implies a transition.
+    return (
+      <div className="app">
+        <Navbar
+          currentView={currentView}
+          setCurrentView={navigateTo}
+          onNewLog={() => handleNewLog(null)}
+          onAuthRequired={handleAuthRequired}
+        />
+        <main className="main-content">
+          {/* We could keep LandingPage in background if we made Auth a modal, but Auth.jsx is a full page card. */}
+          {/* Let's just render Auth.jsx. It has a "back" button? No, but we can add one or just rely on browser back? */}
+          {/* Actually, Auth.jsx is a centered card. We can render it on top of a blurred background? */}
+          <div style={{ position: 'relative' }}>
+            <div style={{ filter: 'blur(5px)', pointerEvents: 'none' }}>
+              <LandingPage onAuthRequired={() => { }} />
+            </div>
+            <div style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              zIndex: 1000,
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              minHeight: '80vh' // Ensure it covers
+            }}>
+              <Auth />
+              <button
+                onClick={() => setShowAuthModal(false)}
+                style={{
+                  position: 'absolute',
+                  top: '20px',
+                  right: '20px',
+                  background: 'rgba(0,0,0,0.5)',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '50%',
+                  width: '40px',
+                  height: '40px',
+                  cursor: 'pointer',
+                  fontSize: '1.5rem'
+                }}
+              >
+                ×
+              </button>
+            </div>
+          </div>
+        </main>
+      </div>
+    );
+  }
+
+  if (user && !profileComplete) {
     return <ProfileSetup onComplete={handleProfileSetupComplete} />;
   }
 
@@ -192,7 +292,7 @@ function App() {
       return (
         <FollowersList
           userId={listTargetUser || user.id}
-          onBack={() => navigateTo('profile')} // Ideally back to previous view, but profile is safe fallback
+          onBack={() => navigateTo('profile')}
           onNavigate={handleNavigateToProfile}
         />
       );
@@ -217,7 +317,7 @@ function App() {
         />;
       case 'feed':
         return <Feed
-          key={feedVersion} // Force re-render/refetch when version changes
+          key={feedVersion}
           onViewProfile={(userId) => {
             setSelectedUser({ id: userId });
             navigateTo('userProfile', { selectedUser: { id: userId } });
