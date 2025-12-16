@@ -1,12 +1,35 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import PopularRestaurants from './PopularRestaurants';
-import LocationSelector from './LocationSelector';
 
 const LandingPage = ({ onAuthRequired, onRestaurantClick, onNewLog }) => {
-    const [selectedCity, setSelectedCity] = useState(null);
+    const [location, setLocation] = useState(null);
 
-    const handleLocationChange = (location) => {
-        setSelectedCity(location);
+    useEffect(() => {
+        loadLocation();
+
+        const handleLocationUpdate = () => {
+            loadLocation();
+        };
+        window.addEventListener('locationChanged', handleLocationUpdate);
+        return () => window.removeEventListener('locationChanged', handleLocationUpdate);
+    }, []);
+
+    const loadLocation = () => {
+        const savedLocation = localStorage.getItem('userLocation');
+        if (savedLocation) {
+            try {
+                const parsed = JSON.parse(savedLocation);
+                if (typeof parsed === 'object' && parsed !== null) {
+                    setLocation(parsed);
+                } else {
+                    setLocation({ name: savedLocation });
+                }
+            } catch (e) {
+                setLocation({ name: savedLocation });
+            }
+        } else {
+            setLocation(null);
+        }
     };
 
     return (
@@ -28,16 +51,9 @@ const LandingPage = ({ onAuthRequired, onRestaurantClick, onNewLog }) => {
                 </p>
 
                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1.5rem' }}>
-                    <div style={{ width: '100%', maxWidth: '400px' }}>
-                        <LocationSelector
-                            currentLocation={selectedCity}
-                            onLocationChange={handleLocationChange}
-                        />
-                    </div>
-
-                    {!selectedCity && (
-                        <p style={{ color: 'var(--primary-color)', fontSize: '0.9rem', marginTop: '0.5rem' }}>
-                            Please select a location to explore restaurants
+                    {!location && (
+                        <p style={{ color: 'var(--primary-color)', fontSize: '1.1rem', marginTop: '0.5rem', fontWeight: 'bold' }}>
+                            Please select a location in the navigation bar above to explore restaurants
                         </p>
                     )}
 
@@ -53,9 +69,9 @@ const LandingPage = ({ onAuthRequired, onRestaurantClick, onNewLog }) => {
 
             {/* Content Section */}
             <div className="container">
-                {selectedCity ? (
+                {location && location.name ? (
                     <PopularRestaurants
-                        city={selectedCity.name ? selectedCity.name.split(',')[0] : ''}
+                        city={location.name.split(',')[0]}
                         onRestaurantClick={onRestaurantClick}
                         onNewLog={onNewLog}
                         onAuthRequired={onAuthRequired}
