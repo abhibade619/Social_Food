@@ -12,6 +12,7 @@ const Diary = ({ onRestaurantClick }) => {
     const [loading, setLoading] = useState(false);
     const [showModal, setShowModal] = useState(false);
     const [editingLog, setEditingLog] = useState(null);
+    const [userProfile, setUserProfile] = useState(null);
 
     // Filter states
     const [timeFilter, setTimeFilter] = useState('all');
@@ -19,12 +20,32 @@ const Diary = ({ onRestaurantClick }) => {
     const [locationFilter, setLocationFilter] = useState('all');
 
     useEffect(() => {
-        fetchLogs();
-    }, []);
+        if (user) {
+            fetchUserProfile();
+            fetchLogs();
+        }
+    }, [user]);
 
     useEffect(() => {
         applyFilters();
     }, [timeFilter, cuisineFilter, locationFilter, logs]);
+
+    const fetchUserProfile = async () => {
+        try {
+            const { data, error } = await supabase
+                .from('profiles')
+                .select('*')
+                .eq('id', user.id)
+                .single();
+
+            if (error) throw error;
+            if (data) setUserProfile(data);
+        } catch (error) {
+            console.error('Error fetching user profile:', error);
+            // Fallback to auth user data if profile fetch fails
+            setUserProfile(user);
+        }
+    };
 
     const fetchLogs = async () => {
         setLoading(true);
@@ -205,7 +226,7 @@ const Diary = ({ onRestaurantClick }) => {
                                 log={log}
                                 showActions={true}
                                 isDiaryView={true}
-                                profileOwner={user}
+                                profileOwner={userProfile || user}
                                 onEdit={handleEdit}
                                 onDelete={handleDelete}
                                 onClick={() => handleEdit(log)}
