@@ -292,7 +292,7 @@ const UserProfile = ({ userId, onNavigate, onRestaurantClick, onViewFollowers, o
                                         key={log.id}
                                         log={log}
                                         isDiaryView={true}
-                                        profileOwner={profile}
+                                        profileOwner={isOwnProfile ? (profile || currentUser) : profile}
                                         onViewProfile={onNavigate}
                                         onRestaurantClick={onRestaurantClick}
                                     />

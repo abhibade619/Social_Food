@@ -6023,3 +6023,13 @@ input:checked+.toggle-slider:before {
     padding: 1.5rem;
   }
 }
+/* Clickable Tags */
+.clickable-tag {
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.clickable-tag:hover {
+  color: var(--primary-color);
+  text-decoration: underline;
+}
