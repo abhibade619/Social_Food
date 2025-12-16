@@ -197,41 +197,34 @@ function App() {
           {/* We could keep LandingPage in background if we made Auth a modal, but Auth.jsx is a full page card. */}
           {/* Let's just render Auth.jsx. It has a "back" button? No, but we can add one or just rely on browser back? */}
           {/* Actually, Auth.jsx is a centered card. We can render it on top of a blurred background? */}
-          <div style={{ position: 'relative' }}>
-            <div style={{ filter: 'blur(5px)', pointerEvents: 'none' }}>
-              <LandingPage onAuthRequired={() => { }} />
-            </div>
-            <div style={{
-              position: 'absolute',
+          <LandingPage onAuthRequired={() => { }} />
+          <div
+            onClick={() => setShowAuthModal(false)}
+            style={{
+              position: 'fixed',
               top: 0,
               left: 0,
               right: 0,
               bottom: 0,
-              zIndex: 1000,
+              zIndex: 2000,
               display: 'flex',
               justifyContent: 'center',
               alignItems: 'center',
-              minHeight: '80vh' // Ensure it covers
-            }}>
+              backgroundColor: 'rgba(0, 0, 0, 0.6)',
+              backdropFilter: 'blur(5px)',
+              padding: '20px'
+            }}
+          >
+            <div
+              onClick={(e) => e.stopPropagation()}
+              style={{
+                position: 'relative',
+                width: '100%',
+                maxWidth: '400px',
+                animation: 'fadeIn 0.3s ease-out'
+              }}
+            >
               <Auth />
-              <button
-                onClick={() => setShowAuthModal(false)}
-                style={{
-                  position: 'absolute',
-                  top: '20px',
-                  right: '20px',
-                  background: 'rgba(0,0,0,0.5)',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: '50%',
-                  width: '40px',
-                  height: '40px',
-                  cursor: 'pointer',
-                  fontSize: '1.5rem'
-                }}
-              >
-                ×
-              </button>
             </div>
           </div>
         </main>
