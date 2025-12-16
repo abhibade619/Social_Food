@@ -30,23 +30,26 @@ const Auth = () => {
                 if (error) throw error;
 
                 // Show success message
-                setSuccess('✅ Account created! Please check your email for a confirmation link.');
+                setSuccess('✅ Account created! Please check your email for a confirmation link before signing in.');
                 setEmail('');
                 setPassword('');
                 setUsername('');
 
-                // Switch to sign in after 3 seconds
-                setTimeout(() => {
-                    setIsSignUp(false);
-                    setSuccess('');
-                }, 5000);
+                // No auto-redirect. User must confirm email first.
             } else {
                 const { error } = await signIn(email, password);
                 if (error) throw error;
             }
         } catch (err) {
-            setError(err.message);
+            console.error("Auth error:", err);
+            if (err.message.includes("Email not confirmed")) {
+                setError("⚠️ Please verify your email address. Check your inbox for the confirmation link.");
+            } else {
+                setError(err.message);
+            }
             setSuccess('');
+        } finally {
+            setLoading(false);
         }
     }
     return (
