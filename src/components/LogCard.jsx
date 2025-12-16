@@ -126,12 +126,13 @@ const LogCard = ({ log, onClick, showActions = false, isDiaryView = false, profi
 
     // If it's a tagged entry, we show the PROFILE OWNER'S info at the top (because it's on THEIR timeline)
     // Otherwise, we show the LOG AUTHOR'S info
+    // FIX: If we have profileOwner and it matches log.user_id, use it directly to avoid re-fetching/defaults
     const displayUser = isTaggedEntry ? {
         id: targetProfile.id,
         avatar_url: targetProfile.user_metadata?.avatar_url || targetProfile.avatar_url,
         full_name: targetProfile.user_metadata?.full_name || targetProfile.full_name,
         username: targetProfile.user_metadata?.username || targetProfile.username || targetProfile.email?.split('@')[0]
-    } : userProfile;
+    } : (profileOwner && profileOwner.id === log.user_id ? profileOwner : userProfile);
 
     return (
         <>
@@ -158,7 +159,7 @@ const LogCard = ({ log, onClick, showActions = false, isDiaryView = false, profi
                 )}
 
                 <div className="log-header">
-                    <div className="user-info clickable" onClick={(e) => { e.stopPropagation(); onViewProfile && onViewProfile(displayUser.id || log.user_id); }}>
+                    <div className="user-info clickable" onClick={(e) => { e.stopPropagation(); onViewProfile && onViewProfile(displayUser?.id || log.user_id); }}>
                         <div className="avatar-wrapper">
                             <img
                                 src={displayUser?.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${displayUser?.id || log.user_id}`}
@@ -182,7 +183,10 @@ const LogCard = ({ log, onClick, showActions = false, isDiaryView = false, profi
                     {isTaggedEntry && (
                         <div className="tagged-by-attribution">
                             <span className="tag-icon">🏷️</span>
-                            Tagged by <span className="tagged-by-name">{userProfile?.full_name || 'Unknown'}</span>
+                            Tagged by <span className="tagged-by-name clickable-tag" onClick={(e) => {
+                                e.stopPropagation();
+                                onViewProfile && onViewProfile(userProfile?.id || log.user_id);
+                            }}>{userProfile?.full_name || 'Unknown'}</span>
                         </div>
                     )}
 
@@ -227,9 +231,16 @@ const LogCard = ({ log, onClick, showActions = false, isDiaryView = false, profi
                         <div className="tagged-users-list">
                             <span className="tag-icon">🏷️ with</span>
                             {taggedUsers.map((tag, index) => (
-                                <span key={tag.user_id} className="tagged-user-name">
+                                <span
+                                    key={tag.user_id}
+                                    className="tagged-user-name clickable-tag"
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        onViewProfile && onViewProfile(tag.user_id);
+                                    }}
+                                    style={{ cursor: 'pointer', textDecoration: 'underline' }}
+                                >
                                     {tag.profiles?.full_name || 'Unknown'}
-                                    {index < taggedUsers.length - 1 ? ', ' : ''}
                                 </span>
                             ))}
                         </div>
