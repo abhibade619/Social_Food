@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthProvider';
+import CityBadgeCard from './CityBadgeCard';
 import PopularRestaurants from './PopularRestaurants';
 
 const Home = ({ onRestaurantClick, onViewProfile, onNewLog }) => {
@@ -46,11 +47,22 @@ const Home = ({ onRestaurantClick, onViewProfile, onNewLog }) => {
                         <p>Find the best restaurants in your city.</p>
                     </div>
                 ) : (
-                    <PopularRestaurants
-                        city={location.name.split(',')[0]}
-                        onRestaurantClick={onRestaurantClick}
-                        onNewLog={onNewLog}
-                    />
+                    <>
+                        {user && (
+                            <div style={{ marginBottom: '2rem' }}>
+                                <CityBadgeCard
+                                    userId={user.id}
+                                    city={location.name}
+                                    onBadgeClick={() => onViewProfile(user.id, { initialTab: 'badges' })}
+                                />
+                            </div>
+                        )}
+                        <PopularRestaurants
+                            city={location.name.split(',')[0]}
+                            onRestaurantClick={onRestaurantClick}
+                            onNewLog={onNewLog}
+                        />
+                    </>
                 )}
             </div>
         </div>

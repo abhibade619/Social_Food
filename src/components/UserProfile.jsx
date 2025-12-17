@@ -3,17 +3,25 @@ import { supabase } from '../supabaseClient';
 import { useAuth } from '../context/AuthProvider';
 import LogCard from './LogCard';
 import FollowButton from './FollowButton';
+import CityBadgeCard from './CityBadgeCard';
 
-const UserProfile = ({ userId, onNavigate, onRestaurantClick, onViewFollowers, onViewFollowing }) => {
+const UserProfile = ({ userId, onNavigate, onRestaurantClick, onViewFollowers, onViewFollowing, initialTab }) => {
     const { user: currentUser } = useAuth();
     const [profile, setProfile] = useState(null);
     const [logs, setLogs] = useState([]);
     const [visitedRestaurants, setVisitedRestaurants] = useState([]);
     const [wishlist, setWishlist] = useState([]);
-    const [activeTab, setActiveTab] = useState('logs'); // 'logs', 'visited', 'wishlist'
-    const [stats, setStats] = useState({ followers: 0, following: 0, totalLogs: 0, totalVisited: 0 });
+    const [activeTab, setActiveTab] = useState(initialTab || 'logs'); // 'logs', 'visited', 'wishlist', 'badges'
+    const [cityStats, setCityStats] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [stats, setStats] = useState({ followers: 0, following: 0, totalLogs: 0, totalVisited: 0 });
+
+    useEffect(() => {
+        if (initialTab) {
+            setActiveTab(initialTab);
+        }
+    }, [initialTab]);
 
     useEffect(() => {
         if (userId) {
@@ -25,11 +33,12 @@ const UserProfile = ({ userId, onNavigate, onRestaurantClick, onViewFollowers, o
         setLoading(true);
         try {
             const profileData = await fetchProfile();
-            const [logsData, visitedData, wishlistData, statsData] = await Promise.all([
+            const [logsData, visitedData, wishlistData, statsData, badgesData] = await Promise.all([
                 fetchLogs(),
                 fetchVisited(),
                 fetchWishlist(profileData),
-                fetchStats()
+                fetchStats(),
+                fetchCityBadges()
             ]);
 
             setProfile(profileData);
@@ -37,11 +46,59 @@ const UserProfile = ({ userId, onNavigate, onRestaurantClick, onViewFollowers, o
             setVisitedRestaurants(visitedData);
             setWishlist(wishlistData);
             setStats(statsData);
+            setCityStats(badgesData);
         } catch (error) {
             console.error('Error fetching user data:', error);
+            setError(error.message);
         } finally {
             setLoading(false);
         }
+    };
+
+    const fetchCityBadges = async () => {
+        // Fetch all visited places (lightweight)
+        const { data: visited } = await supabase
+            .from('visited_restaurants')
+            .select('place_id, restaurant_data')
+            .eq('user_id', userId);
+
+        // Fetch all logs locations (lightweight)
+        const { data: logs } = await supabase
+            .from('logs')
+            .select('place_id, location')
+            .eq('user_id', userId);
+
+        const cityCounts = {};
+        const normalizeCity = (c) => c ? c.split(',')[0].trim().toLowerCase() : '';
+        const capitalizeCity = (c) => c.charAt(0).toUpperCase() + c.slice(1);
+
+        const processPlace = (placeId, cityRaw) => {
+            if (!cityRaw) return;
+            const cityKey = normalizeCity(cityRaw);
+            if (!cityKey) return;
+
+            if (!cityCounts[cityKey]) {
+                cityCounts[cityKey] = {
+                    name: cityRaw.split(',')[0].trim(), // Keep original casing of first part
+                    places: new Set()
+                };
+            }
+            cityCounts[cityKey].places.add(placeId);
+        };
+
+        visited?.forEach(v => {
+            const city = v.restaurant_data?.city || v.restaurant_data?.address; // Fallback logic same as Card
+            processPlace(v.place_id, city);
+        });
+
+        logs?.forEach(l => {
+            processPlace(l.place_id, l.location);
+        });
+
+        // Convert to array and sort by count
+        return Object.values(cityCounts)
+            .map(c => ({ name: c.name, count: c.places.size }))
+            .sort((a, b) => b.count - a.count);
     };
 
     const fetchProfile = async () => {
@@ -99,7 +156,6 @@ const UserProfile = ({ userId, onNavigate, onRestaurantClick, onViewFollowers, o
         const uniqueLogs = Array.from(new Map(allLogs.map(log => [log.id, log])).values());
         uniqueLogs.sort((a, b) => new Date(b.visit_date) - new Date(a.visit_date));
 
-        return uniqueLogs;
         return uniqueLogs;
     };
 
@@ -280,6 +336,22 @@ const UserProfile = ({ userId, onNavigate, onRestaurantClick, onViewFollowers, o
                 >
                     Wishlist
                 </button>
+                <button
+                    className={`tab-button ${activeTab === 'badges' ? 'active' : ''}`}
+                    onClick={() => setActiveTab('badges')}
+                    style={{
+                        background: 'none',
+                        border: 'none',
+                        color: activeTab === 'badges' ? 'var(--primary-color)' : 'var(--text-secondary)',
+                        padding: '1rem',
+                        fontSize: '1.1rem',
+                        fontWeight: '600',
+                        cursor: 'pointer',
+                        borderBottom: activeTab === 'badges' ? '2px solid var(--primary-color)' : 'none'
+                    }}
+                >
+                    Badges
+                </button>
             </div>
 
             <div className="profile-content">
@@ -366,6 +438,26 @@ const UserProfile = ({ userId, onNavigate, onRestaurantClick, onViewFollowers, o
                         ) : (
                             <p className="no-logs" style={{ gridColumn: '1/-1', textAlign: 'center' }}>
                                 Wishlist is empty.
+                            </p>
+                        )}
+                    </div>
+                )}
+
+                {activeTab === 'badges' && (
+                    <div className="badges-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '1.5rem' }}>
+                        {cityStats.length > 0 ? (
+                            cityStats.map((city) => (
+                                <div key={city.name}>
+                                    <CityBadgeCard
+                                        userId={userId}
+                                        city={city.name}
+                                        count={city.count}
+                                    />
+                                </div>
+                            ))
+                        ) : (
+                            <p className="no-logs" style={{ gridColumn: '1/-1', textAlign: 'center' }}>
+                                No badges earned yet. Start exploring!
                             </p>
                         )}
                     </div>

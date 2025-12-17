@@ -241,9 +241,9 @@ function App() {
     navigateTo('restaurant', { selectedRestaurant: restaurantData });
   };
 
-  const handleNavigateToProfile = (userId) => {
-    setSelectedUser({ id: userId });
-    navigateTo('userProfile', { selectedUser: { id: userId } });
+  const handleNavigateToProfile = (userId, options = {}) => {
+    setSelectedUser({ id: userId, ...options });
+    navigateTo('userProfile', { selectedUser: { id: userId, ...options } });
   };
 
   const handleViewFollowers = (userId) => {
@@ -272,6 +272,7 @@ function App() {
       return (
         <UserProfile
           userId={selectedUser.id}
+          initialTab={selectedUser.initialTab}
           onBack={() => navigateTo('search')}
           onNavigate={handleNavigateToProfile}
           onViewFollowers={handleViewFollowers}
