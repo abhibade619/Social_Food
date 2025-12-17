@@ -6,7 +6,7 @@ import heic2any from 'heic2any';
 
 import CityBadgeCard from './CityBadgeCard';
 
-const Profile = ({ onNavigate, onViewFollowers, onViewFollowing, triggerUpdate }) => {
+const Profile = ({ onNavigate, onViewFollowers, onViewFollowing, triggerUpdate, lastUpdated }) => {
     const { user } = useAuth();
     const [profile, setProfile] = useState(null);
     const [userLogs, setUserLogs] = useState([]);
@@ -45,7 +45,7 @@ const Profile = ({ onNavigate, onViewFollowers, onViewFollowing, triggerUpdate }
             fetchFollowCounts();
             fetchCityBadges();
         }
-    }, [user]);
+    }, [user, lastUpdated]);
 
     const fetchCityBadges = async () => {
         // Fetch all visited places (lightweight)

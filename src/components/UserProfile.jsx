@@ -5,7 +5,7 @@ import LogCard from './LogCard';
 import FollowButton from './FollowButton';
 import CityBadgeCard from './CityBadgeCard';
 
-const UserProfile = ({ userId, onNavigate, onRestaurantClick, onViewFollowers, onViewFollowing, initialTab }) => {
+const UserProfile = ({ userId, onNavigate, onRestaurantClick, onViewFollowers, onViewFollowing, initialTab, triggerUpdate, lastUpdated }) => {
     const { user: currentUser } = useAuth();
     const [profile, setProfile] = useState(null);
     const [logs, setLogs] = useState([]);
@@ -27,7 +27,7 @@ const UserProfile = ({ userId, onNavigate, onRestaurantClick, onViewFollowers, o
         if (userId) {
             fetchAllData();
         }
-    }, [userId]);
+    }, [userId, lastUpdated]);
 
     const fetchAllData = async () => {
         setLoading(true);

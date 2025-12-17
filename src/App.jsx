@@ -287,6 +287,7 @@ function App() {
           onViewFollowing={handleViewFollowing}
           onRestaurantClick={handleNavigateToRestaurant}
           triggerUpdate={triggerUpdate}
+          lastUpdated={lastUpdated}
         />
       );
     }
@@ -343,6 +344,7 @@ function App() {
           onViewFollowers={handleViewFollowers}
           onViewFollowing={handleViewFollowing}
           triggerUpdate={triggerUpdate}
+          lastUpdated={lastUpdated}
         />;
       case 'wishlist':
         return <Wishlist onRestaurantClick={handleNavigateToRestaurant} />;
