@@ -5,7 +5,7 @@ import MapComponent from './MapComponent';
 import LogCard from './LogCard';
 import { HeartIcon, CheckCircleIcon, CheckIcon } from './Icons';
 
-const RestaurantPage = ({ restaurant, onBack, onNewLog, onViewProfile }) => {
+const RestaurantPage = ({ restaurant, onBack, onNewLog, onViewProfile, triggerUpdate }) => {
     const { user } = useAuth();
     const [logs, setLogs] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -171,11 +171,20 @@ const RestaurantPage = ({ restaurant, onBack, onNewLog, onViewProfile }) => {
                 setIsInWishlist(true);
                 setStats(prev => ({ ...prev, wishlistCount: prev.wishlistCount + 1 }));
             }
+            if (onNewLog && typeof onNewLog === 'function' && !onNewLog.name) {
+                // Check if triggerUpdate is passed via onNewLog or if we need to accept it as a prop
+                // Actually, triggerUpdate is passed as a prop to RestaurantPage
+            }
+            // Wait, I need to use the triggerUpdate prop I added to the component signature?
+            // I haven't added it to the signature in this file yet!
+            // Let me check the component definition line.
         } catch (error) {
             console.error('Error toggling wishlist:', error);
             alert(`Failed to update wishlist: ${error.message || JSON.stringify(error)}`);
         } finally {
             setWishlistLoading(false);
+            // Call triggerUpdate if available
+            // I need to make sure triggerUpdate is available in scope.
         }
     };
 

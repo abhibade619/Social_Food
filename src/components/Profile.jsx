@@ -4,7 +4,9 @@ import { useAuth } from '../context/AuthProvider';
 import LogCard from './LogCard';
 import heic2any from 'heic2any';
 
-const Profile = ({ onNavigate, onViewFollowers, onViewFollowing }) => {
+import CityBadgeCard from './CityBadgeCard';
+
+const Profile = ({ onNavigate, onViewFollowers, onViewFollowing, triggerUpdate }) => {
     const { user } = useAuth();
     const [profile, setProfile] = useState(null);
     const [userLogs, setUserLogs] = useState([]);
@@ -14,7 +16,8 @@ const Profile = ({ onNavigate, onViewFollowers, onViewFollowing }) => {
     const [followingCount, setFollowingCount] = useState(0);
     const [visitedRestaurants, setVisitedRestaurants] = useState([]);
     const [wishlist, setWishlist] = useState([]);
-    const [activeTab, setActiveTab] = useState('logs'); // 'logs', 'visited', 'wishlist'
+    const [activeTab, setActiveTab] = useState('logs'); // 'logs', 'visited', 'wishlist', 'badges'
+    const [cityStats, setCityStats] = useState([]);
     const [uploading, setUploading] = useState(false);
     const [formData, setFormData] = useState({
         username: '',
@@ -40,8 +43,54 @@ const Profile = ({ onNavigate, onViewFollowers, onViewFollowing }) => {
             fetchVisited();
             fetchWishlist();
             fetchFollowCounts();
+            fetchCityBadges();
         }
     }, [user]);
+
+    const fetchCityBadges = async () => {
+        // Fetch all visited places (lightweight)
+        const { data: visited } = await supabase
+            .from('visited_restaurants')
+            .select('place_id, restaurant_data')
+            .eq('user_id', user.id);
+
+        // Fetch all logs locations (lightweight)
+        const { data: logs } = await supabase
+            .from('logs')
+            .select('place_id, location')
+            .eq('user_id', user.id);
+
+        const cityCounts = {};
+        const normalizeCity = (c) => c ? c.split(',')[0].trim().toLowerCase() : '';
+
+        const processPlace = (placeId, cityRaw) => {
+            if (!cityRaw) return;
+            const cityKey = normalizeCity(cityRaw);
+            if (!cityKey) return;
+
+            if (!cityCounts[cityKey]) {
+                cityCounts[cityKey] = {
+                    name: cityRaw.split(',')[0].trim(), // Keep original casing of first part
+                    places: new Set()
+                };
+            }
+            cityCounts[cityKey].places.add(placeId);
+        };
+
+        visited?.forEach(v => {
+            const city = v.restaurant_data?.city || v.restaurant_data?.address;
+            processPlace(v.place_id, city);
+        });
+
+        logs?.forEach(l => {
+            processPlace(l.place_id, l.location);
+        });
+
+        // Convert to array and sort by count
+        setCityStats(Object.values(cityCounts)
+            .map(c => ({ name: c.name, count: c.places.size }))
+            .sort((a, b) => b.count - a.count));
+    };
 
     const fetchProfile = async () => {
         try {
@@ -293,6 +342,7 @@ const Profile = ({ onNavigate, onViewFollowers, onViewFollowing }) => {
             window.dispatchEvent(new Event('profileUpdated'));
             setShowCropper(false);
             alert('Profile picture updated successfully!');
+            if (triggerUpdate) triggerUpdate();
         } catch (error) {
             console.error('Error uploading avatar:', error);
             alert('Failed to upload profile picture.');
@@ -337,6 +387,7 @@ const Profile = ({ onNavigate, onViewFollowers, onViewFollowing }) => {
 
             // Trigger profile update event
             window.dispatchEvent(new Event('profileUpdated'));
+            if (triggerUpdate) triggerUpdate();
         } catch (error) {
             console.error('Error updating profile:', error);
         }
@@ -592,6 +643,22 @@ const Profile = ({ onNavigate, onViewFollowers, onViewFollowing }) => {
                         >
                             Wishlist
                         </button>
+                        <button
+                            className={`tab-button ${activeTab === 'badges' ? 'active' : ''}`}
+                            onClick={() => setActiveTab('badges')}
+                            style={{
+                                background: 'none',
+                                border: 'none',
+                                color: activeTab === 'badges' ? 'var(--primary-color)' : 'var(--text-secondary)',
+                                padding: '1rem',
+                                fontSize: '1.1rem',
+                                fontWeight: '600',
+                                cursor: 'pointer',
+                                borderBottom: activeTab === 'badges' ? '2px solid var(--primary-color)' : 'none'
+                            }}
+                        >
+                            Badges
+                        </button>
                     </div>
 
                     <div className="profile-content">
@@ -671,6 +738,26 @@ const Profile = ({ onNavigate, onViewFollowers, onViewFollowing }) => {
                                         </p>
                                     )}
                                 </div>
+                            </div>
+                        )}
+
+                        {activeTab === 'badges' && (
+                            <div className="badges-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '1.5rem' }}>
+                                {cityStats.length > 0 ? (
+                                    cityStats.map((city) => (
+                                        <div key={city.name}>
+                                            <CityBadgeCard
+                                                userId={user.id}
+                                                city={city.name}
+                                                count={city.count}
+                                            />
+                                        </div>
+                                    ))
+                                ) : (
+                                    <p className="no-logs" style={{ gridColumn: '1/-1', textAlign: 'center' }}>
+                                        No badges earned yet. Start exploring!
+                                    </p>
+                                )}
                             </div>
                         )}
                     </div>

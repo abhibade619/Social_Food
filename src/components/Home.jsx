@@ -3,7 +3,7 @@ import { useAuth } from '../context/AuthProvider';
 import CityBadgeCard from './CityBadgeCard';
 import PopularRestaurants from './PopularRestaurants';
 
-const Home = ({ onRestaurantClick, onViewProfile, onNewLog }) => {
+const Home = ({ onRestaurantClick, onViewProfile, onNewLog, lastUpdated }) => {
     const { user } = useAuth();
     const [location, setLocation] = useState({ name: '', lat: null, lng: null });
 
@@ -54,6 +54,7 @@ const Home = ({ onRestaurantClick, onViewProfile, onNewLog }) => {
                                     userId={user.id}
                                     city={location.name}
                                     onBadgeClick={() => onViewProfile(user.id, { initialTab: 'badges' })}
+                                    lastUpdated={lastUpdated}
                                 />
                             </div>
                         )}

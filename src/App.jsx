@@ -38,6 +38,12 @@ function App() {
   const [feedVersion, setFeedVersion] = useState(0);
   const [showAuthModal, setShowAuthModal] = useState(false); // New state for auth modal
 
+  const [lastUpdated, setLastUpdated] = useState(Date.now());
+
+  const triggerUpdate = () => {
+    setLastUpdated(Date.now());
+  };
+
   // Handle browser back button and initial load
   useEffect(() => {
     if (window.history.state && window.history.state.view) {
@@ -111,6 +117,7 @@ function App() {
     setShowLogModal(false);
     setInitialLogData(null);
     navigateTo('feed');
+    triggerUpdate();
   };
 
   const handleNewLog = (data = null) => {
@@ -264,6 +271,7 @@ function App() {
           onBack={() => navigateTo('search')}
           onNewLog={handleNewLog}
           onViewProfile={handleNavigateToProfile}
+          triggerUpdate={triggerUpdate}
         />
       );
     }
@@ -278,6 +286,7 @@ function App() {
           onViewFollowers={handleViewFollowers}
           onViewFollowing={handleViewFollowing}
           onRestaurantClick={handleNavigateToRestaurant}
+          triggerUpdate={triggerUpdate}
         />
       );
     }
@@ -308,6 +317,7 @@ function App() {
           onRestaurantClick={handleNavigateToRestaurant}
           onViewProfile={handleNavigateToProfile}
           onNewLog={handleNewLog}
+          lastUpdated={lastUpdated}
         />;
       case 'feed':
         return <Feed
@@ -332,6 +342,7 @@ function App() {
           onNavigate={navigateTo}
           onViewFollowers={handleViewFollowers}
           onViewFollowing={handleViewFollowing}
+          triggerUpdate={triggerUpdate}
         />;
       case 'wishlist':
         return <Wishlist onRestaurantClick={handleNavigateToRestaurant} />;

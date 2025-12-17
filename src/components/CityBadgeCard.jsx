@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../supabaseClient';
 
-const CityBadgeCard = ({ userId, city, onBadgeClick, count: externalCount }) => {
+const CityBadgeCard = ({ userId, city, onBadgeClick, count: externalCount, lastUpdated }) => {
     const [stats, setStats] = useState({ count: 0, level: 'New Explorer', nextLevel: 4, color: '#bdc3c7' });
     const [loading, setLoading] = useState(!externalCount && externalCount !== 0);
 
@@ -12,7 +12,7 @@ const CityBadgeCard = ({ userId, city, onBadgeClick, count: externalCount }) => 
         } else if (userId && city) {
             fetchCityStats();
         }
-    }, [userId, city, externalCount]);
+    }, [userId, city, externalCount, lastUpdated]);
 
     const fetchCityStats = async () => {
         try {
