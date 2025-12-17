@@ -55,7 +55,7 @@ const Auth = () => {
     return (
         <div className="auth-card glass-panel fade-in">
             <div className="auth-header">
-                <h1 className="auth-title premium-gradient-text">FoodSocial</h1>
+                <h1 className="auth-title premium-gradient-text">Khrunch</h1>
                 <p className="auth-tagline">Savor every moment.</p>
                 <p className="auth-subtitle">
                     {isResetPassword
@@ -188,7 +188,7 @@ const Auth = () => {
                 ) : (
                     <>
                         <p className="auth-switch-text" style={{ color: 'var(--text-secondary)', marginBottom: '0.5rem' }}>
-                            {isSignUp ? 'Already a member?' : "New to FoodSocial?"}
+                            {isSignUp ? 'Already a member?' : "New to Khrunch?"}
                         </p>
                         <button
                             type="button"

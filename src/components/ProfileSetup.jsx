@@ -89,7 +89,7 @@ const ProfileSetup = ({ onComplete }) => {
         <div className="profile-setup-container">
             <div className="profile-setup-card">
                 <div className="profile-setup-header">
-                    <h1>👋 Welcome to FoodSocial!</h1>
+                    <h1>👋 Welcome to Khrunch!</h1>
                     <p>Let's set up your profile</p>
                 </div>
 

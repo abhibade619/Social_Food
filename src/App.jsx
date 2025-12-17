@@ -136,7 +136,7 @@ function App() {
   if (loading || checkingProfile) {
     return (
       <div className="loading-screen">
-        <h1>🍽️ FoodSocial</h1>
+        <h1>🍽️ Khrunch</h1>
         <p>Loading...</p>
       </div>
     );

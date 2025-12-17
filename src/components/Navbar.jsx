@@ -154,7 +154,7 @@ const Navbar = ({ currentView, setCurrentView, onNewLog, onAuthRequired }) => {
                                 <line x1="14" y1="1" x2="14" y2="4"></line>
                             </svg>
                         </span>
-                        <span className="logo-text">FoodSocial</span>
+                        <span className="logo-text">Khrunch</span>
                     </div>
                 </div>
 

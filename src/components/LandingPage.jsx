@@ -44,7 +44,7 @@ const LandingPage = ({ onAuthRequired, onRestaurantClick, onNewLog }) => {
                 boxShadow: '0 4px 20px rgba(0,0,0,0.3)'
             }}>
                 <h1 className="premium-gradient-text" style={{ fontSize: '3.5rem', marginBottom: '1rem' }}>
-                    FoodSocial
+                    Khrunch
                 </h1>
                 <p style={{ fontSize: '1.2rem', color: '#ccc', marginBottom: '2rem' }}>
                     Savor every moment. Discover, track, and share your culinary journey.
