@@ -51,11 +51,7 @@ const LandingPage = ({ onAuthRequired, onRestaurantClick, onNewLog }) => {
                 </p>
 
                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1.5rem' }}>
-                    {!location && (
-                        <p style={{ color: 'var(--primary-color)', fontSize: '1.1rem', marginTop: '0.5rem', fontWeight: 'bold' }}>
-                            Please select a location in the navigation bar above to explore restaurants
-                        </p>
-                    )}
+
 
                     <button
                         className="premium-button"

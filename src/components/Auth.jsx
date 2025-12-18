@@ -35,6 +35,13 @@ const Auth = () => {
                 setPassword('');
                 setUsername('');
 
+                // Redirect to sign-in view after 3 seconds
+                setTimeout(() => {
+                    setIsSignUp(false);
+                    setSuccess('');
+                    setError('');
+                }, 3000);
+
                 // No auto-redirect. User must confirm email first.
             } else {
                 const { error } = await signIn(email, password);

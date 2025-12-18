@@ -207,6 +207,7 @@ function App() {
           <LandingPage onAuthRequired={() => { }} />
           <div
             onClick={() => setShowAuthModal(false)}
+
             style={{
               position: 'fixed',
               top: 0,
