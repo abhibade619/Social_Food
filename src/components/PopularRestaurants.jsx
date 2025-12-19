@@ -11,7 +11,38 @@ const PopularRestaurants = ({ city, onRestaurantClick, onNewLog, onAuthRequired 
     const [loading, setLoading] = useState(true);
     const [placesApi, setPlacesApi] = useState(null);
     const [selectedCuisine, setSelectedCuisine] = useState('All');
-    const [selectedType, setSelectedType] = useState('All');
+
+    // Helper to get icon for cuisine
+    const getIconForCuisine = (cuisine) => {
+        const map = {
+            'All': '🍽️',
+            'Italian': '🍝',
+            'Chinese': '🥡',
+            'Japanese': '🍣',
+            'Mexican': '🌮',
+            'Indian': '🍛',
+            'American': '🍔',
+            'Thai': '🍜',
+            'French': '🥐',
+            'Mediterranean': '🥙',
+            'Greek': '🥗',
+            'Spanish': '🥘',
+            'Korean': '🥢',
+            'Vietnamese': '🍲',
+            'Vegetarian': '🥦',
+            'Vegan': '🌱',
+            'Seafood': '🦞',
+            'Steak': '🥩',
+            'Pizza': '🍕',
+            'Burger': '🍔',
+            'Sushi': '🍣',
+            'Cafe': '☕',
+            'Bakery': '🥖',
+            'Dessert': '🍰',
+            'Bar': '🍺'
+        };
+        return map[cuisine] || '🍴';
+    };
 
     const [visitedMap, setVisitedMap] = useState({});
     const [wishlistMap, setWishlistMap] = useState({});
@@ -310,26 +341,17 @@ const PopularRestaurants = ({ city, onRestaurantClick, onNewLog, onAuthRequired 
         }
     };
 
-    // Extract unique cuisines and types
+    // Extract unique cuisines/categories
     const allRestaurants = [...popularRestaurants, ...topRatedRestaurants];
-    const cuisines = ['All', ...new Set(allRestaurants.map(r => {
-        const c = r.types?.[0]?.split('_')[0] || 'Restaurant';
-        return c.charAt(0).toUpperCase() + c.slice(1);
-    }))].sort();
-
-    // Extract unique types (excluding generic ones like 'point_of_interest', 'establishment')
-    const ignoredTypes = ['point_of_interest', 'establishment', 'food', 'restaurant'];
-    const uniqueTypes = new Set();
-    allRestaurants.forEach(r => {
-        if (r.types) {
-            r.types.forEach(t => {
-                if (!ignoredTypes.includes(t)) {
-                    uniqueTypes.add(t.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' '));
-                }
+    const cuisines = ['All', ...new Set(allRestaurants.flatMap(r => {
+        if (!r.types) return [];
+        return r.types
+            .filter(t => !['point_of_interest', 'establishment', 'food', 'restaurant'].includes(t))
+            .map(t => {
+                const clean = t.split('_')[0];
+                return clean.charAt(0).toUpperCase() + clean.slice(1);
             });
-        }
-    });
-    const types = ['All', ...Array.from(uniqueTypes).sort()];
+    }))].sort();
 
     const [visibleCount, setVisibleCount] = useState(8);
 
@@ -338,18 +360,14 @@ const PopularRestaurants = ({ city, onRestaurantClick, onNewLog, onAuthRequired 
     };
 
     const filterRestaurants = (list) => {
+        if (selectedCuisine === 'All') return list;
         return list.filter(r => {
-            const cuisine = r.types?.[0]?.split('_')[0] || 'Restaurant';
-            const formattedCuisine = cuisine.charAt(0).toUpperCase() + cuisine.slice(1);
-            const matchesCuisine = selectedCuisine === 'All' || formattedCuisine === selectedCuisine;
-
-            // Type matching
-            const matchesType = selectedType === 'All' || (r.types && r.types.some(t => {
-                const formattedT = t.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
-                return formattedT === selectedType;
-            }));
-
-            return matchesCuisine && matchesType;
+            if (!r.types) return false;
+            return r.types.some(t => {
+                const clean = t.split('_')[0];
+                const formatted = clean.charAt(0).toUpperCase() + clean.slice(1);
+                return formatted === selectedCuisine;
+            });
         });
     };
 
@@ -467,29 +485,26 @@ const PopularRestaurants = ({ city, onRestaurantClick, onNewLog, onAuthRequired 
             <div className="popular-restaurants-section">
                 <div className="section-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '1rem' }}>
                     <h2 className="section-title-premium" style={{ marginBottom: 0 }}>Popular in {city}</h2>
-                    <div className="filters-section" style={{ display: 'flex', gap: '1rem' }}>
-                        <div className="select-wrapper">
-                            <select
-                                value={selectedCuisine}
-                                onChange={(e) => setSelectedCuisine(e.target.value)}
-                                className="premium-input custom-select"
-                                style={{ width: 'auto', minWidth: '150px' }}
-                            >
-                                {cuisines.map(c => <option key={c} value={c}>{c}</option>)}
-                            </select>
-                        </div>
-                        <div className="select-wrapper">
-                            <select
-                                value={selectedType}
-                                onChange={(e) => setSelectedType(e.target.value)}
-                                className="premium-input custom-select"
-                                style={{ width: 'auto', minWidth: '150px' }}
-                            >
-                                {types.map(t => <option key={t} value={t}>{t}</option>)}
-                            </select>
+                    <div className="filters-section" style={{ display: 'flex', flexDirection: 'column', gap: '1rem', width: '100%' }}>
+                        {/* Single Row Icon Filters */}
+                        <div className="filter-scroll-container" style={{ overflowX: 'auto', whiteSpace: 'nowrap', paddingBottom: '5px', scrollbarWidth: 'none', msOverflowStyle: 'none', minHeight: '50px', display: 'flex', alignItems: 'center' }}>
+                            <div style={{ display: 'inline-flex', gap: '0.5rem' }}>
+                                {cuisines.map(c => (
+                                    <button
+                                        key={c}
+                                        onClick={() => setSelectedCuisine(c)}
+                                        className={`filter-pill ${selectedCuisine === c ? 'active' : ''}`}
+                                        style={{ display: 'flex', alignItems: 'center', gap: '6px' }}
+                                    >
+                                        <span>{getIconForCuisine(c)}</span>
+                                        <span>{c}</span>
+                                    </button>
+                                ))}
+                            </div>
                         </div>
                     </div>
                 </div>
+
                 {visiblePopular.length > 0 ? (
                     <div className="popular-grid">
                         {visiblePopular.map(renderRestaurantCard)}
@@ -505,24 +520,24 @@ const PopularRestaurants = ({ city, onRestaurantClick, onNewLog, onAuthRequired 
                         </button>
                     </div>
                 )}
-            </div>
 
-            {/* Top Rated Section */}
-            {visibleTopRated.length > 0 && (
-                <div className="popular-restaurants-section" style={{ marginTop: '3rem' }}>
-                    <h2 className="section-title-premium">Top Rated Gems</h2>
-                    <div className="popular-grid">
-                        {visibleTopRated.map(renderRestaurantCard)}
-                    </div>
-                    {visibleCount < filteredTopRated.length && (
-                        <div className="load-more-container" style={{ textAlign: 'center', marginTop: '2rem' }}>
-                            <button className="btn-secondary" onClick={handleLoadMore}>
-                                Load More
-                            </button>
+                {/* Top Rated Section */}
+                {visibleTopRated.length > 0 && (
+                    <div className="popular-restaurants-section" style={{ marginTop: '3rem' }}>
+                        <h2 className="section-title-premium">Top Rated Gems</h2>
+                        <div className="popular-grid">
+                            {visibleTopRated.map(renderRestaurantCard)}
                         </div>
-                    )}
-                </div>
-            )}
+                        {visibleCount < filteredTopRated.length && (
+                            <div className="load-more-container" style={{ textAlign: 'center', marginTop: '2rem' }}>
+                                <button className="btn-secondary" onClick={handleLoadMore}>
+                                    Load More
+                                </button>
+                            </div>
+                        )}
+                    </div>
+                )}
+            </div>
         </div>
     );
 };
