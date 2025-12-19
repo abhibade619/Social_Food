@@ -1779,25 +1779,115 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover {
 }
 
 /* Home Layout Fixes */
-.home-layout {
+/* Navbar Layout Fixes */
+.navbar-content {
   display: flex;
-  gap: 30px;
-  align-items: flex-start;
-  padding-top: 20px;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+  /* Ensure absolute positioning works if needed */
 }
 
-@media (max-width: 900px) {
+.navbar-left {
+  flex: 0 0 auto;
+  /* Don't grow or shrink */
+  min-width: 150px;
+  /* Ensure space for logo */
+}
+
+.navbar-center {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  /* Force absolute center */
+  left: 50%;
+  transform: translateX(-50%);
+  width: auto;
+}
+
+.navbar-right {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  margin-left: auto;
+  /* Push to right if not absolute */
+}
+
+/* Home Layout Fixes */
+.home-layout {
+  display: flex;
+  gap: 24px;
+  align-items: flex-start;
+  padding-top: 20px;
+  position: relative;
+  /* Context for children */
+}
+
+.home-sidebar {
+  width: 280px;
+  /* Slightly smaller */
+  flex-shrink: 0;
+  position: sticky;
+  top: 100px;
+  /* Sticky below navbar */
+  height: fit-content;
+  z-index: 10;
+}
+
+.main-feed {
+  flex: 1;
+  min-width: 0;
+  /* Prevent overflow */
+  /* overflow: hidden;  <-- REMOVED this because it clips the horizontal scroll if width calculation is slightly off, or if we want sticky headers inside.
+     Instead, min-width: 0 on flex child usually fixes the expansion issue. */
+}
+
+.filter-scroll-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  overflow-x: auto;
+  white-space: nowrap;
+  padding-bottom: 5px;
+  scrollbar-width: none;
+  /* Firefox */
+  -ms-overflow-style: none;
+  /* IE/Edge */
+  max-width: 100%;
+  /* Ensure it doesn't overflow parent */
+}
+
+.filter-scroll-container::-webkit-scrollbar {
+  display: none;
+  /* Chrome/Safari */
+}
+
+@media (max-width: 1100px) {
+  .navbar-center {
+    position: static;
+    /* Stack on mobile */
+    transform: none;
+    order: 2;
+    width: 100%;
+    margin-top: 10px;
+  }
+
+  .navbar-content {
+    flex-wrap: wrap;
+  }
+
   .home-layout {
     flex-direction: column;
   }
 
   .home-sidebar {
-    width: 100% !important;
+    width: 100%;
+    position: static;
     order: -1;
-    /* Optional: Move leaderboard to top on mobile, or keep at bottom */
-  }
-
-  .main-feed {
-    min-width: 0 !important;
+    /* Leaderboard on top */
+    margin-bottom: 20px;
   }
 }

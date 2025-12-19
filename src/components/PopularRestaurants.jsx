@@ -341,17 +341,8 @@ const PopularRestaurants = ({ city, onRestaurantClick, onNewLog, onAuthRequired 
         }
     };
 
-    // Extract unique cuisines/categories
-    const allRestaurants = [...popularRestaurants, ...topRatedRestaurants];
-    const cuisines = ['All', ...new Set(allRestaurants.flatMap(r => {
-        if (!r.types) return [];
-        return r.types
-            .filter(t => !['point_of_interest', 'establishment', 'food', 'restaurant'].includes(t))
-            .map(t => {
-                const clean = t.split('_')[0];
-                return clean.charAt(0).toUpperCase() + clean.slice(1);
-            });
-    }))].sort();
+    // Curated cuisines list
+    const cuisines = ['All', 'American', 'Indian', 'Chinese', 'Pizza', 'Burger', 'Sushi', 'Mexican', 'Italian', 'Thai'];
 
     const [visibleCount, setVisibleCount] = useState(8);
 
@@ -363,11 +354,10 @@ const PopularRestaurants = ({ city, onRestaurantClick, onNewLog, onAuthRequired 
         if (selectedCuisine === 'All') return list;
         return list.filter(r => {
             if (!r.types) return false;
-            return r.types.some(t => {
-                const clean = t.split('_')[0];
-                const formatted = clean.charAt(0).toUpperCase() + clean.slice(1);
-                return formatted === selectedCuisine;
-            });
+            // Simple keyword match for the curated list
+            const typeString = r.types.join(' ').toLowerCase();
+            const cuisineLower = selectedCuisine.toLowerCase();
+            return typeString.includes(cuisineLower);
         });
     };
 
@@ -496,7 +486,6 @@ const PopularRestaurants = ({ city, onRestaurantClick, onNewLog, onAuthRequired 
                                         className={`filter-pill ${selectedCuisine === c ? 'active' : ''}`}
                                         style={{ display: 'flex', alignItems: 'center', gap: '6px' }}
                                     >
-                                        <span>{getIconForCuisine(c)}</span>
                                         <span>{c}</span>
                                     </button>
                                 ))}

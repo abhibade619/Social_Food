@@ -70,7 +70,7 @@ const Home = ({ onRestaurantClick, onViewProfile, onNewLog, lastUpdated }) => {
 
             {/* Sidebar for Leaderboard */}
             <div className="home-sidebar" style={{ width: '300px', flexShrink: 0 }}>
-                <Leaderboard onViewProfile={onViewProfile} />
+                <Leaderboard onViewProfile={onViewProfile} userLocation={location} />
             </div>
         </div>
     );
