@@ -150,11 +150,22 @@ const Navbar = ({ currentView, setCurrentView, onNewLog, onAuthRequired }) => {
                     </div>
                 </div>
 
-                <div className="navbar-center">
+                <div className="navbar-center" style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
                     <LocationSelector
                         currentLocation={location}
                         onLocationChange={handleLocationChange}
                     />
+                    <button
+                        className={`nav-icon-btn ${currentView === 'search' ? 'active' : ''}`}
+                        onClick={() => setCurrentView('search')}
+                        title="Search"
+                        style={{ background: 'var(--bg-hover)', borderRadius: '50%', width: '40px', height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                    >
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                        </svg>
+                    </button>
                 </div>
 
                 <div className="navbar-right">
@@ -178,16 +189,6 @@ const Navbar = ({ currentView, setCurrentView, onNewLog, onAuthRequired }) => {
                                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                     <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
                                     <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
-                                </svg>
-                            </button>
-                            <button
-                                className={`nav-icon-btn ${currentView === 'search' ? 'active' : ''}`}
-                                onClick={() => setCurrentView('search')}
-                                title="Search"
-                            >
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                    <circle cx="11" cy="11" r="8"></circle>
-                                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
                                 </svg>
                             </button>
                             <button

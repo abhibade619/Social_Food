@@ -6915,3 +6915,69 @@ input:checked+.toggle-slider:before {
 .filter-scroll-container::-webkit-scrollbar {
   display: none;
 }
+/* Mobile Profile Cropping Fixes */
+.profile-container-premium {
+  width: 100%;
+  max-width: 100vw;
+  overflow-x: hidden;
+  box-sizing: border-box;
+  padding: 0.5rem 1rem 2rem;
+  margin: 0 auto;
+}
+
+.profile-header-premium {
+  width: 100%;
+  box-sizing: border-box;
+  max-width: 100%;
+}
+
+.profile-stats {
+  width: 100%;
+  box-sizing: border-box;
+  flex-wrap: wrap;
+}
+
+/* Ensure no fixed widths break layout on mobile */
+@media (max-width: 480px) {
+  .profile-container-premium {
+    padding: 0.5rem 0.5rem 2rem;
+  }
+  
+  .profile-stats {
+    gap: 0.5rem;
+  }
+  
+  .stat-item {
+    min-width: auto;
+    flex: 1;
+  }
+}
+
+/* Ensure Desktop Sidebar Order (Override) */
+@media (min-width: 769px) {
+  .home-layout {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 2rem;
+    position: relative;
+  }
+
+  .home-sidebar {
+    order: 2;
+    width: 300px;
+    flex-shrink: 0;
+    position: sticky;
+    top: 90px;
+    z-index: 10;
+    margin-left: auto;
+    display: block !important;
+  }
+
+  .main-feed {
+    order: 1;
+    flex: 1;
+    min-width: 0;
+    max-width: calc(100% - 332px);
+  }
+}
