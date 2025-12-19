@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthProvider';
 import CityBadgeCard from './CityBadgeCard';
 import PopularRestaurants from './PopularRestaurants';
+import Leaderboard from './Leaderboard';
 
 const Home = ({ onRestaurantClick, onViewProfile, onNewLog, lastUpdated }) => {
     const { user } = useAuth();
@@ -37,8 +38,8 @@ const Home = ({ onRestaurantClick, onViewProfile, onNewLog, lastUpdated }) => {
     }, []);
 
     return (
-        <div className="home-layout container">
-            <div className="main-feed" style={{ width: '100%' }}>
+        <div className="home-layout container" style={{ display: 'flex', gap: '2rem', flexWrap: 'wrap' }}>
+            <div className="main-feed" style={{ flex: '1', minWidth: '300px' }}>
                 {/* Popular Section */}
                 {!location.name ? (
                     <div className="empty-state" style={{ textAlign: 'center', padding: '4rem 2rem', color: 'var(--text-secondary)' }}>
@@ -65,6 +66,11 @@ const Home = ({ onRestaurantClick, onViewProfile, onNewLog, lastUpdated }) => {
                         />
                     </>
                 )}
+            </div>
+
+            {/* Sidebar for Leaderboard */}
+            <div className="home-sidebar" style={{ width: '300px', flexShrink: 0 }}>
+                <Leaderboard onViewProfile={onViewProfile} />
             </div>
         </div>
     );

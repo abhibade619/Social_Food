@@ -154,7 +154,7 @@ const LogCard = ({ log, onClick, showActions = false, isDiaryView = false, profi
         <>
             <div className="log-card glass-panel premium-card" onClick={onClick}>
                 {showActions && (
-                    <div className="menu-container" ref={menuRef} onClick={(e) => e.stopPropagation()}>
+                    <div className="menu-container" ref={menuRef} onClick={(e) => e.stopPropagation()} style={{ position: 'absolute', top: '20px', right: '20px', zIndex: 10 }}>
                         <button
                             className="menu-trigger"
                             onClick={() => setShowMenu(!showMenu)}
@@ -163,6 +163,26 @@ const LogCard = ({ log, onClick, showActions = false, isDiaryView = false, profi
                         </button>
                         {showMenu && (
                             <div className="action-menu">
+                                <button
+                                    className="menu-item"
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        setShowMenu(false);
+                                        const shareData = {
+                                            title: `Check out ${log.restaurant_name} on Khrunch!`,
+                                            text: `I just saw a great food log from ${displayUser?.full_name} at ${log.restaurant_name}.`,
+                                            url: window.location.href
+                                        };
+                                        if (navigator.share) {
+                                            navigator.share(shareData).catch(console.error);
+                                        } else {
+                                            navigator.clipboard.writeText(`${shareData.text} ${shareData.url}`);
+                                            alert('Link copied to clipboard!');
+                                        }
+                                    }}
+                                >
+                                    📤 Share
+                                </button>
                                 <button onClick={() => { setShowMenu(false); onEdit(log); }} className="menu-item">
                                     ✏️ Edit
                                 </button>
