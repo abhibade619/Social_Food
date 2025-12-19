@@ -1,57 +1,20 @@
 .logo-container {
-    font-family: 'Montserrat', sans-serif;
     display: inline-flex;
     align-items: center;
-    line-height: 1;
-    letter-spacing: -0.04em;
     user-select: none;
+    /* Overall subtle drop shadow for depth */
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
 }
 
-.brand-name {
-    text-transform: uppercase;
-    font-weight: 900;
+.logo-image {
+    display: block;
+    max-height: 100%;
+    /* Ensure image renders crisply */
+    image-rendering: -webkit-optimize-contrast;
 }
 
-.letter-k {
-    color: #383838;
-    display: inline-block;
-}
-
-/* Dark mode adjustment for K */
-@media (prefers-color-scheme: dark) {
-    .letter-k {
-        color: #e0e0e0;
-    }
-}
-
-/* If the app has a dark mode class */
-.dark-mode .letter-k {
-    color: #e0e0e0;
-}
-
-.brand-rest {
-    color: #ff7b00;
-}
-
-.letter-u {
-    position: relative;
-    display: inline-block;
-}
-
-/* Optional smile effect */
-.letter-u::after {
-    content: '';
-    position: absolute;
-    bottom: 12%;
-    left: 10%;
-    width: 80%;
-    height: 6%;
-    background-color: transparent;
-    /* Changed to transparent as we don't want a cutout if background isn't white */
-    /* To do a real cutout, we'd need SVG or mix-blend-mode, but let's stick to the user's request or simple style */
-    /* User's snippet used white background. If we are on dark mode, white cutout looks bad. */
-    /* Let's omit the cutout for now or make it smart. */
-    /* Actually, a smile is usually a curve. The user's snippet was a white line to "cut" the U? */
-    /* "background-color: white; border-radius: 50%;" -> this makes a white arc? No, it makes a white line. */
-    /* Let's skip the ::after for now unless it's critical, or make it a smile shape. */
+/* Hover effect - maybe slight brightness boost */
+.logo-container:hover .logo-image {
+    filter: brightness(1.1);
+    transition: filter 0.3s ease;
 }
