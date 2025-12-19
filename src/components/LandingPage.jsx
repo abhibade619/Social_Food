@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import PopularRestaurants from './PopularRestaurants';
+import Logo from './Logo';
 
 const LandingPage = ({ onAuthRequired, onRestaurantClick, onNewLog }) => {
     const [location, setLocation] = useState(null);
@@ -43,16 +44,14 @@ const LandingPage = ({ onAuthRequired, onRestaurantClick, onNewLog }) => {
                 borderRadius: '0 0 20px 20px',
                 boxShadow: '0 4px 20px rgba(0,0,0,0.3)'
             }}>
-                <h1 className="premium-gradient-text" style={{ fontSize: '3.5rem', marginBottom: '1rem' }}>
-                    Khrunch
-                </h1>
+                <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '1.5rem' }}>
+                    <Logo height="100px" style={{ width: 'auto', maxWidth: '80%' }} />
+                </div>
                 <p style={{ fontSize: '1.2rem', color: '#ccc', marginBottom: '2rem' }}>
                     Savor every moment. Discover, track, and share your culinary journey.
                 </p>
 
                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1.5rem' }}>
-
-
                     <button
                         className="premium-button"
                         onClick={onAuthRequired}
@@ -80,7 +79,7 @@ const LandingPage = ({ onAuthRequired, onRestaurantClick, onNewLog }) => {
                     </div>
                 )}
             </div>
-        </div>
+        </div >
     );
 };
 

@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useAuth } from '../context/AuthProvider';
+import Logo from './Logo';
 
 const Auth = () => {
     const [isSignUp, setIsSignUp] = useState(false);
@@ -62,7 +63,9 @@ const Auth = () => {
     return (
         <div className="auth-card glass-panel fade-in">
             <div className="auth-header">
-                <h1 className="auth-title premium-gradient-text">Khrunch</h1>
+                <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '1.5rem' }}>
+                    <Logo height="70px" style={{ width: 'auto', maxWidth: '80%' }} />
+                </div>
                 <p className="auth-tagline">Savor every moment.</p>
                 <p className="auth-subtitle">
                     {isResetPassword

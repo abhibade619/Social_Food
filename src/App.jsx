@@ -23,6 +23,7 @@ import Diary from './components/Diary';
 import LogModal from './components/LogModal';
 import Home from './components/Home';
 import LandingPage from './components/LandingPage';
+import Logo from './components/Logo';
 import './App.css';
 
 function App() {
@@ -136,7 +137,7 @@ function App() {
   if (loading || checkingProfile) {
     return (
       <div className="loading-screen">
-        <h1>🍽️ Khrunch</h1>
+        <Logo height="80px" style={{ width: 'auto', maxWidth: '80%', marginBottom: '1rem' }} />
         <p>Loading...</p>
       </div>
     );
