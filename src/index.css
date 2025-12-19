@@ -1777,3 +1777,27 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover {
   object-fit: cover;
   /* Keeps it square but covers area */
 }
+
+/* Home Layout Fixes */
+.home-layout {
+  display: flex;
+  gap: 30px;
+  align-items: flex-start;
+  padding-top: 20px;
+}
+
+@media (max-width: 900px) {
+  .home-layout {
+    flex-direction: column;
+  }
+
+  .home-sidebar {
+    width: 100% !important;
+    order: -1;
+    /* Optional: Move leaderboard to top on mobile, or keep at bottom */
+  }
+
+  .main-feed {
+    min-width: 0 !important;
+  }
+}
