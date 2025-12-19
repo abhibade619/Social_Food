@@ -190,7 +190,6 @@ const Navbar = ({ currentView, setCurrentView, onNewLog, onAuthRequired }) => {
                                     <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
                                 </svg>
                             </button>
-
                             <button
                                 className={`nav-icon-btn ${currentView === 'notifications' ? 'active' : ''}`}
                                 onClick={() => setCurrentView('notifications')}
@@ -220,8 +219,8 @@ const Navbar = ({ currentView, setCurrentView, onNewLog, onAuthRequired }) => {
                         </button>
                     )}
                 </div>
-            </div >
-        </nav >
+            </div>
+        </nav>
     );
 };
 

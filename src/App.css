@@ -6220,3 +6220,603 @@ input:checked+.toggle-slider:before {
     transform: scale(1);
   }
 }
+
+/* Home Layout (Desktop Default) */
+.home-layout {}
+
+.clickable-tag:hover {
+  color: var(--primary-color);
+  text-decoration: underline;
+}
+
+/* Profile Tabs */
+.profile-tabs {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding-bottom: 1px;
+  flex-wrap: wrap;
+}
+
+.tab-button {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  padding: 1rem 1.5rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.tab-button:hover {
+  color: var(--text-primary);
+}
+
+.tab-button.active {
+  color: var(--primary-color);
+}
+
+.tab-button.active::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: var(--primary-color);
+  box-shadow: 0 0 10px var(--primary-color);
+}
+
+/* City Badge Card - Premium Redesign */
+.city-badge-card {
+  position: relative;
+  border-radius: 24px;
+  padding: 2rem;
+  overflow: hidden;
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  margin-bottom: 1.5rem;
+  position: relative;
+  z-index: 2;
+}
+
+.city-name {
+  font-size: 2rem;
+  font-weight: 800;
+  margin: 0;
+  background: linear-gradient(to right, #fff, #ccc);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.badge-level-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border-radius: 50px;
+  background: rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(5px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  font-weight: 600;
+  font-size: 0.9rem;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.badge-icon-large {
+  position: absolute;
+  right: -20px;
+  top: -20px;
+  font-size: 8rem;
+  opacity: 0.15;
+  transform: rotate(15deg);
+  filter: blur(1px);
+  pointer-events: none;
+  transition: all 0.5s ease;
+}
+
+.city-badge-card:hover .badge-icon-large {
+  transform: rotate(0deg) scale(1.1);
+  opacity: 0.2;
+}
+
+.progress-section {
+  position: relative;
+  z-index: 2;
+  background: rgba(0, 0, 0, 0.2);
+  padding: 1rem;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.progress-info {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.8rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.progress-bar-bg {
+  width: 100%;
+  height: 10px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 5px;
+  overflow: hidden;
+  position: relative;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  border-radius: 5px;
+  background: linear-gradient(90deg, #fff, rgba(255, 255, 255, 0.8));
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+  transition: width 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+}
+
+.progress-bar-fill::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(90deg,
+      transparent,
+      rgba(255, 255, 255, 0.4),
+      transparent);
+  transform: translateX(-100%);
+  animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+.badge-footer {
+  margin-top: 1rem;
+  text-align: center;
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.7);
+  font-style: italic;
+}
+
+.max-level-banner {
+  text-align: center;
+  font-weight: bold;
+  font-size: 1.1rem;
+  padding: 0.5rem;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  margin-top: 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.02);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* Home Layout (Desktop Default) */
+.home-layout {
+  display: flex;
+  gap: 2rem;
+  flex-wrap: wrap;
+}
+
+text-decoration: underline;
+}
+
+/* Profile Tabs */
+.profile-tabs {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding-bottom: 1px;
+  flex-wrap: wrap;
+}
+
+.tab-button {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  padding: 1rem 1.5rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.tab-button:hover {
+  color: var(--text-primary);
+}
+
+.tab-button.active {
+  color: var(--primary-color);
+}
+
+.tab-button.active::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: var(--primary-color);
+  box-shadow: 0 0 10px var(--primary-color);
+}
+
+/* City Badge Card - Premium Redesign */
+.city-badge-card {
+  position: relative;
+  border-radius: 24px;
+  padding: 2rem;
+  overflow: hidden;
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  margin-bottom: 1.5rem;
+  position: relative;
+  z-index: 2;
+}
+
+.city-name {
+  font-size: 2rem;
+  font-weight: 800;
+  margin: 0;
+  background: linear-gradient(to right, #fff, #ccc);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.badge-level-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border-radius: 50px;
+  background: rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(5px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  font-weight: 600;
+  font-size: 0.9rem;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.badge-icon-large {
+  position: absolute;
+  right: -20px;
+  top: -20px;
+  font-size: 8rem;
+  opacity: 0.15;
+  transform: rotate(15deg);
+  filter: blur(1px);
+  pointer-events: none;
+  transition: all 0.5s ease;
+}
+
+.city-badge-card:hover .badge-icon-large {
+  transform: rotate(0deg) scale(1.1);
+  opacity: 0.2;
+}
+
+.progress-section {
+  position: relative;
+  z-index: 2;
+  background: rgba(0, 0, 0, 0.2);
+  padding: 1rem;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.progress-info {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.8rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.progress-bar-bg {
+  width: 100%;
+  height: 10px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 5px;
+  overflow: hidden;
+  position: relative;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  border-radius: 5px;
+  background: linear-gradient(90deg, #fff, rgba(255, 255, 255, 0.8));
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+  transition: width 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+}
+
+.progress-bar-fill::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(90deg,
+      transparent,
+      rgba(255, 255, 255, 0.4),
+      transparent);
+  transform: translateX(-100%);
+  animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+.badge-footer {
+  margin-top: 1rem;
+  text-align: center;
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.7);
+  font-style: italic;
+}
+
+.max-level-banner {
+  text-align: center;
+  font-weight: bold;
+  font-size: 1.1rem;
+  padding: 0.5rem;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  margin-top: 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.02);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* Home Layout (Desktop Default) */
+.home-layout {
+  display: flex;
+  gap: 2rem;
+  flex-wrap: wrap;
+}
+
+/* =========================================
+   MOBILE RESPONSIVENESS (Playbook Approach)
+   ========================================= */
+
+/* Navbar Responsiveness */
+@media (max-width: 768px) {
+  .navbar-content {
+    flex-wrap: wrap;
+    height: auto !important;
+    /* Allow height to grow */
+    padding: 0.5rem 1rem;
+    gap: 0.5rem;
+  }
+
+  /* Logo stays on left */
+  .navbar-left {
+    flex: 1;
+    order: 1;
+  }
+
+  /* Icons move to right */
+  .navbar-right {
+    display: flex !important;
+    /* Ensure visible */
+    flex: 1;
+    justify-content: flex-end;
+    order: 2;
+    gap: 0.5rem;
+  }
+
+  /* Location moves to new line */
+  .navbar-center {
+    order: 3;
+    width: 100%;
+    flex: 0 0 100%;
+    margin: 0.5rem 0 0 0;
+  }
+
+  .location-container {
+    width: 100%;
+    max-width: none;
+    justify-content: center;
+  }
+
+  /* Adjust Home Layout */
+  .home-layout {
+    /* Flex wrap is already default, but we ensure column on mobile */
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .home-sidebar {
+    width: 100%;
+    order: 2;
+    /* Sidebar below feed */
+  }
+
+  .main-feed {
+    width: 100%;
+    order: 1;
+  }
+
+  /* Adjust Container Padding */
+  .container {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  /* Adjust Modal */
+  .modal-content {
+    width: 95%;
+    max-width: 95%;
+    margin: 0 auto;
+  }
+
+  /* Mobile Feed Toggle */
+  .mobile-feed-toggle {
+    display: flex;
+    background: var(--bg-card);
+    padding: 4px;
+    border-radius: 12px;
+    margin-bottom: 1rem;
+    border: 1px solid var(--border-color);
+  }
+
+  .toggle-btn {
+    flex: 1;
+    padding: 10px;
+    border: none;
+    background: transparent;
+    color: var(--text-secondary);
+    font-weight: 600;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .toggle-btn.active {
+    background: var(--bg-hover);
+    color: var(--primary-color);
+    box-shadow: var(--shadow-sm);
+  }
+
+  /* Helper to hide elements on mobile based on state */
+  .mobile-hidden {
+    display: none !important;
+  }
+
+  /* --- Horizontal Scroll for Popular Restaurants (Mobile) --- */
+  .popular-grid {
+    display: flex !important;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    gap: 1rem;
+    padding-bottom: 1rem;
+    grid-template-columns: none !important;
+    -webkit-overflow-scrolling: touch;
+    margin-right: -1rem;
+    /* Bleed to edge */
+    padding-right: 1rem;
+    /* Padding for last item */
+  }
+
+  .popular-card {
+    min-width: 280px;
+    width: 280px;
+    scroll-snap-align: start;
+    flex-shrink: 0;
+  }
+
+  /* Fix Elongated Filters */
+  .filters-section {
+    width: 100%;
+    flex-wrap: wrap;
+    /* Allow wrapping if needed */
+  }
+
+  .select-wrapper {
+    flex: 0 1 auto;
+    /* Allow shrinking but prefer auto */
+    width: auto;
+    max-width: 50%;
+    /* Prevent taking full width */
+  }
+
+  .custom-select {
+    width: auto !important;
+    min-width: 120px;
+    padding-right: 2rem;
+  }
+}
+
+/* Hide toggle on desktop */
+.mobile-feed-toggle {
+  display: none;
+}
+/* =========================================
+   EMERGENCY FIXES (Layout & Filters)
+   ========================================= */
+
+/* 1. Force Sidebar Visibility on Mobile */
+@media (max-width: 900px) {
+  .home-layout {
+    display: flex !important;
+    flex-direction: column !important;
+  }
+
+  .home-sidebar {
+    display: block !important;
+    width: 100% !important;
+    order: 2;
+    margin-top: 2rem;
+  }
+  
+  .main-feed {
+    order: 1;
+  }
+}
+
+/* 2. Fix Elongated Filters */
+@media (max-width: 768px) {
+  .filters-section {
+    width: 100%;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    justify-content: flex-start; /* Align left */
+  }
+  
+  .select-wrapper {
+    flex: 0 1 auto !important;
+    width: auto !important;
+    max-width: 48%;
+  }
+
+  .custom-select {
+    width: auto !important;
+    min-width: 100px;
+    padding-right: 1.5rem;
+    font-size: 0.9rem;
+    height: 40px; /* Fixed height */
+  }
+}

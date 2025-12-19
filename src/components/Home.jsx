@@ -38,7 +38,7 @@ const Home = ({ onRestaurantClick, onViewProfile, onNewLog, lastUpdated }) => {
     }, []);
 
     return (
-        <div className="home-layout container" style={{ display: 'flex', gap: '2rem', flexWrap: 'wrap' }}>
+        <div className="home-layout container">
             <div className="main-feed" style={{ flex: '1', minWidth: '300px' }}>
                 {/* Popular Section */}
                 {!location.name ? (
