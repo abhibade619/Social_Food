@@ -69,6 +69,7 @@ const PopularRestaurants = ({ city: cityProp, userLocation, onRestaurantClick, o
     const processedPlaceIdsRef = useState(new Set());
 
     useEffect(() => {
+        console.log("PopularRestaurants useEffect: city changed to", city);
         if (city && placesApi) {
             fetchRestaurants();
         }
