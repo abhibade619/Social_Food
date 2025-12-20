@@ -37,6 +37,12 @@ const Home = ({ onRestaurantClick, onViewProfile, onNewLog, lastUpdated }) => {
         return () => window.removeEventListener('locationChanged', handleLocationUpdate);
     }, []);
 
+    const [badgeUpdateTrigger, setBadgeUpdateTrigger] = useState(0);
+
+    const handleInteraction = () => {
+        setBadgeUpdateTrigger(prev => prev + 1);
+    };
+
     return (
         <div className="home-layout container">
             <div className="main-feed" style={{ flex: '1', minWidth: '300px' }}>
@@ -55,7 +61,7 @@ const Home = ({ onRestaurantClick, onViewProfile, onNewLog, lastUpdated }) => {
                                     userId={user.id}
                                     city={location.name}
                                     onBadgeClick={() => onViewProfile(user.id, { initialTab: 'badges' })}
-                                    lastUpdated={lastUpdated}
+                                    lastUpdated={lastUpdated || badgeUpdateTrigger}
                                 />
                             </div>
                         )}
@@ -64,6 +70,7 @@ const Home = ({ onRestaurantClick, onViewProfile, onNewLog, lastUpdated }) => {
                             userLocation={location}
                             onRestaurantClick={onRestaurantClick}
                             onNewLog={onNewLog}
+                            onInteraction={handleInteraction}
                         />
                     </>
                 )}

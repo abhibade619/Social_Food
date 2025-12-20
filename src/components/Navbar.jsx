@@ -146,7 +146,7 @@ const Navbar = ({ currentView, setCurrentView, onNewLog, onAuthRequired }) => {
             <div className="navbar-content container">
                 <div className="navbar-left">
                     <div className="logo" onClick={() => setCurrentView('home')} style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
-                        <Logo height="36px" />
+                        <Logo height="50px" />
                     </div>
                 </div>
 

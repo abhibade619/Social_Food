@@ -4,7 +4,7 @@ import { useAuth } from '../context/AuthProvider';
 import { loadPlacesLibrary } from '../utils/googleMaps';
 import { HeartIcon, CheckCircleIcon, CheckIcon } from './Icons';
 
-const PopularRestaurants = ({ city: cityProp, userLocation, onRestaurantClick, onNewLog, onAuthRequired }) => {
+const PopularRestaurants = ({ city: cityProp, userLocation, onRestaurantClick, onNewLog, onAuthRequired, onInteraction }) => {
     const { user } = useAuth();
     const [popularRestaurants, setPopularRestaurants] = useState([]);
 
@@ -331,6 +331,11 @@ const PopularRestaurants = ({ city: cityProp, userLocation, onRestaurantClick, o
                         restaurant_data: restaurant
                     });
                 if (error) throw error;
+            }
+
+            // Trigger badge update
+            if (onInteraction) {
+                onInteraction();
             }
         } catch (error) {
             console.error("Error toggling visited:", error);
