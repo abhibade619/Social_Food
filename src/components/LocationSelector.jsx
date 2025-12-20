@@ -207,7 +207,18 @@ const LocationSelector = ({ currentLocation, onLocationChange }) => {
                                                         addressComponents.find(c => c.types.includes('administrative_area_level_2'))?.long_name;
 
                                                     const state = addressComponents.find(c => c.types.includes('administrative_area_level_1'))?.short_name;
-                                                    const country = addressComponents.find(c => c.types.includes('country'))?.long_name;
+                                                    // ISO Alpha-2 to Alpha-3 mapping for common countries
+                                                    const isoAlpha2to3 = {
+                                                        "US": "USA", "GB": "GBR", "CA": "CAN", "AU": "AUS", "IN": "IND",
+                                                        "FR": "FRA", "DE": "DEU", "IT": "ITA", "ES": "ESP", "BR": "BRA",
+                                                        "MX": "MEX", "JP": "JPN", "CN": "CHN", "RU": "RUS", "ZA": "ZAF",
+                                                        "NZ": "NZL", "IE": "IRL", "CH": "CHE", "NL": "NLD", "SE": "SWE",
+                                                        "NO": "NOR", "DK": "DNK", "FI": "FIN", "KR": "KOR", "SG": "SGP",
+                                                        "AE": "ARE", "SA": "SAU", "IL": "ISR", "TR": "TUR", "EG": "EGY"
+                                                    };
+
+                                                    const countryCode2 = addressComponents.find(c => c.types.includes('country'))?.short_name;
+                                                    const country = countryCode2 ? (isoAlpha2to3[countryCode2] || countryCode2) : null;
 
                                                     // Construct "City, State, Country"
                                                     const parts = [];
