@@ -298,7 +298,7 @@ const LocationSelector = ({ currentLocation, onLocationChange }) => {
                                             handleError(error);
                                         }
                                     },
-                                    { timeout: 20000, enableHighAccuracy: true }
+                                    { timeout: 5000, enableHighAccuracy: true }
                                 );
                             }}
                         >
