@@ -4,9 +4,15 @@ import { useAuth } from '../context/AuthProvider';
 import { loadPlacesLibrary } from '../utils/googleMaps';
 import { HeartIcon, CheckCircleIcon, CheckIcon } from './Icons';
 
-const PopularRestaurants = ({ city, onRestaurantClick, onNewLog, onAuthRequired }) => {
+const PopularRestaurants = ({ city: cityProp, userLocation, onRestaurantClick, onNewLog, onAuthRequired }) => {
     const { user } = useAuth();
     const [popularRestaurants, setPopularRestaurants] = useState([]);
+
+    // Parse location
+    const parts = userLocation?.name?.split(',').map(p => p.trim()) || [];
+    const city = parts[0] || cityProp;
+    const state = parts[1] || null;
+    const country = parts[2] || null;
     const [topRatedRestaurants, setTopRatedRestaurants] = useState([]);
     const [loading, setLoading] = useState(true);
     const [placesApi, setPlacesApi] = useState(null);
@@ -143,11 +149,16 @@ const PopularRestaurants = ({ city, onRestaurantClick, onNewLog, onAuthRequired 
             const freshnessThreshold = new Date();
             freshnessThreshold.setDate(freshnessThreshold.getDate() - 30);
 
-            const { data: cachedData, error: cacheError } = await supabase
+            let query = supabase
                 .from('cached_restaurants')
                 .select('*')
                 .eq('city', city)
                 .gt('last_updated', freshnessThreshold.toISOString());
+
+            if (state) query = query.eq('state', state);
+            if (country) query = query.eq('country', country);
+
+            const { data: cachedData, error: cacheError } = await query;
 
             if (cachedData && cachedData.length >= 20) {
                 processAndSetRestaurants(cachedData);
@@ -208,7 +219,11 @@ const PopularRestaurants = ({ city, onRestaurantClick, onNewLog, onAuthRequired 
                     place_id: place.id,
                     name,
                     address: place.formattedAddress ?? null,
+                    name,
+                    address: place.formattedAddress ?? null,
                     city,
+                    state,
+                    country,
                     rating:
                         typeof place.rating === 'number'
                             ? place.rating

@@ -61,6 +61,7 @@ const Home = ({ onRestaurantClick, onViewProfile, onNewLog, lastUpdated }) => {
                         )}
                         <PopularRestaurants
                             city={location.name.split(',')[0]}
+                            userLocation={location}
                             onRestaurantClick={onRestaurantClick}
                             onNewLog={onNewLog}
                         />
