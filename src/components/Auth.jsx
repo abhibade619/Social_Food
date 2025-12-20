@@ -70,7 +70,7 @@ const Auth = () => {
                 <p className="auth-subtitle">
                     {isResetPassword
                         ? 'Recover your account.'
-                        : (isSignUp ? 'Join the exclusive culinary circle.' : 'Welcome back, connoisseur.')}
+                        : (isSignUp ? 'Join the exclusive culinary circle.' : 'Welcome back, foodie.')}
                 </p>
             </div>
 
@@ -83,48 +83,50 @@ const Auth = () => {
 
             <form onSubmit={handleSubmit} className="auth-form">
                 {isSignUp && !isResetPassword && (
-                    <div className="form-group floating-label-group">
+                    <div className="form-group" style={{ marginBottom: '1.2rem' }}>
+                        <label htmlFor="username" style={{ display: 'block', marginBottom: '0.35rem', color: 'var(--text-secondary)', fontSize: '0.9rem', fontWeight: '500' }}>Username</label>
                         <input
                             id="username"
                             type="text"
                             value={username}
                             onChange={(e) => setUsername(e.target.value)}
-                            placeholder=" "
+                            placeholder="Choose a username"
                             required
                             className="premium-input"
+                            style={{ background: 'rgba(255, 255, 255, 0.05)', borderColor: 'rgba(255, 255, 255, 0.1)' }}
                         />
-                        <label htmlFor="username" className="floating-label">Username</label>
                     </div>
                 )}
 
-                <div className="form-group floating-label-group">
+                <div className="form-group" style={{ marginBottom: '1.2rem' }}>
+                    <label htmlFor="email" style={{ display: 'block', marginBottom: '0.35rem', color: 'var(--text-secondary)', fontSize: '0.9rem', fontWeight: '500' }}>Email Address</label>
                     <input
                         id="email"
                         type="email"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
-                        placeholder=" "
+                        placeholder="Enter your email"
                         required
                         className="premium-input"
+                        style={{ background: 'rgba(255, 255, 255, 0.05)', borderColor: 'rgba(255, 255, 255, 0.1)' }}
                     />
-                    <label htmlFor="email" className="floating-label">Email Address</label>
                 </div>
 
                 {!isResetPassword && (
-                    <div className="form-group floating-label-group">
+                    <div className="form-group" style={{ marginBottom: '1.2rem' }}>
+                        <label htmlFor="password" style={{ display: 'block', marginBottom: '0.35rem', color: 'var(--text-secondary)', fontSize: '0.9rem', fontWeight: '500' }}>Password</label>
                         <div className="password-input-wrapper" style={{ position: 'relative' }}>
                             <input
                                 id="password"
                                 type={showPassword ? "text" : "password"}
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
-                                placeholder=" "
+                                placeholder="Enter your password"
                                 required
                                 minLength={6}
                                 className="premium-input"
-                                style={{ paddingRight: '40px' }}
+                                style={{ paddingRight: '40px', background: 'rgba(255, 255, 255, 0.05)', borderColor: 'rgba(255, 255, 255, 0.1)' }}
                             />
-                            <label htmlFor="password" className="floating-label">Password</label>
                             <button
                                 type="button"
                                 className="password-toggle-btn"

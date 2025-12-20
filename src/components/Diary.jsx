@@ -199,8 +199,8 @@ const Diary = ({ onRestaurantClick, onViewProfile }) => {
         <div className="diary-container container">
             <div className="diary-header-premium">
                 <div className="diary-title-section">
-                    <h1>My Culinary Journal</h1>
-                    <p className="diary-subtitle">Documenting your gastronomic adventures.</p>
+                    <h1>My Food Diary</h1>
+                    <p className="diary-subtitle">Track your favorite meals and places.</p>
                 </div>
                 <button className="premium-button new-entry-btn" onClick={() => setShowModal(true)}>
                     <span className="plus-icon">+</span> New Entry

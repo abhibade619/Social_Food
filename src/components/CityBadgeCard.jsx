@@ -114,7 +114,8 @@ const CityBadgeCard = ({ userId, city, onBadgeClick, count: externalCount, lastU
                         background: 'linear-gradient(to right, #fff, #e0e0e0)',
                         WebkitBackgroundClip: 'text',
                         WebkitTextFillColor: 'transparent',
-                        lineHeight: 1
+                        lineHeight: 1.2,
+                        paddingBottom: '4px'
                     }}>
                         {city.split(',')[0]}
                     </h3>
