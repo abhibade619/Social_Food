@@ -141,6 +141,8 @@ const Navbar = ({ currentView, setCurrentView, onNewLog, onAuthRequired }) => {
         console.log("Navbar: handleSignOut called");
         await signOut();
         console.log("Navbar: handleSignOut completed");
+        // Force reload to ensure clean state if state update lags
+        window.location.reload();
     };
 
     return (
