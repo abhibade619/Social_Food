@@ -65,18 +65,37 @@ const PopularRestaurants = ({ city: cityProp, userLocation, onRestaurantClick, o
         initServices();
     }, []);
 
+    // Ref for tracking if we've already fetched interactions for the current set of restaurants
+    const processedPlaceIdsRef = useState(new Set());
+
     useEffect(() => {
         if (city && placesApi) {
             fetchRestaurants();
         }
     }, [city, placesApi]);
 
+    // Trigger interaction fetch when user changes or when we have new restaurants that haven't been processed
     useEffect(() => {
         const allRestaurants = [...popularRestaurants, ...topRatedRestaurants];
         if (user && allRestaurants.length > 0) {
-            fetchUserInteractions(allRestaurants);
+            // Create a signature for the current set of restaurants to avoid re-fetching for the same data
+            const currentPlaceIds = new Set(allRestaurants.map(r => r.place_id));
+
+            // Simple check: if we have the same number of items and the first one is the same, it's likely the same list
+            // A better check would be deep comparison, but we want to avoid the loop caused by updateWithRatings
+            // which creates new objects.
+
+            // Actually, the issue is that updateWithRatings creates NEW objects, triggering this effect again.
+            // We should check if the restaurants ALREADY have 'internalRating' property.
+            // If they do, we might not need to fetch again unless the user changed.
+
+            const needsUpdate = allRestaurants.some(r => r.internalRating === undefined);
+
+            if (needsUpdate) {
+                fetchUserInteractions(allRestaurants);
+            }
         }
-    }, [user, popularRestaurants, topRatedRestaurants]);
+    }, [user, popularRestaurants.length, topRatedRestaurants.length]); // Depend on length, not the array itself to avoid loop from object identity change
 
     const fetchUserInteractions = async (restaurants) => {
         try {
