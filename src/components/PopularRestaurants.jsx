@@ -134,6 +134,132 @@ const PopularRestaurants = ({ city: cityProp, userLocation, onRestaurantClick, o
             setPopularRestaurants(prev => updateWithRatings(prev));
             setTopRatedRestaurants(prev => updateWithRatings(prev));
 
+        } catch (error) {
+            console.error("Error fetching interactions:", error);
+        }
+    };
+
+    const fetchRestaurants = async () => {
+        if (!city || !placesApi) return;
+
+        setLoading(true);
+
+        try {
+            // 1. Check cache first
+            const freshnessThreshold = new Date();
+            freshnessThreshold.setDate(freshnessThreshold.getDate() - 30);
+
+            let query = supabase
+                .from('cached_restaurants')
+                .select('*')
+                .eq('city', city)
+                .gt('last_updated', freshnessThreshold.toISOString());
+
+            if (state) query = query.eq('state', state);
+            if (country) query = query.eq('country', country);
+
+            const { data: cachedData, error: cacheError } = await query;
+
+            if (cachedData && cachedData.length >= 20) {
+                processAndSetRestaurants(cachedData);
+                setLoading(false);
+                return;
+            }
+
+            // 2. Fetch from Google Places
+            if (!placesApi.Place || !placesApi.Place.searchByText) {
+                setLoading(false);
+                return;
+            }
+
+            const { places } = await placesApi.Place.searchByText({
+                textQuery: `best restaurants in ${city}, ${state || ''}, ${country || ''}`,
+                fields: [
+                    'id',
+                    'displayName',
+                    'formattedAddress',
+                    'rating',
+                    'userRatingCount',
+                    'priceLevel',
+                    'types',
+                    'photos',
+                    'location'
+                ],
+                maxResultCount: 20
+            });
+
+            if (!places || places.length === 0) {
+                setLoading(false);
+                return;
+            }
+
+            // 3. Normalize data so it matches cached_restaurants columns
+            const results = places.map((place) => {
+                const name =
+                    typeof place.displayName === 'string'
+                        ? place.displayName
+                        : place.displayName?.text ?? 'Unknown';
+
+                const photos =
+                    Array.isArray(place.photos)
+                        ? place.photos
+                            .map((p) => {
+                                try {
+                                    return p.getURI({ maxWidth: 400 });
+                                } catch (e) {
+                                    return null;
+                                }
+                            })
+                            .filter(Boolean)
+                        : [];
+
+                const types = Array.isArray(place.types) ? place.types : [];
+
+                const payloadRow = {
+                    place_id: place.id,
+                    name,
+                    address: place.formattedAddress ?? null,
+                    city,
+                    state,
+                    country,
+                    rating:
+                        typeof place.rating === 'number'
+                            ? place.rating
+                            : place.rating
+                                ? Number(place.rating)
+                                : null,
+                    user_ratings_total:
+                        typeof place.userRatingCount === 'number'
+                            ? place.userRatingCount
+                            : place.userRatingCount
+                                ? Number(place.userRatingCount)
+                                : null,
+                    price_level:
+                        typeof place.priceLevel === 'number'
+                            ? place.priceLevel
+                            : place.priceLevel
+                                ? Number(place.priceLevel)
+                                : null,
+                    photos, // JSONB
+                    types,  // JSONB
+                    last_updated: new Date().toISOString()
+                };
+
+                return payloadRow;
+            });
+
+            // 4. Upsert into cache
+            const { error: upsertError } = await supabase
+                .from('cached_restaurants')
+                .upsert(results, { onConflict: 'place_id' });
+
+            if (upsertError) {
+                console.error("Cache upsert failed:", upsertError);
+            }
+
+            // 5. Use the normalized results for UI
+            processAndSetRestaurants(results);
+        } catch (error) {
             console.error('fetchRestaurants failed', error);
         } finally {
             setLoading(false);
