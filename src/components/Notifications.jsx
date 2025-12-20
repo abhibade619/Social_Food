@@ -99,7 +99,7 @@ const Notifications = ({ onNavigate }) => {
                     </p>
                 </div>
             ) : (
-                <div className="notifications-list-premium">
+                <div className="notifications-list-premium" style={{ marginTop: '1.5rem' }}>
                     {notifications.map((notification) => (
                         <div
                             key={notification.id}

@@ -138,7 +138,9 @@ const Navbar = ({ currentView, setCurrentView, onNewLog, onAuthRequired }) => {
     };
 
     const handleSignOut = async () => {
+        console.log("Navbar: handleSignOut called");
         await signOut();
+        console.log("Navbar: handleSignOut completed");
     };
 
     return (

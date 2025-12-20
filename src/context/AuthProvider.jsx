@@ -60,7 +60,10 @@ export const AuthProvider = ({ children }) => {
     };
 
     const signOut = async () => {
+        console.log("AuthProvider: signOut called");
         const { error } = await supabase.auth.signOut();
+        if (error) console.error("AuthProvider: signOut error", error);
+        else console.log("AuthProvider: signOut success");
         return { error };
     };
 

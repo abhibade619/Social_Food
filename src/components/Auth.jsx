@@ -83,8 +83,8 @@ const Auth = () => {
 
             <form onSubmit={handleSubmit} className="auth-form">
                 {isSignUp && !isResetPassword && (
-                    <div className="form-group" style={{ marginBottom: '1.2rem' }}>
-                        <label htmlFor="username" style={{ display: 'block', marginBottom: '0.35rem', color: 'var(--text-secondary)', fontSize: '0.9rem', fontWeight: '500' }}>Username</label>
+                    <div className="form-group" style={{ marginBottom: '1rem' }}>
+                        <label htmlFor="username" style={{ display: 'block', marginBottom: '0.25rem', color: 'var(--text-secondary)', fontSize: '0.85rem', fontWeight: '500' }}>Username</label>
                         <input
                             id="username"
                             type="text"
@@ -93,13 +93,13 @@ const Auth = () => {
                             placeholder="Choose a username"
                             required
                             className="premium-input"
-                            style={{ background: 'rgba(255, 255, 255, 0.05)', borderColor: 'rgba(255, 255, 255, 0.1)' }}
+                            style={{ background: 'rgba(255, 255, 255, 0.05)', borderColor: 'rgba(255, 255, 255, 0.1)', padding: '0.8rem' }}
                         />
                     </div>
                 )}
 
-                <div className="form-group" style={{ marginBottom: '1.2rem' }}>
-                    <label htmlFor="email" style={{ display: 'block', marginBottom: '0.35rem', color: 'var(--text-secondary)', fontSize: '0.9rem', fontWeight: '500' }}>Email Address</label>
+                <div className="form-group" style={{ marginBottom: '1rem' }}>
+                    <label htmlFor="email" style={{ display: 'block', marginBottom: '0.25rem', color: 'var(--text-secondary)', fontSize: '0.85rem', fontWeight: '500' }}>Email Address</label>
                     <input
                         id="email"
                         type="email"
@@ -108,13 +108,13 @@ const Auth = () => {
                         placeholder="Enter your email"
                         required
                         className="premium-input"
-                        style={{ background: 'rgba(255, 255, 255, 0.05)', borderColor: 'rgba(255, 255, 255, 0.1)' }}
+                        style={{ background: 'rgba(255, 255, 255, 0.05)', borderColor: 'rgba(255, 255, 255, 0.1)', padding: '0.8rem' }}
                     />
                 </div>
 
                 {!isResetPassword && (
-                    <div className="form-group" style={{ marginBottom: '1.2rem' }}>
-                        <label htmlFor="password" style={{ display: 'block', marginBottom: '0.35rem', color: 'var(--text-secondary)', fontSize: '0.9rem', fontWeight: '500' }}>Password</label>
+                    <div className="form-group" style={{ marginBottom: '1rem' }}>
+                        <label htmlFor="password" style={{ display: 'block', marginBottom: '0.25rem', color: 'var(--text-secondary)', fontSize: '0.85rem', fontWeight: '500' }}>Password</label>
                         <div className="password-input-wrapper" style={{ position: 'relative' }}>
                             <input
                                 id="password"
@@ -125,7 +125,7 @@ const Auth = () => {
                                 required
                                 minLength={6}
                                 className="premium-input"
-                                style={{ paddingRight: '40px', background: 'rgba(255, 255, 255, 0.05)', borderColor: 'rgba(255, 255, 255, 0.1)' }}
+                                style={{ paddingRight: '40px', background: 'rgba(255, 255, 255, 0.05)', borderColor: 'rgba(255, 255, 255, 0.1)', padding: '0.8rem' }}
                             />
                             <button
                                 type="button"
