@@ -182,35 +182,74 @@ const LocationSelector = ({ currentLocation, onLocationChange }) => {
                             onClick={() => {
                                 if (navigator.geolocation) {
                                     setLoading(true);
+                                    console.log("Requesting geolocation...");
                                     navigator.geolocation.getCurrentPosition(
                                         async (position) => {
+                                            console.log("Geolocation success:", position);
                                             const { latitude, longitude } = position.coords;
                                             try {
                                                 // Reverse geocode to get city name
+                                                if (!window.google || !window.google.maps || !window.google.maps.Geocoder) {
+                                                    throw new Error("Google Maps API not loaded");
+                                                }
                                                 const geocoder = new window.google.maps.Geocoder();
+                                                console.log("Geocoding coordinates:", latitude, longitude);
                                                 const response = await geocoder.geocode({ location: { lat: latitude, lng: longitude } });
+                                                console.log("Geocoding response:", response);
 
                                                 if (response.results[0]) {
                                                     // Find city, state, country components
                                                     const addressComponents = response.results[0].address_components;
-                                                    const city = addressComponents.find(c => c.types.includes('locality'))?.long_name;
+
+                                                    // Try to find locality (city), fallback to sublocality or administrative_area_level_2 (county)
+                                                    const city = addressComponents.find(c => c.types.includes('locality'))?.long_name ||
+                                                        addressComponents.find(c => c.types.includes('sublocality'))?.long_name ||
+                                                        addressComponents.find(c => c.types.includes('administrative_area_level_2'))?.long_name;
+
                                                     const state = addressComponents.find(c => c.types.includes('administrative_area_level_1'))?.short_name;
                                                     const country = addressComponents.find(c => c.types.includes('country'))?.long_name;
 
-                                                    const formattedLocation = [city, state, country].filter(Boolean).join(', ');
+                                                    // Construct "City, State, Country"
+                                                    const parts = [];
+                                                    if (city) parts.push(city);
+                                                    if (state) parts.push(state);
+                                                    if (country) parts.push(country);
+
+                                                    const formattedLocation = parts.join(', ');
+                                                    console.log("Formatted location:", formattedLocation);
 
                                                     onLocationChange({
                                                         name: formattedLocation || response.results[0].formatted_address,
                                                         lat: latitude,
                                                         lng: longitude
                                                     });
+                                                    return; // Exit after successful update
                                                 }
-                                                // Fallback to coords only if geocoding fails, but try to be descriptive
+
+                                                console.warn("No results found for location");
+                                                // Fallback if no results found
                                                 onLocationChange({
                                                     name: "Unknown Location",
                                                     lat: latitude,
                                                     lng: longitude
                                                 });
+                                            } catch (error) {
+                                                console.error("Geocoding error:", error);
+                                                // If API key is restricted or quota exceeded, fallback to coordinates
+                                                const fallbackName = `Location (${latitude.toFixed(4)}, ${longitude.toFixed(4)})`;
+
+                                                onLocationChange({
+                                                    name: fallbackName,
+                                                    lat: latitude,
+                                                    lng: longitude
+                                                });
+
+                                                // Optional: Alert user if it's a dev/config issue, or just fail silently to coords
+                                                if (error.message.includes("REQUEST_DENIED") || error.message.includes("API project is not authorized")) {
+                                                    console.warn("Google Maps Geocoding API not authorized. Using coordinates as fallback.");
+                                                } else {
+                                                    alert(`Could not determine city name: ${error.message}. Using coordinates.`);
+                                                }
                                             } finally {
                                                 setLoading(false);
                                                 setIsOpen(false);
@@ -218,9 +257,14 @@ const LocationSelector = ({ currentLocation, onLocationChange }) => {
                                         },
                                         (error) => {
                                             console.error("Geolocation error:", error);
-                                            alert("Could not get your location. Please enable location services.");
+                                            let msg = "Could not get your location.";
+                                            if (error.code === 1) msg = "Location permission denied. Please enable it in your browser settings.";
+                                            else if (error.code === 2) msg = "Location unavailable.";
+                                            else if (error.code === 3) msg = "Location request timed out.";
+                                            alert(msg);
                                             setLoading(false);
-                                        }
+                                        },
+                                        { timeout: 10000, enableHighAccuracy: true }
                                     );
                                 } else {
                                     alert("Geolocation is not supported by this browser.");
