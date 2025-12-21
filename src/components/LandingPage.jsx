@@ -45,7 +45,7 @@ const LandingPage = ({ onAuthRequired, onRestaurantClick, onNewLog }) => {
                 boxShadow: '0 4px 20px rgba(0,0,0,0.3)'
             }}>
                 <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '1.5rem' }}>
-                    <Logo height="100px" style={{ width: 'auto', maxWidth: '80%' }} />
+                    <Logo height="100px" style={{ width: 'auto', maxWidth: '100%', objectFit: 'contain' }} />
                 </div>
                 <p style={{ fontSize: '1.2rem', color: '#ccc', marginBottom: '3rem' }}>
                     Discover, track, and share the best food in your city.

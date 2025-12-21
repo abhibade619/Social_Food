@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { loadPlacesLibrary } from '../utils/googleMaps';
 
-const LocationSelector = ({ currentLocation, onLocationChange }) => {
+const LocationSelector = ({ currentLocation, onLocationChange, displayCityOnly }) => {
     const [isOpen, setIsOpen] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
     const [suggestions, setSuggestions] = useState([]);
@@ -159,7 +159,13 @@ const LocationSelector = ({ currentLocation, onLocationChange }) => {
                         WebkitAppearance: 'none'
                     }}
                 >
-                    {(currentLocation && typeof currentLocation === 'object' ? currentLocation.name : currentLocation) || 'Select Location'}
+                    {(() => {
+                        const locName = (currentLocation && typeof currentLocation === 'object' ? currentLocation.name : currentLocation) || 'Select Location';
+                        if (displayCityOnly && locName !== 'Select Location') {
+                            return locName.split(',')[0];
+                        }
+                        return locName;
+                    })()}
                 </button>
                 <span className="dropdown-arrow" style={{ fontSize: '0.8rem', opacity: 0.7 }}>▼</span>
             </div>

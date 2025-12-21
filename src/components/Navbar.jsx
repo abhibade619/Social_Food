@@ -158,6 +158,7 @@ const Navbar = ({ currentView, setCurrentView, onNewLog, onAuthRequired }) => {
                     <LocationSelector
                         currentLocation={location}
                         onLocationChange={handleLocationChange}
+                        displayCityOnly={true}
                     />
                 </div>
 

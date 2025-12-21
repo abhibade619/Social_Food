@@ -6915,6 +6915,7 @@ input:checked+.toggle-slider:before {
 .filter-scroll-container::-webkit-scrollbar {
   display: none;
 }
+
 /* Mobile Profile Cropping Fixes */
 .profile-container-premium {
   width: 100%;
@@ -6942,11 +6943,11 @@ input:checked+.toggle-slider:before {
   .profile-container-premium {
     padding: 0.5rem 0.5rem 2rem;
   }
-  
+
   .profile-stats {
     gap: 0.5rem;
   }
-  
+
   .stat-item {
     min-width: auto;
     flex: 1;
@@ -6979,5 +6980,115 @@ input:checked+.toggle-slider:before {
     flex: 1;
     min-width: 0;
     max-width: calc(100% - 332px);
+  }
+}
+
+/* --- Mobile UI Overhaul --- */
+
+/* Utility Classes for Responsive Display */
+@media (min-width: 769px) {
+  .d-md-none {
+    display: none !important;
+  }
+
+  .d-md-block {
+    display: block !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .d-none {
+    display: none !important;
+  }
+
+  .d-block {
+    display: block !important;
+  }
+
+  /* Home Layout Reordering */
+  .home-layout {
+    flex-direction: column;
+  }
+
+  .home-sidebar {
+    width: 100% !important;
+    margin-top: 2rem;
+  }
+
+  /* Navbar Mobile Layout */
+  .navbar-content {
+    flex-wrap: wrap;
+    gap: 1rem;
+    justify-content: space-between;
+  }
+
+  .navbar-left {
+    order: 1;
+    flex: 0 0 auto;
+  }
+
+  .navbar-center {
+    order: 2;
+    flex: 1 1 auto;
+    /* Allow location to take available space */
+    min-width: 150px;
+    /* Ensure it doesn't shrink too much */
+    margin: 0;
+    /* Remove default margins if any */
+  }
+
+  .navbar-right {
+    order: 3;
+    flex: 0 0 auto;
+    /* Icons stay together */
+    gap: 0.5rem;
+    /* Reduce gap between icons */
+  }
+
+  /* Ensure Location Selector fits */
+  .location-selector-btn {
+    width: 100%;
+    padding: 0.5rem;
+    font-size: 0.9rem;
+  }
+
+  /* Profile Tabs Scrollable */
+  .profile-tabs {
+    flex-wrap: nowrap !important;
+    overflow-x: auto;
+    justify-content: flex-start !important;
+    padding-bottom: 0.5rem;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    /* Firefox */
+  }
+
+  .profile-tabs::-webkit-scrollbar {
+    display: none;
+    /* Chrome/Safari */
+  }
+
+  .tab-button {
+    flex: 0 0 auto;
+    /* Don't shrink */
+    white-space: nowrap;
+  }
+
+  /* Profile Stats Cropping Fix */
+  .profile-stats-premium {
+    flex-wrap: wrap;
+    gap: 1rem;
+    justify-content: center;
+  }
+
+  .stat-item-premium {
+    min-width: 80px;
+    /* Ensure minimum width */
+  }
+
+  /* Landing Page Logo Fix */
+  .hero-section svg {
+    max-width: 100%;
+    height: auto;
   }
 }

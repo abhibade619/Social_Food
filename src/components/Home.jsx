@@ -65,6 +65,12 @@ const Home = ({ onRestaurantClick, onViewProfile, onNewLog, lastUpdated }) => {
                                 />
                             </div>
                         )}
+
+                        {/* Mobile Leaderboard (Visible only on mobile) */}
+                        <div className="mobile-leaderboard d-md-none" style={{ marginBottom: '2rem' }}>
+                            <Leaderboard onViewProfile={onViewProfile} userLocation={location} />
+                        </div>
+
                         <PopularRestaurants
                             city={location.name.split(',')[0]}
                             userLocation={location}
@@ -76,8 +82,8 @@ const Home = ({ onRestaurantClick, onViewProfile, onNewLog, lastUpdated }) => {
                 )}
             </div>
 
-            {/* Sidebar for Leaderboard */}
-            <div className="home-sidebar" style={{ width: '300px', flexShrink: 0 }}>
+            {/* Sidebar for Leaderboard (Visible only on desktop) */}
+            <div className="home-sidebar d-none d-md-block" style={{ width: '300px', flexShrink: 0 }}>
                 <Leaderboard onViewProfile={onViewProfile} userLocation={location} />
             </div>
         </div>

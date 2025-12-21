@@ -559,28 +559,30 @@ const Profile = ({ onNavigate, onViewFollowers, onViewFollowing, triggerUpdate, 
                                 <p className="profile-bio-premium">{profile.bio}</p>
                             )}
 
-                            <div className="profile-stats-premium">
-                                <div className="stat-item-premium">
-                                    <span className="stat-value-premium">{userLogs.length}</span>
-                                    <span className="stat-label-premium">Logs</span>
+                            <div className="profile-stats-premium" style={{ display: 'flex', flexWrap: 'nowrap', overflowX: 'auto', justifyContent: 'flex-start', gap: '0.5rem', paddingBottom: '0.5rem' }}>
+                                <div className="stat-item-premium" style={{ flex: '0 0 auto', minWidth: '70px' }}>
+                                    <span className="stat-value-premium" style={{ fontSize: '1.1rem' }}>{userLogs.length}</span>
+                                    <span className="stat-label-premium" style={{ fontSize: '0.75rem' }}>Logs</span>
                                 </div>
-                                <div className="stat-item-premium">
-                                    <span className="stat-value-premium">{visitedRestaurants.length}</span>
-                                    <span className="stat-label-premium">Visited</span>
+                                <div className="stat-item-premium" style={{ flex: '0 0 auto', minWidth: '70px' }}>
+                                    <span className="stat-value-premium" style={{ fontSize: '1.1rem' }}>{visitedRestaurants.length}</span>
+                                    <span className="stat-label-premium" style={{ fontSize: '0.75rem' }}>Visited</span>
                                 </div>
                                 <div
                                     className="stat-item-premium clickable"
                                     onClick={() => onViewFollowers && onViewFollowers(user.id)}
+                                    style={{ flex: '0 0 auto', minWidth: '70px' }}
                                 >
-                                    <span className="stat-value-premium">{followerCount}</span>
-                                    <span className="stat-label-premium">Followers</span>
+                                    <span className="stat-value-premium" style={{ fontSize: '1.1rem' }}>{followerCount}</span>
+                                    <span className="stat-label-premium" style={{ fontSize: '0.75rem' }}>Followers</span>
                                 </div>
                                 <div
                                     className="stat-item-premium clickable"
                                     onClick={() => onViewFollowing && onViewFollowing(user.id)}
+                                    style={{ flex: '0 0 auto', minWidth: '70px' }}
                                 >
-                                    <span className="stat-value-premium">{followingCount}</span>
-                                    <span className="stat-label-premium">Following</span>
+                                    <span className="stat-value-premium" style={{ fontSize: '1.1rem' }}>{followingCount}</span>
+                                    <span className="stat-label-premium" style={{ fontSize: '0.75rem' }}>Following</span>
                                 </div>
                             </div>
 
@@ -594,7 +596,7 @@ const Profile = ({ onNavigate, onViewFollowers, onViewFollowing, triggerUpdate, 
 
             {!editing && (
                 <>
-                    <div className="profile-tabs" style={{ display: 'flex', justifyContent: 'center', gap: '2rem', marginBottom: '2rem', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
+                    <div className="profile-tabs" style={{ gap: '2rem', marginBottom: '2rem', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
                         <button
                             className={`tab-button ${activeTab === 'logs' ? 'active' : ''}`}
                             onClick={() => setActiveTab('logs')}
@@ -682,7 +684,9 @@ const Profile = ({ onNavigate, onViewFollowers, onViewFollowing, triggerUpdate, 
                                     visitedRestaurants.map((place) => (
                                         <div key={place.id} className="visited-card glass-panel" style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
                                             <h3 style={{ fontSize: '1.2rem', margin: 0 }}>{place.restaurant_name}</h3>
-                                            <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>{place.location}</p>
+                                            <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
+                                                {place.location || place.restaurant_data?.address || place.restaurant_data?.vicinity || 'Address not available'}
+                                            </p>
                                             <div style={{ marginTop: 'auto', paddingTop: '1rem' }}>
                                                 <button
                                                     className="btn-secondary btn-sm"
@@ -690,7 +694,7 @@ const Profile = ({ onNavigate, onViewFollowers, onViewFollowing, triggerUpdate, 
                                                         selectedRestaurant: {
                                                             place_id: place.place_id,
                                                             name: place.restaurant_name,
-                                                            address: place.location
+                                                            address: place.location || place.restaurant_data?.address || place.restaurant_data?.vicinity
                                                         }
                                                     })}
                                                 >
