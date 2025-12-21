@@ -72,6 +72,7 @@ function App() {
   }, []);
 
   const navigateTo = (view, state = {}) => {
+    window.scrollTo(0, 0);
     setCurrentView(view);
     if (state.selectedUser) setSelectedUser(state.selectedUser);
     if (state.selectedRestaurant) setSelectedRestaurant(state.selectedRestaurant);
