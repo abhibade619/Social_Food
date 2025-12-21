@@ -39,6 +39,14 @@ const Auth = () => {
                     throw new Error("This username is already taken. Please choose another one.");
                 }
 
+                // Check if email already exists using RPC
+                const { data: emailExists, error: emailCheckError } = await supabase
+                    .rpc('check_email_exists', { email_input: email });
+
+                if (emailExists) {
+                    throw new Error("This email already exists. Please sign in instead.");
+                }
+
                 const { error } = await signUp(email, password, username);
                 if (error) {
                     if (error.message.includes("User already registered") || error.message.includes("unique constraint")) {
@@ -131,13 +139,15 @@ const Auth = () => {
                 )}
 
                 <div className="form-group" style={{ marginBottom: '1rem' }}>
-                    <label htmlFor="email" style={{ display: 'block', marginBottom: '0.25rem', color: 'var(--text-secondary)', fontSize: '0.85rem', fontWeight: '500' }}>Email or Username</label>
+                    <label htmlFor="email" style={{ display: 'block', marginBottom: '0.25rem', color: 'var(--text-secondary)', fontSize: '0.85rem', fontWeight: '500' }}>
+                        {isSignUp ? 'Email Address' : 'Email or Username'}
+                    </label>
                     <input
                         id="email"
                         type="text"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
-                        placeholder="Enter your email or username"
+                        placeholder={isSignUp ? "Enter your email address" : "Enter your email or username"}
                         required
                         className="premium-input"
                         style={{ background: 'rgba(255, 255, 255, 0.05)', borderColor: 'rgba(255, 255, 255, 0.1)', padding: '0.8rem' }}
