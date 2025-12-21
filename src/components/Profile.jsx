@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { supabase } from '../supabaseClient';
 import { useAuth } from '../context/AuthProvider';
 import LogCard from './LogCard';
+import LocationSelector from './LocationSelector';
 import heic2any from 'heic2any';
 
 import CityBadgeCard from './CityBadgeCard';
@@ -24,6 +25,7 @@ const Profile = ({ onNavigate, onViewFollowers, onViewFollowing, triggerUpdate, 
         full_name: '',
         bio: '',
         website: '',
+        location: null,
         is_wishlist_private: false,
     });
 
@@ -109,6 +111,7 @@ const Profile = ({ onNavigate, onViewFollowers, onViewFollowing, triggerUpdate, 
                     full_name: data.full_name || '',
                     bio: data.bio || '',
                     website: data.website || '',
+                    location: data.location ? JSON.parse(data.location) : null,
                     is_wishlist_private: data.is_wishlist_private || false,
                 });
             }
@@ -360,11 +363,20 @@ const Profile = ({ onNavigate, onViewFollowers, onViewFollowing, triggerUpdate, 
         }
 
         try {
+            const locationString = formData.location ? JSON.stringify(formData.location) : null;
+
+            // Update local storage
+            if (locationString) {
+                localStorage.setItem('userLocation', locationString);
+                window.dispatchEvent(new Event('locationChanged'));
+            }
+
             const { error } = await supabase
                 .from('profiles')
                 .upsert({
                     id: user.id,
                     ...formData,
+                    location: locationString,
                     updated_at: new Date().toISOString(),
                 });
 
@@ -474,19 +486,22 @@ const Profile = ({ onNavigate, onViewFollowers, onViewFollowing, triggerUpdate, 
                     </div>
 
                     {editing ? (
-                        <form onSubmit={handleUpdate} className="profile-form glass-panel">
-                            <div className="form-group">
-                                <label htmlFor="username">Username</label>
+                        <form onSubmit={handleUpdate} className="profile-form glass-panel" style={{ padding: '2rem', borderRadius: '16px', border: '1px solid rgba(255, 255, 255, 0.1)', background: 'rgba(20, 20, 20, 0.6)', backdropFilter: 'blur(10px)' }}>
+                            <h3 style={{ marginBottom: '1.5rem', fontSize: '1.5rem', fontWeight: '600', color: 'var(--text-primary)' }}>Edit Profile</h3>
+
+                            <div className="form-group" style={{ marginBottom: '1.5rem' }}>
+                                <label htmlFor="username" style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--text-secondary)', fontSize: '0.9rem' }}>Username</label>
                                 <input
                                     id="username"
                                     type="text"
                                     value={formData.username}
                                     onChange={(e) => setFormData({ ...formData, username: e.target.value })}
                                     className="premium-input"
+                                    style={{ width: '100%', padding: '0.8rem', borderRadius: '8px', background: 'rgba(255, 255, 255, 0.05)', border: '1px solid rgba(255, 255, 255, 0.1)', color: 'white' }}
                                 />
                             </div>
-                            <div className="form-group">
-                                <label htmlFor="full_name">Full Name</label>
+                            <div className="form-group" style={{ marginBottom: '1.5rem' }}>
+                                <label htmlFor="full_name" style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--text-secondary)', fontSize: '0.9rem' }}>Full Name</label>
                                 <input
                                     id="full_name"
                                     type="text"
@@ -494,28 +509,53 @@ const Profile = ({ onNavigate, onViewFollowers, onViewFollowing, triggerUpdate, 
                                     onChange={(e) => setFormData({ ...formData, full_name: e.target.value })}
                                     className="premium-input"
                                     required
+                                    style={{ width: '100%', padding: '0.8rem', borderRadius: '8px', background: 'rgba(255, 255, 255, 0.05)', border: '1px solid rgba(255, 255, 255, 0.1)', color: 'white' }}
                                 />
                             </div>
-                            <div className="form-group">
-                                <label htmlFor="website">Website</label>
+                            <div className="form-group" style={{ marginBottom: '1.5rem' }}>
+                                <label htmlFor="website" style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--text-secondary)', fontSize: '0.9rem' }}>Website</label>
                                 <input
                                     id="website"
                                     type="url"
                                     value={formData.website}
                                     onChange={(e) => setFormData({ ...formData, website: e.target.value })}
                                     className="premium-input"
+                                    style={{ width: '100%', padding: '0.8rem', borderRadius: '8px', background: 'rgba(255, 255, 255, 0.05)', border: '1px solid rgba(255, 255, 255, 0.1)', color: 'white' }}
                                 />
                             </div>
-                            <div className="form-group">
-                                <label htmlFor="bio">Bio</label>
+                            <div className="form-group" style={{ marginBottom: '1.5rem' }}>
+                                <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--text-secondary)', fontSize: '0.9rem' }}>Location</label>
+                                <LocationSelector
+                                    currentLocation={formData.location}
+                                    onLocationChange={(newLocation) => setFormData({ ...formData, location: newLocation })}
+                                    displayCityOnly={true}
+                                />
+                            </div>
+                            <div className="form-group" style={{ marginBottom: '1.5rem' }}>
+                                <label htmlFor="bio" style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--text-secondary)', fontSize: '0.9rem' }}>Bio</label>
                                 <textarea
                                     id="bio"
                                     rows="4"
+                                    maxLength={50}
                                     value={formData.bio}
                                     onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
                                     placeholder="Tell us about yourself..."
                                     className="premium-input"
+                                    style={{
+                                        width: '100%',
+                                        padding: '0.8rem',
+                                        borderRadius: '8px',
+                                        background: 'rgba(255, 255, 255, 0.05)',
+                                        border: '1px solid rgba(255, 255, 255, 0.1)',
+                                        color: 'white',
+                                        resize: 'vertical',
+                                        lineHeight: '1.5',
+                                        verticalAlign: 'top'
+                                    }}
                                 />
+                                <div style={{ textAlign: 'right', fontSize: '0.8rem', color: 'var(--text-secondary)', marginTop: '0.25rem' }}>
+                                    {formData.bio.length}/50
+                                </div>
                             </div>
                             <div className="form-group">
                                 <label htmlFor="avatar">Profile Picture</label>

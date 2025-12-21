@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { supabase } from '../supabaseClient';
 import { useAuth } from '../context/AuthProvider';
+import LocationSelector from './LocationSelector';
 
 const ProfileSetup = ({ onComplete }) => {
     const { user } = useAuth();
@@ -8,6 +9,7 @@ const ProfileSetup = ({ onComplete }) => {
         username: user?.user_metadata?.username || '',
         full_name: '',
         bio: '',
+        location: null,
     });
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
@@ -15,6 +17,10 @@ const ProfileSetup = ({ onComplete }) => {
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData(prev => ({ ...prev, [name]: value }));
+    };
+
+    const handleLocationChange = (newLocation) => {
+        setFormData(prev => ({ ...prev, location: newLocation }));
     };
 
     const handleSubmit = async (e) => {
@@ -49,6 +55,13 @@ const ProfileSetup = ({ onComplete }) => {
                 full_name: formData.full_name,
                 updated_at: new Date().toISOString(),
             };
+
+            if (formData.location) {
+                profileData.location = JSON.stringify(formData.location);
+                // Also update local storage and dispatch event immediately
+                localStorage.setItem('userLocation', JSON.stringify(formData.location));
+                window.dispatchEvent(new Event('locationChanged'));
+            }
 
             // Only add bio if it's not empty, but if the column is missing, this will still fail.
             // We'll try to insert with bio first (if provided), and if it fails with specific error, retry without.
@@ -121,6 +134,17 @@ const ProfileSetup = ({ onComplete }) => {
                             placeholder="Your full name"
                             required
                         />
+                    </div>
+
+                    <div className="form-group">
+                        <label>City/Location</label>
+                        <div style={{ width: '100%' }}>
+                            <LocationSelector
+                                currentLocation={formData.location}
+                                onLocationChange={handleLocationChange}
+                                displayCityOnly={false}
+                            />
+                        </div>
                     </div>
 
                     <div className="form-group">

@@ -7092,3 +7092,58 @@ input:checked+.toggle-slider:before {
     height: auto;
   }
 }
+
+/* User requested navbar flex fixes */
+.navbar-left {
+  flex: 0 0 auto !important;
+}
+
+.navbar-center {
+  flex: 0 1 auto !important;
+}
+
+.navbar-right {
+  flex: 0 0 auto !important;
+}
+
+/* Mobile Navbar Layout Fix - Robust */
+@media (max-width: 768px) {
+  .navbar .navbar-content {
+    flex-wrap: wrap !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    padding: 0.5rem 1rem !important;
+    height: auto !important;
+  }
+
+  .navbar .navbar-left {
+    order: 1 !important;
+    flex: 0 1 auto !important;
+    width: auto !important;
+  }
+
+  .navbar .navbar-right {
+    order: 2 !important;
+    flex: 0 1 auto !important;
+    width: auto !important;
+    justify-content: flex-end !important;
+  }
+
+  .navbar .navbar-center {
+    order: 3 !important;
+    flex: 1 0 100% !important;
+    width: 100% !important;
+    margin-top: 0.75rem !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    display: flex !important;
+    justify-content: center !important;
+  }
+
+  /* Ensure location container fits nicely */
+  .navbar .navbar-center .location-container {
+    width: auto !important;
+    max-width: 100% !important;
+    justify-content: center !important;
+  }
+}

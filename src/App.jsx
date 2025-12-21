@@ -81,9 +81,32 @@ function App() {
   };
 
   useEffect(() => {
+    window.supabase = supabase; // Debugging
     if (user) {
       checkProfileCompletion();
       setShowAuthModal(false); // Close auth modal on successful login
+
+      // Load user location
+      const loadUserLocation = async () => {
+        try {
+          const { data, error } = await supabase
+            .from('profiles')
+            .select('location')
+            .eq('id', user.id)
+            .single();
+
+          if (data && data.location) {
+            // Update local storage
+            localStorage.setItem('userLocation', data.location);
+            // Dispatch event
+            window.dispatchEvent(new Event('locationChanged'));
+          }
+        } catch (err) {
+          console.error("Error loading user location in App:", err);
+        }
+      };
+      loadUserLocation();
+
     } else {
       setCheckingProfile(false);
     }

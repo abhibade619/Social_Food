@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthProvider';
 import { supabase } from '../supabaseClient';
-import LocationSelector from './LocationSelector';
+// import LocationSelector from './LocationSelector';
 import UserMenu from './UserMenu';
 import { useTheme } from '../context/ThemeContext';
 import Logo from './Logo';
@@ -14,19 +14,6 @@ const Navbar = ({ currentView, setCurrentView, onNewLog, onAuthRequired }) => {
     const [unreadCount, setUnreadCount] = useState(0);
 
     useEffect(() => {
-        const savedLocation = localStorage.getItem('userLocation');
-        if (savedLocation) {
-            try {
-                const parsed = JSON.parse(savedLocation);
-                setLocation(parsed);
-            } catch {
-                // Handle legacy plain string in local storage
-                setLocation({ name: savedLocation, lat: null, lng: null });
-            }
-        } else {
-            loadUserProfile();
-        }
-
         if (user) {
             loadUserProfile();
         }
@@ -90,18 +77,8 @@ const Navbar = ({ currentView, setCurrentView, onNewLog, onAuthRequired }) => {
                 .single();
 
             if (data) {
-                // Handle Location
-                if (data.location) {
-                    try {
-                        const parsed = JSON.parse(data.location);
-                        setLocation(parsed);
-                        localStorage.setItem('userLocation', JSON.stringify(parsed));
-                    } catch {
-                        const locationObj = { name: data.location, lat: null, lng: null };
-                        setLocation(locationObj);
-                        localStorage.setItem('userLocation', JSON.stringify(locationObj));
-                    }
-                }
+                // Handle Location - Logic moved to App/AccountInfo
+                // if (data.location) { ... }
 
                 // Handle Avatar
                 if (data.avatar_url) {
@@ -113,29 +90,7 @@ const Navbar = ({ currentView, setCurrentView, onNewLog, onAuthRequired }) => {
         }
     };
 
-    const handleLocationChange = async (newLocation) => {
-        setLocation(newLocation);
-        // Ensure we store stringified JSON
-        const locationString = JSON.stringify(newLocation);
-        localStorage.setItem('userLocation', locationString);
-
-        // Dispatch event for other components
-        window.dispatchEvent(new Event('locationChanged'));
-
-        if (user) {
-            try {
-                await supabase
-                    .from('profiles')
-                    .upsert({
-                        id: user.id,
-                        location: locationString, // Store as JSON string in DB too
-                        updated_at: new Date().toISOString(),
-                    });
-            } catch (error) {
-                console.error('Error saving location:', error);
-            }
-        }
-    };
+    // handleLocationChange moved/removed
 
     const handleSignOut = async () => {
         console.log("Navbar: handleSignOut called");
@@ -155,11 +110,7 @@ const Navbar = ({ currentView, setCurrentView, onNewLog, onAuthRequired }) => {
                 </div>
 
                 <div className="navbar-center">
-                    <LocationSelector
-                        currentLocation={location}
-                        onLocationChange={handleLocationChange}
-                        displayCityOnly={true}
-                    />
+                    {/* Location Selector removed */}
                 </div>
 
                 <div className="navbar-right">

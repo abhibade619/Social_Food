@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useAuth } from '../context/AuthProvider';
+import { supabase } from '../supabaseClient';
 import Logo from './Logo';
 
 const Auth = () => {
@@ -27,8 +28,24 @@ const Auth = () => {
                 setSuccess('✅ Password reset link sent! Check your email.');
                 // Don't clear email so they can see where it went
             } else if (isSignUp) {
+                // Check if username already exists
+                const { data: existingUser, error: checkError } = await supabase
+                    .from('profiles')
+                    .select('username')
+                    .eq('username', username)
+                    .single();
+
+                if (existingUser) {
+                    throw new Error("This username is already taken. Please choose another one.");
+                }
+
                 const { error } = await signUp(email, password, username);
-                if (error) throw error;
+                if (error) {
+                    if (error.message.includes("User already registered") || error.message.includes("unique constraint")) {
+                        throw new Error("This email already exists. Please sign in instead.");
+                    }
+                    throw error;
+                }
 
                 // Show success message
                 setSuccess('✅ Account created! Please check your email for a confirmation link before signing in.');
@@ -45,7 +62,22 @@ const Auth = () => {
 
                 // No auto-redirect. User must confirm email first.
             } else {
-                const { error } = await signIn(email, password);
+                let signInEmail = email;
+                // Check if input is an email
+                const isEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+
+                if (!isEmail) {
+                    // Try to resolve username to email
+                    const { data: resolvedEmail, error: resolveError } = await supabase
+                        .rpc('get_email_by_username', { username_input: email });
+
+                    if (resolveError || !resolvedEmail) {
+                        throw new Error("Username not found or invalid credentials.");
+                    }
+                    signInEmail = resolvedEmail;
+                }
+
+                const { error } = await signIn(signInEmail, password);
                 if (error) throw error;
             }
         } catch (err) {
@@ -99,13 +131,13 @@ const Auth = () => {
                 )}
 
                 <div className="form-group" style={{ marginBottom: '1rem' }}>
-                    <label htmlFor="email" style={{ display: 'block', marginBottom: '0.25rem', color: 'var(--text-secondary)', fontSize: '0.85rem', fontWeight: '500' }}>Email Address</label>
+                    <label htmlFor="email" style={{ display: 'block', marginBottom: '0.25rem', color: 'var(--text-secondary)', fontSize: '0.85rem', fontWeight: '500' }}>Email or Username</label>
                     <input
                         id="email"
-                        type="email"
+                        type="text"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
-                        placeholder="Enter your email"
+                        placeholder="Enter your email or username"
                         required
                         className="premium-input"
                         style={{ background: 'rgba(255, 255, 255, 0.05)', borderColor: 'rgba(255, 255, 255, 0.1)', padding: '0.8rem' }}

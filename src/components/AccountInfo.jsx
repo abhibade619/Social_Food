@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthProvider';
 import { supabase } from '../supabaseClient';
 
@@ -7,6 +7,34 @@ const AccountInfo = ({ onNavigate }) => {
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [deleteConfirmation, setDeleteConfirmation] = useState('');
     const [isDeleting, setIsDeleting] = useState(false);
+    const [location, setLocation] = useState(null);
+
+    // Load location on mount
+    useEffect(() => {
+        const loadLocation = async () => {
+            if (!user) return;
+            try {
+                const { data, error } = await supabase
+                    .from('profiles')
+                    .select('location')
+                    .eq('id', user.id)
+                    .single();
+
+                if (data && data.location) {
+                    try {
+                        setLocation(JSON.parse(data.location));
+                    } catch {
+                        setLocation({ name: data.location, lat: null, lng: null });
+                    }
+                }
+            } catch (err) {
+                console.error("Error loading location:", err);
+            }
+        };
+        loadLocation();
+    }, [user]);
+
+
 
     const formatDate = (dateString) => {
         if (!dateString) return 'N/A';
@@ -67,6 +95,12 @@ const AccountInfo = ({ onNavigate }) => {
                             <span className="info-icon">🕒</span> Last Seen
                         </span>
                         <span className="info-value">{formatDate(user?.last_sign_in_at)}</span>
+                    </div>
+                    <div className="info-row-premium">
+                        <span className="info-label-premium">
+                            <span className="info-icon">📍</span> Location
+                        </span>
+                        <span className="info-value">{location?.name || 'Not set'}</span>
                     </div>
                 </div>
 
