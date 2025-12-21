@@ -254,28 +254,30 @@ const UserProfile = ({ userId, onNavigate, onRestaurantClick, onViewFollowers, o
                         <p className="profile-bio-premium">{profile.bio}</p>
                     )}
 
-                    <div className="profile-stats-premium">
-                        <div className="stat-item-premium">
-                            <span className="stat-value-premium">{stats.totalLogs}</span>
-                            <span className="stat-label-premium">Logs</span>
+                    <div className="profile-stats-premium" style={{ display: 'flex', flexWrap: 'nowrap', overflowX: 'auto', justifyContent: 'flex-start', gap: '0.5rem', paddingBottom: '0.5rem' }}>
+                        <div className="stat-item-premium" style={{ flex: '0 0 auto', minWidth: '70px' }}>
+                            <span className="stat-value-premium" style={{ fontSize: '1.1rem' }}>{stats.totalLogs}</span>
+                            <span className="stat-label-premium" style={{ fontSize: '0.75rem' }}>Logs</span>
                         </div>
-                        <div className="stat-item-premium">
-                            <span className="stat-value-premium">{stats.totalVisited}</span>
-                            <span className="stat-label-premium">Visited</span>
+                        <div className="stat-item-premium" style={{ flex: '0 0 auto', minWidth: '70px' }}>
+                            <span className="stat-value-premium" style={{ fontSize: '1.1rem' }}>{stats.totalVisited}</span>
+                            <span className="stat-label-premium" style={{ fontSize: '0.75rem' }}>Visited</span>
                         </div>
                         <div
                             className="stat-item-premium"
                             onClick={() => onViewFollowers && onViewFollowers(userId)}
+                            style={{ flex: '0 0 auto', minWidth: '70px' }}
                         >
-                            <span className="stat-value-premium">{stats.followers}</span>
-                            <span className="stat-label-premium">Followers</span>
+                            <span className="stat-value-premium" style={{ fontSize: '1.1rem' }}>{stats.followers}</span>
+                            <span className="stat-label-premium" style={{ fontSize: '0.75rem' }}>Followers</span>
                         </div>
                         <div
                             className="stat-item-premium"
                             onClick={() => onViewFollowing && onViewFollowing(userId)}
+                            style={{ flex: '0 0 auto', minWidth: '70px' }}
                         >
-                            <span className="stat-value-premium">{stats.following}</span>
-                            <span className="stat-label-premium">Following</span>
+                            <span className="stat-value-premium" style={{ fontSize: '1.1rem' }}>{stats.following}</span>
+                            <span className="stat-label-premium" style={{ fontSize: '0.75rem' }}>Following</span>
                         </div>
                     </div>
 

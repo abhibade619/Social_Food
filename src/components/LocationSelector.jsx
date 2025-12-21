@@ -118,24 +118,24 @@ const LocationSelector = ({ currentLocation, onLocationChange, displayCityOnly }
     };
 
     return (
-        <div className="location-selector" ref={dropdownRef} style={{ position: 'relative', width: '100%' }}>
+        <div className="location-selector" ref={dropdownRef} style={{ position: 'relative', display: 'inline-block' }}>
             <div
                 className="location-container"
                 onClick={() => setIsOpen(!isOpen)}
                 style={{
-                    display: 'flex',
+                    display: 'inline-flex',
                     alignItems: 'center',
                     gap: '8px',
-                    padding: '6px 16px',
+                    padding: '6px 12px',
                     border: '1px solid var(--border-color)',
                     borderRadius: '20px',
                     cursor: 'pointer',
                     background: 'rgba(255, 255, 255, 0.05)',
-                    width: 'fit-content',
-                    minWidth: '200px'
+                    width: 'auto',
+                    maxWidth: '100%'
                 }}
             >
-                <div className="location-icon-wrapper" style={{ display: 'flex', alignItems: 'center', color: '#D4AF37' }}>
+                <div className="location-icon-wrapper" style={{ display: 'flex', alignItems: 'center', color: '#D4AF37', flexShrink: 0 }}>
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                         <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
                         <circle cx="12" cy="10" r="3"></circle>
@@ -152,11 +152,11 @@ const LocationSelector = ({ currentLocation, onLocationChange, displayCityOnly }
                         color: 'var(--text-primary)',
                         fontSize: '0.9rem',
                         cursor: 'pointer',
-                        flex: 1,
                         textAlign: 'left',
                         boxShadow: 'none !important',
                         appearance: 'none',
-                        WebkitAppearance: 'none'
+                        WebkitAppearance: 'none',
+                        whiteSpace: 'nowrap'
                     }}
                 >
                     {(() => {

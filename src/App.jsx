@@ -130,6 +130,11 @@ function App() {
     setShowLogModal(true);
   };
 
+  const handleEditLog = (log) => {
+    setInitialLogData(log);
+    setShowLogModal(true);
+  };
+
   const handleAuthRequired = () => {
     setShowAuthModal(true);
   };
@@ -347,6 +352,7 @@ function App() {
           onViewFollowing={handleViewFollowing}
           triggerUpdate={triggerUpdate}
           lastUpdated={lastUpdated}
+          onEditLog={handleEditLog}
         />;
       case 'wishlist':
         return <Wishlist onRestaurantClick={handleNavigateToRestaurant} />;

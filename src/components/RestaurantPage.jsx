@@ -274,16 +274,16 @@ const RestaurantPage = ({ restaurant, onBack, onNewLog, onViewProfile, triggerUp
         <div className="restaurant-page container">
             <div className="restaurant-header-premium">
                 <div className="restaurant-hero">
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                         <h1 className="restaurant-title-large" style={{ margin: 0, flex: 1 }}>{restaurant.name || 'Restaurant Details'}</h1>
                         <button
                             className={`btn-wishlist-icon ${isInWishlist ? 'active' : ''}`}
                             onClick={toggleWishlist}
                             disabled={wishlistLoading}
                             title={isInWishlist ? "Remove from Wishlist" : "Add to Wishlist"}
-                            style={{ marginLeft: '1rem' }}
+                            style={{ marginLeft: '1rem', padding: '8px' }}
                         >
-                            <HeartIcon filled={isInWishlist} className="icon-md" />
+                            <HeartIcon filled={isInWishlist} style={{ width: '32px', height: '32px' }} />
                         </button>
                     </div>
                     <div className="restaurant-badges" style={{ marginTop: '0.5rem' }}>
@@ -310,10 +310,19 @@ const RestaurantPage = ({ restaurant, onBack, onNewLog, onViewProfile, triggerUp
                                 display: 'flex',
                                 alignItems: 'center',
                                 justifyContent: 'center',
-                                height: '48px'
+                                height: '56px',
+                                background: 'linear-gradient(135deg, #D4AF37 0%, #F2C94C 100%)',
+                                color: '#000',
+                                fontWeight: 'bold',
+                                fontSize: '0.9rem',
+                                borderRadius: '16px',
+                                border: 'none',
+                                boxShadow: '0 4px 15px rgba(212, 175, 55, 0.3)',
+                                whiteSpace: 'nowrap',
+                                padding: '0 12px'
                             }}
                         >
-                            📝 Log your visit
+                            📝 Log Visit
                         </button>
                         <button
                             className={`btn-icon-premium large ${isVisited ? 'visited' : ''}`}

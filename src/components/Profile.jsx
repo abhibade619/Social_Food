@@ -6,7 +6,7 @@ import heic2any from 'heic2any';
 
 import CityBadgeCard from './CityBadgeCard';
 
-const Profile = ({ onNavigate, onViewFollowers, onViewFollowing, triggerUpdate, lastUpdated }) => {
+const Profile = ({ onNavigate, onViewFollowers, onViewFollowing, triggerUpdate, lastUpdated, onEditLog }) => {
     const { user } = useAuth();
     const [profile, setProfile] = useState(null);
     const [userLogs, setUserLogs] = useState([]);
@@ -669,7 +669,14 @@ const Profile = ({ onNavigate, onViewFollowers, onViewFollowing, triggerUpdate, 
                                 {userLogs.length > 0 ? (
                                     <div className="logs-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))', gap: '1.5rem', justifyContent: 'start' }}>
                                         {userLogs.map((log) => (
-                                            <LogCard key={log.id} log={log} isDiaryView={true} profileOwner={profile || user} />
+                                            <LogCard
+                                                key={log.id}
+                                                log={log}
+                                                isDiaryView={true}
+                                                profileOwner={profile || user}
+                                                onClick={() => onEditLog && onEditLog(log)}
+                                                onRestaurantClick={(restaurant) => onNavigate && onNavigate('restaurant', { selectedRestaurant: restaurant })}
+                                            />
                                         ))}
                                     </div>
                                 ) : (

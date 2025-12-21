@@ -12,7 +12,13 @@ const isConfigured =
 
 // Create a dummy client if not configured (for development)
 export const supabase = isConfigured
-    ? createClient(supabaseUrl, supabaseAnonKey)
+    ? createClient(supabaseUrl, supabaseAnonKey, {
+        auth: {
+            persistSession: true,
+            autoRefreshToken: true,
+            detectSessionInUrl: true
+        }
+    })
     : createClient('https://placeholder.supabase.co', 'placeholder-key');
 
 export const isSupabaseConfigured = isConfigured;
