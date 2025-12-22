@@ -100,12 +100,24 @@ const Navbar = ({ currentView, setCurrentView, onNewLog, onAuthRequired }) => {
         window.location.reload();
     };
 
+    const [isMobile, setIsMobile] = useState(false);
+
+    useEffect(() => {
+        const checkMobile = () => {
+            const isMobileDevice = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+            setIsMobile(isMobileDevice);
+        };
+        checkMobile();
+        window.addEventListener('resize', checkMobile);
+        return () => window.removeEventListener('resize', checkMobile);
+    }, []);
+
     return (
-        <nav className="navbar">
+        <nav className={`navbar ${isMobile ? 'mobile-force' : ''}`}>
             <div className="navbar-content container">
                 <div className="navbar-left">
                     <div className="logo" onClick={() => setCurrentView('home')} style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
-                        <Logo height="50px" />
+                        <Logo height="45px" />
                     </div>
                 </div>
 

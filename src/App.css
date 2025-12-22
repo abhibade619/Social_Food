@@ -7147,6 +7147,7 @@ input:checked+.toggle-slider:before {
     justify-content: center !important;
   }
 }
+
 /* City Badge Card */
 .city-badge-card {
   background: linear-gradient(135deg, #2c3e50 0%, #000000 100%);
@@ -7254,19 +7255,36 @@ input:checked+.toggle-slider:before {
 
 .main-feed {
   flex: 1;
-  min-width: 0; /* Prevent flex item from overflowing */
+  min-width: 0;
+  /* Prevent flex item from overflowing */
 }
 
 
 /* Utility Classes for Responsive Design */
-.d-none { display: none !important; }
-.d-block { display: block !important; }
-.d-flex { display: flex !important; }
+.d-none {
+  display: none !important;
+}
+
+.d-block {
+  display: block !important;
+}
+
+.d-flex {
+  display: flex !important;
+}
 
 @media (min-width: 768px) {
-  .d-md-none { display: none !important; }
-  .d-md-block { display: block !important; }
-  .d-md-flex { display: flex !important; }
+  .d-md-none {
+    display: none !important;
+  }
+
+  .d-md-block {
+    display: block !important;
+  }
+
+  .d-md-flex {
+    display: flex !important;
+  }
 }
 
 
@@ -7280,10 +7298,29 @@ input:checked+.toggle-slider:before {
   padding-left: 1rem;
 }
 
-@media (min-width: 576px) { .container { max-width: 540px; } }
-@media (min-width: 768px) { .container { max-width: 720px; } }
-@media (min-width: 992px) { .container { max-width: 960px; } }
-@media (min-width: 1200px) { .container { max-width: 1140px; } }
+@media (min-width: 576px) {
+  .container {
+    max-width: 540px;
+  }
+}
+
+@media (min-width: 768px) {
+  .container {
+    max-width: 720px;
+  }
+}
+
+@media (min-width: 992px) {
+  .container {
+    max-width: 960px;
+  }
+}
+
+@media (min-width: 1200px) {
+  .container {
+    max-width: 1140px;
+  }
+}
 
 
 /* Navbar Styles */
@@ -7306,7 +7343,8 @@ input:checked+.toggle-slider:before {
   height: 100%;
 }
 
-.navbar-left, .navbar-right {
+.navbar-left,
+.navbar-right {
   display: flex;
   align-items: center;
   gap: 1rem;
@@ -7332,7 +7370,8 @@ input:checked+.toggle-slider:before {
   position: relative;
 }
 
-.nav-icon-btn:hover, .nav-icon-btn.active {
+.nav-icon-btn:hover,
+.nav-icon-btn.active {
   color: var(--primary-color);
   background: rgba(255, 107, 107, 0.1);
 }
@@ -7356,13 +7395,15 @@ input:checked+.toggle-slider:before {
   width: 300px;
   flex-shrink: 0;
   position: sticky;
-  top: 90px; /* Navbar height + spacing */
+  top: 90px;
+  /* Navbar height + spacing */
   height: fit-content;
 }
 
 /* Navbar Alignment Fixes */
 .navbar-content {
-  max-width: 1200px; /* Match container max-width */
+  max-width: 1200px;
+  /* Match container max-width */
   margin: 0 auto;
   padding: 0 1rem;
 }
@@ -7380,18 +7421,21 @@ input:checked+.toggle-slider:before {
 
 
 /* Fix for 'Desktop site' on mobile */
-html, body {
+html,
+body {
   width: 100%;
   overflow-x: hidden;
 }
 
 * {
   max-width: 100%;
-  box-sizing: border-box; /* Ensure padding doesn't overflow width */
+  box-sizing: border-box;
+  /* Ensure padding doesn't overflow width */
 }
 
 /* Key fix: treat touch devices like mobile even in 'Desktop site' mode */
 @media (hover: none) and (pointer: coarse) {
+
   /* Make multi-column layouts become single column */
   .home-layout {
     flex-direction: column !important;
@@ -7403,7 +7447,8 @@ html, body {
     width: 100% !important;
     max-width: 100% !important;
     position: static !important;
-    display: block !important; /* Ensure it shows up stacked */
+    display: block !important;
+    /* Ensure it shows up stacked */
     margin-top: 2rem;
   }
 
@@ -7412,7 +7457,7 @@ html, body {
     flex: none !important;
     min-width: 0 !important;
   }
-  
+
   /* Hide the mobile-only leaderboard if we are showing the sidebar stacked */
   .mobile-leaderboard {
     display: none !important;
@@ -7422,20 +7467,22 @@ html, body {
 
 /* Strict Navbar Alignment Fixes */
 .navbar {
-  height: 70px; /* Fixed height */
+  height: 70px;
+  /* Fixed height */
   display: flex;
   align-items: center;
 }
 
 .navbar-content {
   display: flex;
-  align-items: center; /* Vertically center everything */
+  align-items: center;
+  /* Vertically center everything */
   justify-content: space-between;
   height: 100%;
 }
 
-.navbar-left, 
-.navbar-right, 
+.navbar-left,
+.navbar-right,
 .navbar-center {
   display: flex;
   align-items: center;
@@ -7449,7 +7496,8 @@ html, body {
 }
 
 .logo-image {
-  max-height: 40px; /* Ensure logo doesn't overflow */
+  max-height: 40px;
+  /* Ensure logo doesn't overflow */
   width: auto;
 }
 
@@ -7466,7 +7514,8 @@ html, body {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  height: 40px; /* Match icon height */
+  height: 40px;
+  /* Match icon height */
 }
 
 
@@ -7493,7 +7542,8 @@ html, body {
 .navbar-right {
   display: flex;
   align-items: center;
-  gap: 0.5rem; /* Reduce gap slightly to fit better */
+  gap: 0.5rem;
+  /* Reduce gap slightly to fit better */
 }
 
 
@@ -7534,7 +7584,8 @@ html, body {
 .menu-dropdown {
   position: absolute;
   top: 100%;
-  right: 0; /* Anchor to right to prevent cropping */
+  right: 0;
+  /* Anchor to right to prevent cropping */
   margin-top: 0.5rem;
   background: var(--bg-card);
   border: 1px solid var(--border-color);
@@ -7575,5 +7626,347 @@ html, body {
 
 .menu-item:hover .menu-icon {
   color: var(--primary-color);
+}
+
+
+/* Mobile Navbar Optimization */
+@media (max-width: 576px) {
+  .navbar-content {
+    padding: 0 0.5rem !important;
+    /* Reduce padding */
+  }
+
+  .navbar-right {
+    gap: 0.25rem !important;
+    /* Tighten icons */
+  }
+
+  .nav-icon-btn {
+    padding: 6px !important;
+    /* Smaller touch target padding */
+    width: 36px !important;
+    height: 36px !important;
+  }
+
+  .logo-image {
+    max-height: 32px !important;
+    /* Slightly smaller logo */
+  }
+
+  .user-menu-trigger {
+    gap: 0.25rem !important;
+  }
+
+  .nav-avatar {
+    width: 28px !important;
+    height: 28px !important;
+  }
+}
+
+
+/* Aggressive Mobile Navbar Fixes */
+@media (max-width: 576px) {
+  .navbar-center {
+    display: none !important;
+    /* Remove completely to free space */
+  }
+
+  .navbar-left {
+    flex: 0 0 auto !important;
+    margin-right: auto !important;
+    /* Push right section to the right */
+  }
+
+  .navbar-right {
+    flex: 0 0 auto !important;
+    width: auto !important;
+  }
+
+  .logo-container {
+    height: 30px !important;
+    /* Force smaller height */
+    width: auto !important;
+  }
+
+  .logo-image {
+    height: 100% !important;
+    width: auto !important;
+    max-width: 120px !important;
+    /* Cap width just in case */
+  }
+
+  /* Ensure container doesn't add too much padding */
+  .navbar-content {
+    padding-left: 8px !important;
+    padding-right: 8px !important;
+  }
+}
+
+
+/* ROBUST Mobile Navbar Fixes (Applies to Touch Devices in ANY mode) */
+@media (hover: none) and (pointer: coarse) {
+  .navbar-center {
+    display: none !important;
+  }
+
+  .navbar-left {
+    flex: 0 0 auto !important;
+    margin-right: auto !important;
+    min-width: 40px !important;
+    z-index: 102 !important;
+    display: flex !important;
+    align-items: center !important;
+    /* Ensure vertical center */
+    opacity: 1 !important;
+    visibility: visible !important;
+  }
+
+  .navbar-right {
+    flex: 0 0 auto !important;
+    width: auto !important;
+    z-index: 102 !important;
+    display: flex !important;
+    align-items: center !important;
+    /* Ensure vertical center */
+    gap: 0.5rem !important;
+  }
+
+  .logo-container {
+    height: 40px !important;
+    /* Increased from 30px */
+    width: auto !important;
+    display: flex !important;
+    align-items: center !important;
+  }
+
+  .logo-image {
+    height: 100% !important;
+    width: auto !important;
+    max-width: 140px !important;
+    /* Increased max-width */
+    display: block !important;
+  }
+
+  .nav-icon-btn {
+    width: 44px !important;
+    /* Increased touch target */
+    height: 44px !important;
+    padding: 8px !important;
+  }
+
+  .nav-avatar {
+    width: 36px !important;
+    /* Increased avatar size */
+    height: 36px !important;
+  }
+
+  .navbar-content {
+    padding-left: 12px !important;
+    /* Slightly more breathing room */
+    padding-right: 12px !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    /* Critical for vertical alignment */
+  }
+}
+
+/* FINAL CORRECTIVE FIXES for Mobile Navbar (Overrides all previous) */
+@media (max-width: 576px),
+(hover: none) and (pointer: coarse) {
+  .navbar {
+    align-items: center !important;
+  }
+
+  .navbar-content {
+    align-items: center !important;
+    height: 100% !important;
+    padding: 0 4px !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+  }
+
+  .navbar-left {
+    display: flex !important;
+    align-items: center !important;
+    height: 100% !important;
+    flex: 0 1 auto !important;
+    min-width: 0 !important;
+    margin-right: auto !important;
+  }
+
+  .navbar-right {
+    display: flex !important;
+    align-items: center !important;
+    height: 100% !important;
+    flex: 0 0 auto !important;
+    gap: 2px !important;
+  }
+
+  .logo-container {
+    height: 45px !important;
+    /* Increased to 45px */
+    width: auto !important;
+    display: flex !important;
+    align-items: center !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  .logo-image {
+    height: 100% !important;
+    width: auto !important;
+    max-width: 100% !important;
+    object-fit: contain !important;
+    display: block !important;
+  }
+
+  .nav-icon-btn {
+    width: 48px !important;
+    /* Increased to 48px */
+    height: 48px !important;
+    padding: 8px !important;
+    margin: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+
+  .logo {
+    display: flex !important;
+    align-items: center !important;
+    height: 100% !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+  }
+}
+
+
+/* FIT-TO-SCREEN Mobile Navbar Fixes */
+@media (max-width: 576px),
+(hover: none) and (pointer: coarse) {
+
+  /* Override container padding to maximize space */
+  .navbar-content.container {
+    padding-left: 4px !important;
+    padding-right: 4px !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+  }
+
+  /* Logo: Allow shrinking but keep aspect ratio */
+  .navbar-left {
+    flex: 0 1 auto !important;
+    /* Allow shrinking if needed */
+    min-width: 0 !important;
+    margin-right: 4px !important;
+    overflow: hidden !important;
+    /* Prevent spilling */
+  }
+
+  .logo-container {
+    height: 40px !important;
+    width: auto !important;
+    display: flex !important;
+    align-items: center !important;
+  }
+
+  .logo-image {
+    height: 100% !important;
+    width: auto !important;
+    max-width: 100% !important;
+    /* Shrink to fit container */
+    object-fit: contain !important;
+    /* Never crop, just scale */
+    object-position: left center !important;
+  }
+
+  /* Icons: Fixed size, but optimized */
+  .navbar-right {
+    flex: 0 0 auto !important;
+    /* Don't shrink icons */
+    gap: 2px !important;
+    /* Minimal gap */
+  }
+
+  .nav-icon-btn {
+    width: 38px !important;
+    /* 38px is large enough but fits 5 icons */
+    height: 38px !important;
+    padding: 6px !important;
+  }
+
+  .nav-avatar {
+    width: 32px !important;
+    height: 32px !important;
+  }
+
+  /* Ensure vertical alignment */
+  .navbar-content {
+    align-items: center !important;
+  }
+}
+/* FORCE MOBILE LAYOUT (Applied via JS detection) */
+.navbar.mobile-force .navbar-center {
+  display: none !important;
+}
+
+.navbar.mobile-force .navbar-content {
+  padding: 0 4px !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  margin: 0 !important;
+  align-items: center !important;
+}
+
+.navbar.mobile-force .navbar-left {
+  flex: 0 1 auto !important;
+  min-width: 0 !important;
+  margin-right: auto !important;
+  display: flex !important;
+  align-items: center !important;
+}
+
+.navbar.mobile-force .navbar-right {
+  flex: 0 0 auto !important;
+  gap: 2px !important;
+  display: flex !important;
+  align-items: center !important;
+}
+
+.navbar.mobile-force .logo-container {
+  height: 45px !important;
+  width: auto !important;
+  display: flex !important;
+  align-items: center !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+.navbar.mobile-force .logo-image {
+  height: 100% !important;
+  width: auto !important;
+  max-width: 100% !important;
+  object-fit: contain !important;
+  display: block !important;
+}
+
+.navbar.mobile-force .nav-icon-btn {
+  width: 48px !important;
+  height: 48px !important;
+  padding: 8px !important;
+  margin: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.navbar.mobile-force .logo {
+  display: flex !important;
+  align-items: center !important;
+  height: 100% !important;
+  visibility: visible !important;
+  opacity: 1 !important;
 }
 

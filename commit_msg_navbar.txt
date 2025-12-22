@@ -1,0 +1,1 @@
+Fix mobile navbar layout: Force mobile view on phones, increase icon/logo sizes, and strict alignment
