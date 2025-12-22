@@ -43,9 +43,33 @@ const Home = ({ onRestaurantClick, onViewProfile, onNewLog, lastUpdated }) => {
         setBadgeUpdateTrigger(prev => prev + 1);
     };
 
+    const [isDesktop, setIsDesktop] = useState(false);
+
+    useEffect(() => {
+        const checkIsDesktop = () => {
+            const width = window.innerWidth;
+            // Check if it's a mobile device using User Agent
+            const isMobileDevice = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+
+            // Only consider it desktop if width is sufficient AND it's not a mobile device
+            // This forces "Desktop Mode" on mobile to still use the mobile layout (single column)
+            setIsDesktop(width >= 992 && !isMobileDevice);
+        };
+
+        checkIsDesktop();
+        window.addEventListener('resize', checkIsDesktop);
+        return () => window.removeEventListener('resize', checkIsDesktop);
+    }, []);
+
     return (
-        <div className="home-layout container">
-            <div className="main-feed" style={{ flex: '1', minWidth: '300px' }}>
+        <div className="home-layout container" style={{
+            display: 'flex',
+            gap: '2rem',
+            alignItems: 'flex-start',
+            width: '100%',
+            flexDirection: isDesktop ? 'row' : 'column' // Explicitly control direction
+        }}>
+            <div className="main-feed" style={{ flex: '1', minWidth: '0', width: isDesktop ? 'auto' : '100%' }}>
                 {/* Popular Section */}
                 {!location.name ? (
                     <div className="empty-state" style={{ textAlign: 'center', padding: '4rem 2rem', color: 'var(--text-secondary)' }}>
@@ -67,9 +91,11 @@ const Home = ({ onRestaurantClick, onViewProfile, onNewLog, lastUpdated }) => {
                         )}
 
                         {/* Mobile Leaderboard (Visible only on mobile) */}
-                        <div className="mobile-leaderboard d-md-none" style={{ marginBottom: '2rem' }}>
-                            <Leaderboard onViewProfile={onViewProfile} userLocation={location} />
-                        </div>
+                        {!isDesktop && (
+                            <div className="mobile-leaderboard" style={{ marginBottom: '2rem' }}>
+                                <Leaderboard onViewProfile={onViewProfile} userLocation={location} />
+                            </div>
+                        )}
 
                         <PopularRestaurants
                             city={location.name.split(',')[0]}
@@ -83,9 +109,11 @@ const Home = ({ onRestaurantClick, onViewProfile, onNewLog, lastUpdated }) => {
             </div>
 
             {/* Sidebar for Leaderboard (Visible only on desktop) */}
-            <div className="home-sidebar d-none d-md-block" style={{ width: '300px', flexShrink: 0 }}>
-                <Leaderboard onViewProfile={onViewProfile} userLocation={location} />
-            </div>
+            {isDesktop && (
+                <div className="home-sidebar" style={{ width: '300px', flexShrink: 0, position: 'sticky', top: '90px' }}>
+                    <Leaderboard onViewProfile={onViewProfile} userLocation={location} />
+                </div>
+            )}
         </div>
     );
 };

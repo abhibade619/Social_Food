@@ -216,7 +216,24 @@ const Auth = () => {
                 )}
 
                 {error && <div className="error-message" style={{ color: '#ff6b6b', marginBottom: '1rem', fontSize: '0.9rem' }}>{error}</div>}
-                {success && <div className="success-message" style={{ color: '#4caf50', marginBottom: '1rem', fontSize: '0.9rem' }}>{success}</div>}
+                {success && (
+                    <div className="success-message glass-panel" style={{
+                        padding: '1.5rem',
+                        marginBottom: '1.5rem',
+                        borderRadius: '12px',
+                        textAlign: 'center',
+                        background: 'rgba(76, 175, 80, 0.1)',
+                        border: '1px solid rgba(76, 175, 80, 0.3)'
+                    }}>
+                        <div style={{ fontSize: '2.5rem', marginBottom: '0.5rem' }}>📩</div>
+                        <h3 style={{ color: '#4caf50', margin: '0 0 0.5rem 0' }}>Check your inbox!</h3>
+                        <p style={{ color: 'var(--text-secondary)', fontSize: '0.95rem', margin: 0 }}>
+                            We've sent a confirmation link to <strong>{email}</strong>.
+                            <br />
+                            Please verify your email to activate your account.
+                        </p>
+                    </div>
+                )}
 
                 <button type="submit" className="premium-button auth-submit-btn" disabled={loading} style={{ width: '100%', marginTop: '1rem' }}>
                     {loading ? 'Processing...' : (

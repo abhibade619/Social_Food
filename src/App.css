@@ -7147,3 +7147,433 @@ input:checked+.toggle-slider:before {
     justify-content: center !important;
   }
 }
+/* City Badge Card */
+.city-badge-card {
+  background: linear-gradient(135deg, #2c3e50 0%, #000000 100%);
+  border-radius: 20px;
+  padding: 2rem;
+  color: white;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  min-height: 200px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.city-badge-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
+}
+
+.badge-icon-large {
+  position: absolute;
+  top: -20px;
+  right: -20px;
+  font-size: 10rem;
+  opacity: 0.1;
+  transform: rotate(15deg);
+  pointer-events: none;
+}
+
+.badge-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  z-index: 1;
+}
+
+.city-name {
+  font-size: 2.5rem;
+  font-weight: 800;
+  margin: 0;
+  background: linear-gradient(to right, #fff, #e0e0e0);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-family: 'Playfair Display', serif;
+}
+
+.badge-level-pill {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  padding: 0.5rem 1rem;
+  border-radius: 50px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.progress-section {
+  margin-top: auto;
+  z-index: 1;
+}
+
+.progress-info {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.progress-bar-bg {
+  background: rgba(255, 255, 255, 0.1);
+  height: 6px;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 1s ease-out;
+}
+
+.max-level-banner {
+  text-align: center;
+  padding: 1rem;
+  background: rgba(255, 215, 0, 0.1);
+  border: 1px solid rgba(255, 215, 0, 0.3);
+  border-radius: 12px;
+  color: #ffd700;
+  font-weight: bold;
+}
+
+/* Ensure Home Layout works on Desktop Mode on Mobile */
+.home-layout {
+  display: flex;
+  gap: 2rem;
+  align-items: flex-start;
+  width: 100%;
+}
+
+.main-feed {
+  flex: 1;
+  min-width: 0; /* Prevent flex item from overflowing */
+}
+
+
+/* Utility Classes for Responsive Design */
+.d-none { display: none !important; }
+.d-block { display: block !important; }
+.d-flex { display: flex !important; }
+
+@media (min-width: 768px) {
+  .d-md-none { display: none !important; }
+  .d-md-block { display: block !important; }
+  .d-md-flex { display: flex !important; }
+}
+
+
+/* Container for centering content */
+.container {
+  width: 100%;
+  max-width: 1200px;
+  margin-right: auto;
+  margin-left: auto;
+  padding-right: 1rem;
+  padding-left: 1rem;
+}
+
+@media (min-width: 576px) { .container { max-width: 540px; } }
+@media (min-width: 768px) { .container { max-width: 720px; } }
+@media (min-width: 992px) { .container { max-width: 960px; } }
+@media (min-width: 1200px) { .container { max-width: 1140px; } }
+
+
+/* Navbar Styles */
+.navbar {
+  background: var(--bg-card);
+  border-bottom: 1px solid var(--border-color);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  height: 70px;
+  display: flex;
+  align-items: center;
+}
+
+.navbar-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+}
+
+.navbar-left, .navbar-right {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.navbar-center {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+}
+
+.nav-icon-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  padding: 8px;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.nav-icon-btn:hover, .nav-icon-btn.active {
+  color: var(--primary-color);
+  background: rgba(255, 107, 107, 0.1);
+}
+
+.notification-badge {
+  position: absolute;
+  top: 0;
+  right: 0;
+  background: var(--primary-color);
+  color: white;
+  font-size: 0.7rem;
+  padding: 2px 5px;
+  border-radius: 10px;
+  min-width: 16px;
+  text-align: center;
+}
+
+
+/* Home Sidebar */
+.home-sidebar {
+  width: 300px;
+  flex-shrink: 0;
+  position: sticky;
+  top: 90px; /* Navbar height + spacing */
+  height: fit-content;
+}
+
+/* Navbar Alignment Fixes */
+.navbar-content {
+  max-width: 1200px; /* Match container max-width */
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+}
+
+/* Ensure main feed takes remaining space */
+.main-feed {
+  flex: 1;
+  min-width: 0;
+}
+
+
+/* Fix for 'Desktop site' on mobile */
+html, body {
+  width: 100%;
+  overflow-x: hidden;
+}
+
+* {
+  max-width: 100%;
+  box-sizing: border-box; /* Ensure padding doesn't overflow width */
+}
+
+/* Key fix: treat touch devices like mobile even in 'Desktop site' mode */
+@media (hover: none) and (pointer: coarse) {
+  /* Make multi-column layouts become single column */
+  .home-layout {
+    flex-direction: column !important;
+    gap: 2rem !important;
+  }
+
+  /* Put right-side panels under the main content instead of floating */
+  .home-sidebar {
+    width: 100% !important;
+    max-width: 100% !important;
+    position: static !important;
+    display: block !important; /* Ensure it shows up stacked */
+    margin-top: 2rem;
+  }
+
+  .main-feed {
+    width: 100% !important;
+    flex: none !important;
+    min-width: 0 !important;
+  }
+  
+  /* Hide the mobile-only leaderboard if we are showing the sidebar stacked */
+  .mobile-leaderboard {
+    display: none !important;
+  }
+}
+
+
+/* Strict Navbar Alignment Fixes */
+.navbar {
+  height: 70px; /* Fixed height */
+  display: flex;
+  align-items: center;
+}
+
+.navbar-content {
+  display: flex;
+  align-items: center; /* Vertically center everything */
+  justify-content: space-between;
+  height: 100%;
+}
+
+.navbar-left, 
+.navbar-right, 
+.navbar-center {
+  display: flex;
+  align-items: center;
+  height: 100%;
+}
+
+.logo-container {
+  display: flex;
+  align-items: center;
+  height: 100%;
+}
+
+.logo-image {
+  max-height: 40px; /* Ensure logo doesn't overflow */
+  width: auto;
+}
+
+.nav-icon-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 40px;
+  width: 40px;
+}
+
+/* Ensure Sign In button is aligned */
+.premium-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 40px; /* Match icon height */
+}
+
+
+/* FORCE Navbar Alignment */
+.navbar-content {
+  flex-wrap: nowrap !important;
+  white-space: nowrap;
+}
+
+.navbar-left {
+  flex-shrink: 0;
+}
+
+.navbar-right {
+  flex-shrink: 0;
+}
+
+.navbar-center {
+  flex-shrink: 1;
+  min-width: 0;
+}
+
+/* Ensure icons don't wrap internally */
+.navbar-right {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem; /* Reduce gap slightly to fit better */
+}
+
+
+/* User Menu Styles */
+.user-menu {
+  position: relative;
+}
+
+.user-menu-trigger {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.nav-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--primary-color);
+}
+
+.menu-button {
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.menu-button:hover {
+  color: var(--text-primary);
+}
+
+.menu-dropdown {
+  position: absolute;
+  top: 100%;
+  right: 0; /* Anchor to right to prevent cropping */
+  margin-top: 0.5rem;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-sm);
+  box-shadow: var(--shadow-lg);
+  min-width: 200px;
+  z-index: 1000;
+  padding: 0.5rem;
+  animation: fadeIn 0.2s ease;
+}
+
+.menu-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+  padding: 0.75rem 1rem;
+  background: transparent;
+  border: none;
+  color: var(--text-primary);
+  text-align: left;
+  cursor: pointer;
+  border-radius: var(--border-radius-sm);
+  font-size: 0.9rem;
+  transition: all 0.2s ease;
+}
+
+.menu-item:hover {
+  background: var(--bg-hover);
+}
+
+.menu-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-secondary);
+}
+
+.menu-item:hover .menu-icon {
+  color: var(--primary-color);
+}
+

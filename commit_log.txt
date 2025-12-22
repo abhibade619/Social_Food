@@ -1,0 +1,6 @@
+error: pathspec 'layout,' did not match any file(s) known to git
+error: pathspec 'auth,' did not match any file(s) known to git
+error: pathspec 'and' did not match any file(s) known to git
+error: pathspec 'profile' did not match any file(s) known to git
+error: pathspec 'setup' did not match any file(s) known to git
+error: pathspec 'issues'' did not match any file(s) known to git

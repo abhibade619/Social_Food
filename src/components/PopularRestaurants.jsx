@@ -509,7 +509,8 @@ const PopularRestaurants = ({ city: cityProp, userLocation, onRestaurantClick, o
     };
 
     if (loading) return <div className="loading-spinner">Loading recommendations...</div>;
-    if (popularRestaurants.length === 0 && topRatedRestaurants.length === 0) return null;
+    // Removed early return to allow "No results" UI to render
+    // if (popularRestaurants.length === 0 && topRatedRestaurants.length === 0) return null;
 
     return (
         <div className="recommendations-container">
@@ -541,7 +542,18 @@ const PopularRestaurants = ({ city: cityProp, userLocation, onRestaurantClick, o
                         {visiblePopular.map(renderRestaurantCard)}
                     </div>
                 ) : (
-                    <div className="no-results">No restaurants match your filters.</div>
+                    <div className="no-results glass-panel" style={{ padding: '3rem', textAlign: 'center', borderRadius: '16px', marginTop: '1rem' }}>
+                        <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🍽️</div>
+                        <h3 style={{ marginBottom: '0.5rem' }}>No restaurants found</h3>
+                        <p style={{ color: 'var(--text-secondary)' }}>We couldn't find any popular restaurants in {city} matching your filters.</p>
+                        <button
+                            className="btn-secondary"
+                            onClick={() => setSelectedCuisine('All')}
+                            style={{ marginTop: '1rem' }}
+                        >
+                            Clear Filters
+                        </button>
+                    </div>
                 )}
 
                 {visibleCount < filteredPopular.length && (

@@ -1,0 +1,1 @@
+Fix layout issues (Desktop on Mobile, Navbar, UserMenu), improve Auth UI and Profile Setup logic

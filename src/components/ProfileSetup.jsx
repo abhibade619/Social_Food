@@ -32,14 +32,20 @@ const ProfileSetup = ({ onComplete }) => {
             return;
         }
 
+        if (!formData.location) {
+            setError('Please select your city/location.');
+            return;
+        }
+
         setLoading(true);
 
         try {
-            // Check if username is already taken
+            // Check if username is already taken by SOMEONE ELSE
             const { data: existingUser } = await supabase
                 .from('profiles')
                 .select('username')
                 .eq('username', formData.username.toLowerCase())
+                .neq('id', user.id) // Exclude current user
                 .single();
 
             if (existingUser) {
